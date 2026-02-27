@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  odoo-test:
+    image: odoo:18
+    container_name: odoo_hotel_test
+    ports:
+      - "8070:8069"
+    volumes:
+      - odoo-test-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      - HOST=db-test
+      - USER=odoo
+      - PASSWORD=odoo_test_2026
+    depends_on:
+      - db-test
+    restart: unless-stopped
+
+  db-test:
+    image: postgres:16
+    container_name: postgres_hotel_test
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo_test_2026
+      - POSTGRES_USER=odoo
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  odoo-test-data:
+  pgdata-test:

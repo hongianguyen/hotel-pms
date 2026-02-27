@@ -42,9 +42,7 @@ class HotelNightAudit(models.Model):
 
     notes = fields.Text('Notes')
 
-    _sql_constraints = [
-        ('date_uniq', 'unique(date)', 'Night audit already exists for this date!'),
-    ]
+    _date_uniq = models.Constraint('UNIQUE(date)', 'Night audit already exists for this date!')
 
     # ═══════════════════════════════════════════════════════════════════
     # CRON ENTRY POINT — called by ir.cron at 02:00 AM daily

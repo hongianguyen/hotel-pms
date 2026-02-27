@@ -22,6 +22,4 @@ class HotelService(models.Model):
     active = fields.Boolean('Active', default=True)
     description = fields.Text('Description')
 
-    _sql_constraints = [
-        ('price_positive', 'CHECK(price >= 0)', 'Price cannot be negative!'),
-    ]
+    _price_positive = models.Constraint('CHECK(price >= 0)', 'Price cannot be negative!')

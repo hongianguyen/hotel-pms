@@ -34,9 +34,7 @@ class HotelSeason(models.Model):
         ], limit=1, order='rate_multiplier desc')
         return season.rate_multiplier if season else 1.0
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Season name must be unique!'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Season name must be unique!')
 
 
 class HotelRatePlanSeason(models.Model):

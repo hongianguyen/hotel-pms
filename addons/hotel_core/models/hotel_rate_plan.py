@@ -63,7 +63,5 @@ class HotelRatePlan(models.Model):
             return False
         return self.base_rate or (self.room_type_id.base_rate if self.room_type_id else 0.0)
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Rate plan name must be unique!'),
-        ('min_stay_positive', 'CHECK(min_stay >= 1)', 'Minimum stay must be at least 1!'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Rate plan name must be unique!')
+    _min_stay_positive = models.Constraint('CHECK(min_stay >= 1)', 'Minimum stay must be at least 1!')

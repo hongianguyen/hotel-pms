@@ -30,11 +30,9 @@ class HotelRoomType(models.Model):
         for rec in self:
             rec.room_count = len(rec.room_ids)
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Room type name must be unique!'),
-        ('base_rate_positive', 'CHECK(base_rate >= 0)', 'Base rate cannot be negative!'),
-        ('capacity_positive', 'CHECK(capacity > 0)', 'Capacity must be at least 1!'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Room type name must be unique!')
+    _base_rate_positive = models.Constraint('CHECK(base_rate >= 0)', 'Base rate cannot be negative!')
+    _capacity_positive = models.Constraint('CHECK(capacity > 0)', 'Capacity must be at least 1!')
 
 
 class HotelRoom(models.Model):
@@ -134,6 +132,4 @@ class HotelRoom(models.Model):
         booked_ids = overlapping.mapped('room_id').ids
         return all_rooms.filtered(lambda r: r.id not in booked_ids)
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Room number must be unique!'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Room number must be unique!')
