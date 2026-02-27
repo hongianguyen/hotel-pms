@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_hotel_night_audit"
+              name="Night Audit"
+              parent="hotel_core.menu_hotel_root"
+              action="action_hotel_night_audit"
+              sequence="80"
+              groups="hotel_core.group_hotel_admin"/>
+</odoo>

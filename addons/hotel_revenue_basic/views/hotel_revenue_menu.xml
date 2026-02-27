@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_hotel_revenue"
+              name="Revenue"
+              parent="hotel_core.menu_hotel_config"
+              sequence="40"
+              groups="hotel_core.group_hotel_admin"/>
+
+    <menuitem id="menu_hotel_seasons"
+              name="Seasons"
+              parent="menu_hotel_revenue"
+              action="action_hotel_season"
+              sequence="10"/>
+</odoo>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         HOUSEKEEPING KANBAN BOARD
+         Uses hotel.room grouped by status with action buttons
+         ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Housekeeping Kanban -->
+    <record id="view_hotel_housekeeping_kanban" model="ir.ui.view">
+        <field name="name">hotel.room.housekeeping.kanban</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="status" class="o_kanban_small_column"
+                    group_create="false" group_delete="false">
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <field name="status"/>
+                <field name="floor"/>
+                <field name="color"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong class="fs-5">
+                                    <field name="name"/>
+                                </strong>
+                                <div class="text-muted small">
+                                    <field name="room_type_id"/> · Floor <field name="floor"/>
+                                </div>
+                            </div>
+                            <field name="status" widget="badge"
+                                   decoration-success="status == 'available'"
+                                   decoration-danger="status == 'occupied'"
+                                   decoration-warning="status == 'dirty'"
+                                   decoration-info="status == 'cleaning'"/>
+                        </div>
+                        <div class="mt-2 d-flex gap-1 flex-wrap">
+                            <button name="action_set_available" type="object"
+                                    class="btn btn-sm btn-success"
+                                    invisible="status in ('available', 'occupied')"
+                                    title="Mark Available">
+                                ✓ Clean
+                            </button>
+                            <button name="action_set_cleaning" type="object"
+                                    class="btn btn-sm btn-info"
+                                    invisible="status != 'dirty'"
+                                    title="Start Cleaning">
+                                🧹 Start
+                            </button>
+                            <button name="action_set_dirty" type="object"
+                                    class="btn btn-sm btn-warning"
+                                    invisible="status in ('dirty', 'occupied', 'maintenance')"
+                                    title="Mark Dirty">
+                                Mark Dirty
+                            </button>
+                            <button name="action_set_maintenance" type="object"
+                                    class="btn btn-sm btn-secondary"
+                                    invisible="status == 'maintenance'"
+                                    title="Block Room">
+                                🔒 Block
+                            </button>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Housekeeping Search -->
+    <record id="view_hotel_housekeeping_search" model="ir.ui.view">
+        <field name="name">hotel.room.housekeeping.search</field>
+        <field name="model">hotel.room</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <filter string="Dirty" name="dirty" domain="[('status', '=', 'dirty')]"/>
+                <filter string="Cleaning" name="cleaning" domain="[('status', '=', 'cleaning')]"/>
+                <filter string="Maintenance" name="maintenance" domain="[('status', '=', 'maintenance')]"/>
+                <filter string="Available" name="available" domain="[('status', '=', 'available')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Room Type" name="group_type" context="{'group_by': 'room_type_id'}"/>
+                    <filter string="Floor" name="group_floor" context="{'group_by': 'floor'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Housekeeping Action -->
+    <record id="action_hotel_housekeeping" model="ir.actions.act_window">
+        <field name="name">Housekeeping Board</field>
+        <field name="res_model">hotel.room</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hotel_housekeeping_search"/>
+        <field name="view_ids" eval="[
+            (5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_hotel_housekeeping_kanban')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('hotel_core.view_hotel_room_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('hotel_core.view_hotel_room_form')}),
+        ]"/>
+        <field name="context">{'search_default_group_status': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                All rooms are managed here
+            </p>
+            <p>Track and update room cleaning status.</p>
+        </field>
+    </record>
+</odoo>

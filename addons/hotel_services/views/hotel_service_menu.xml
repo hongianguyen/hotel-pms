@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_hotel_services"
+              name="Services"
+              parent="hotel_core.menu_hotel_root"
+              sequence="40"/>
+
+    <menuitem id="menu_hotel_service_list"
+              name="All Services"
+              parent="menu_hotel_services"
+              action="action_hotel_service"
+              sequence="10"/>
+</odoo>

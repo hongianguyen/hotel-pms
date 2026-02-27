@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="hotel_reporting.ReceptionDashboard">
+        <div class="hotel-dashboard">
+            <!-- Header -->
+            <div class="hotel-section-header">
+                <h2>🏨 Reception Dashboard</h2>
+                <button class="btn btn-primary btn-sm" t-on-click="onRefresh">
+                    ↻ Refresh
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <t t-if="state.loading">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"/>
+                    <p class="mt-2 text-muted">Loading dashboard...</p>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- KPI Cards -->
+                <div class="hotel-kpi-grid">
+                    <div class="hotel-kpi-card kpi-primary">
+                        <div class="kpi-icon">🛬</div>
+                        <div class="kpi-label">Today Arrivals</div>
+                        <div class="kpi-value"><t t-out="state.kpis.today_arrivals"/></div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-warning">
+                        <div class="kpi-icon">🛫</div>
+                        <div class="kpi-label">Today Departures</div>
+                        <div class="kpi-value"><t t-out="state.kpis.today_departures"/></div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-success">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-label">Occupancy</div>
+                        <div class="kpi-value"><t t-out="state.kpis.occupancy_pct"/>%</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-danger">
+                        <div class="kpi-icon">🧹</div>
+                        <div class="kpi-label">Dirty Rooms</div>
+                        <div class="kpi-value"><t t-out="state.kpis.dirty_rooms"/></div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-info">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-label">Revenue Today</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.revenue_today)"/>đ</div>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="hotel-legend">
+                    <div class="hotel-legend-item">
+                        <span class="hotel-legend-dot" style="background: #3B82F6;"/>
+                        Confirmed
+                    </div>
+                    <div class="hotel-legend-item">
+                        <span class="hotel-legend-dot" style="background: #22C55E;"/>
+                        Checked In
+                    </div>
+                    <div class="hotel-legend-item">
+                        <span class="hotel-legend-dot" style="background: #64748B;"/>
+                        Checked Out
+                    </div>
+                </div>
+
+                <!-- Gantt Calendar -->
+                <div class="hotel-gantt-wrapper">
+                    <h3>📅 15-Day Booking Calendar</h3>
+                    <table class="hotel-gantt-table">
+                        <thead>
+                            <tr>
+                                <th class="room-name">Room</th>
+                                <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
+                                    <th t-att-class="(d.is_today ? 'today' : '') + (d.is_weekend ? ' weekend' : '')">
+                                        <div><t t-out="d.weekday"/></div>
+                                        <div><t t-out="d.day"/></div>
+                                    </th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.gantt.rooms" t-as="room" t-key="room.id">
+                                <tr>
+                                    <td class="room-name"><t t-out="room.name"/></td>
+                                    <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
+                                        <t t-set="cellRes" t-value="getGanttCellContent(room.id, d.date)"/>
+                                        <td t-att-class="d.is_weekend ? 'weekend' : ''">
+                                            <t t-if="cellRes">
+                                                <span t-att-class="'gantt-bar state-' + cellRes.state"
+                                                      t-on-click="() => this.openReservation(cellRes.id)"
+                                                      t-att-title="cellRes.guest_name">
+                                                    <t t-out="cellRes.guest_name"/>
+                                                </span>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Room Status Board -->
+                <div class="hotel-section-header">
+                    <h3>🏠 Room Status Board</h3>
+                </div>
+                <div class="hotel-room-board">
+                    <t t-foreach="state.rooms" t-as="room" t-key="room.id">
+                        <div t-att-class="'hotel-room-card status-' + room.status"
+                             t-on-click="() => this.openRoom(room.id)">
+                            <div class="room-number"><t t-out="room.name"/></div>
+                            <div class="room-type"><t t-out="room.room_type"/></div>
+                            <span class="room-status-dot"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ── Module Category ──────────────────────────────────────────── -->
+    <record id="hotel_module_category" model="ir.module.category">
+        <field name="name">Hotel Management</field>
+        <field name="description">Internal Hotel Property Management System</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- ── Hotel Admin Group ────────────────────────────────────────── -->
+    <record id="group_hotel_admin" model="res.groups">
+        <field name="name">Hotel Administrator</field>
+        <field name="category_id" ref="hotel_module_category"/>
+        <field name="comment">Full access: all modules, night audit, accounting, rate plans, reports</field>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- ── Hotel Reception Group ────────────────────────────────────── -->
+    <record id="group_hotel_reception" model="res.groups">
+        <field name="name">Hotel Reception</field>
+        <field name="category_id" ref="hotel_module_category"/>
+        <field name="comment">Front-desk: reservations, check-in/out, charges, dashboard</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

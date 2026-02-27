@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Night Audit List -->
+    <record id="view_hotel_night_audit_list" model="ir.ui.view">
+        <field name="name">hotel.night.audit.list</field>
+        <field name="model">hotel.night.audit</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'locked'">
+                <field name="date"/>
+                <field name="occupancy_pct"/>
+                <field name="occupied_rooms"/>
+                <field name="total_rooms"/>
+                <field name="adr" widget="monetary"/>
+                <field name="revpar" widget="monetary"/>
+                <field name="total_revenue" widget="monetary" sum="Total"/>
+                <field name="unpaid_folio_count"/>
+                <field name="posted_invoice_count"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'done'"
+                       decoration-muted="state == 'locked'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Night Audit Form -->
+    <record id="view_hotel_night_audit_form" model="ir.ui.view">
+        <field name="name">hotel.night.audit.form</field>
+        <field name="model">hotel.night.audit</field>
+        <field name="arch" type="xml">
+            <form create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Night Audit — <field name="date"/></h1>
+                    </div>
+
+                    <group>
+                        <group string="Occupancy">
+                            <field name="total_rooms"/>
+                            <field name="occupied_rooms"/>
+                            <field name="occupancy_pct" widget="percentage"/>
+                        </group>
+                        <group string="Rate Metrics">
+                            <field name="adr" widget="monetary"/>
+                            <field name="revpar" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Revenue">
+                            <field name="room_revenue" widget="monetary"/>
+                            <field name="fnb_revenue" widget="monetary"/>
+                            <field name="service_revenue" widget="monetary"/>
+                            <field name="total_revenue" widget="monetary"/>
+                        </group>
+                        <group string="Payments">
+                            <field name="payment_cash" widget="monetary"/>
+                            <field name="payment_card" widget="monetary"/>
+                            <field name="payment_bank" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group string="Flags">
+                        <field name="unpaid_folio_count"/>
+                        <field name="posted_invoice_count"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Night Audit Search -->
+    <record id="view_hotel_night_audit_search" model="ir.ui.view">
+        <field name="name">hotel.night.audit.search</field>
+        <field name="model">hotel.night.audit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Locked" name="locked" domain="[('state', '=', 'locked')]"/>
+                <filter string="Has Unpaid Folios" name="unpaid"
+                        domain="[('unpaid_folio_count', '>', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Month" name="group_month" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Night Audit Action -->
+    <record id="action_hotel_night_audit" model="ir.actions.act_window">
+        <field name="name">Night Audit History</field>
+        <field name="res_model">hotel.night.audit</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_night_audit_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No night audit records yet
+            </p>
+            <p>Night audits run automatically at 02:00 AM daily.</p>
+        </field>
+    </record>
+</odoo>

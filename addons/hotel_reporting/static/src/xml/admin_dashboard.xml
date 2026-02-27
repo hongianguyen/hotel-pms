@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="hotel_reporting.AdminDashboard">
+        <div class="hotel-dashboard">
+            <!-- Header -->
+            <div class="hotel-section-header">
+                <h2>📊 Admin Dashboard</h2>
+                <button class="btn btn-primary btn-sm" t-on-click="onRefresh">
+                    ↻ Refresh
+                </button>
+            </div>
+
+            <!-- Loading -->
+            <t t-if="state.loading">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"/>
+                    <p class="mt-2 text-muted">Loading dashboard...</p>
+                </div>
+            </t>
+
+            <t t-else="">
+                <!-- KPI Cards -->
+                <div class="hotel-kpi-grid">
+                    <div class="hotel-kpi-card kpi-primary">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-label">Monthly Occupancy</div>
+                        <div class="kpi-value"><t t-out="state.kpis.monthly_occupancy"/>%</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-success">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-label">ADR</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.adr)"/>đ</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-info">
+                        <div class="kpi-icon">📈</div>
+                        <div class="kpi-label">RevPAR</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.revpar)"/>đ</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-primary">
+                        <div class="kpi-icon">🏨</div>
+                        <div class="kpi-label">Room Revenue</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.room_revenue)"/>đ</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-warning">
+                        <div class="kpi-icon">🍽</div>
+                        <div class="kpi-label">F&amp;B Revenue</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.fnb_revenue)"/>đ</div>
+                    </div>
+                    <div class="hotel-kpi-card kpi-danger">
+                        <div class="kpi-icon">🎯</div>
+                        <div class="kpi-label">Service Revenue</div>
+                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.service_revenue)"/>đ</div>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="hotel-chart-grid">
+                    <!-- Revenue by Day (Bar Chart) -->
+                    <div class="hotel-chart-card">
+                        <h3>📊 Revenue by Day (30 days)</h3>
+                        <div class="hotel-bar-chart">
+                            <t t-foreach="state.revenueData" t-as="item" t-key="item.date">
+                                <div class="hotel-bar"
+                                     t-att-style="'height: ' + getBarHeight(item) + 'px; background: #2563EB;'">
+                                    <div class="bar-tooltip">
+                                        <t t-out="item.label"/>: <t t-out="formatCurrency(item.room + item.fnb + item.service)"/>đ
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Occupancy Trend -->
+                    <div class="hotel-chart-card">
+                        <h3>📈 Occupancy Trend (30 days)</h3>
+                        <div class="hotel-bar-chart">
+                            <t t-foreach="state.occupancyData" t-as="item" t-key="item.date">
+                                <div class="hotel-bar"
+                                     t-att-style="'height: ' + getOccupancyBarHeight(item) + 'px; background: #22C55E;'">
+                                    <div class="bar-tooltip">
+                                        <t t-out="item.label"/>: <t t-out="item.occupancy"/>%
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Breakdown Pie (CSS segments) -->
+                    <div class="hotel-chart-card">
+                        <h3>🥧 Revenue Breakdown</h3>
+                        <div class="d-flex align-items-center justify-content-center" style="min-height: 200px;">
+                            <t t-set="slices" t-value="getPieSlices()"/>
+                            <t t-if="slices.length">
+                                <div class="text-center">
+                                    <t t-foreach="slices" t-as="slice" t-key="slice.label">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span t-att-style="'display:inline-block;width:16px;height:16px;border-radius:4px;background:' + slice.color"/>
+                                            <span style="font-weight:600; min-width:70px; text-align:left;">
+                                                <t t-out="slice.label"/>
+                                            </span>
+                                            <span class="text-muted">
+                                                <t t-out="formatCurrency(slice.value)"/>đ
+                                            </span>
+                                            <span class="badge bg-secondary">
+                                                <t t-out="Math.round(slice.pct)"/>%
+                                            </span>
+                                        </div>
+                                    </t>
+                                    <div class="mt-3" style="font-size:18px; font-weight:700;">
+                                        Total: <t t-out="formatCurrency(state.kpis.total_revenue)"/>đ
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-muted">No revenue data yet</div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

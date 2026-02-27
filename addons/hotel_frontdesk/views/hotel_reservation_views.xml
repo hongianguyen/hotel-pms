@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         RESERVATION VIEWS
+         ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Reservation List -->
+    <record id="view_hotel_reservation_list" model="ir.ui.view">
+        <field name="name">hotel.reservation.list</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'checked_in'"
+                  decoration-info="state == 'confirmed'">
+                <field name="reservation_number"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="nights"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-primary="state == 'confirmed'"
+                       decoration-success="state == 'checked_in'"
+                       decoration-muted="state == 'checked_out'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Reservation Form -->
+    <record id="view_hotel_reservation_form" model="ir.ui.view">
+        <field name="name">hotel.reservation.form</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object"
+                            string="Confirm" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_check_in" type="object"
+                            string="Check In" class="btn-primary"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_check_out" type="object"
+                            string="Check Out" class="btn-primary"
+                            invisible="state != 'checked_in'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel" class="btn-secondary"
+                            invisible="state in ('checked_out', 'cancelled')"
+                            confirm="Are you sure you want to cancel this reservation?"/>
+                    <button name="action_reset_draft" type="object"
+                            string="Reset to Draft" class="btn-secondary"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,checked_in,checked_out"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="reservation_number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Guest Information">
+                            <field name="guest_id"/>
+                            <field name="guest_phone"/>
+                            <field name="guest_email"/>
+                            <field name="adults"/>
+                            <field name="children"/>
+                        </group>
+                        <group string="Room &amp; Dates">
+                            <field name="room_type_id"/>
+                            <field name="room_id"/>
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                            <field name="nights"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Pricing">
+                            <field name="rate_plan_id"/>
+                            <field name="nightly_rate" widget="monetary"/>
+                            <field name="total_amount" widget="monetary"/>
+                        </group>
+                        <group string="Linked Documents">
+                            <field name="folio_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Special requests, notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Reservation Calendar -->
+    <record id="view_hotel_reservation_calendar" model="ir.ui.view">
+        <field name="name">hotel.reservation.calendar</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <calendar date_start="checkin_date" date_stop="checkout_date"
+                      color="state" mode="month"
+                      event_open_popup="true" quick_create="0">
+                <field name="reservation_number"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Reservation Search -->
+    <record id="view_hotel_reservation_search" model="ir.ui.view">
+        <field name="name">hotel.reservation.search</field>
+        <field name="model">hotel.reservation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="reservation_number"/>
+                <field name="guest_id"/>
+                <field name="room_id"/>
+                <separator/>
+                <filter string="Today Arrivals" name="today_arrivals"
+                        domain="[('checkin_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Departures" name="today_departures"
+                        domain="[('checkout_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Checked In" name="checked_in" domain="[('state', '=', 'checked_in')]"/>
+                <filter string="Checked Out" name="checked_out" domain="[('state', '=', 'checked_out')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Check-in Date" name="group_checkin" context="{'group_by': 'checkin_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Reservation Action -->
+    <record id="action_hotel_reservation" model="ir.actions.act_window">
+        <field name="name">Reservations</field>
+        <field name="res_model">hotel.reservation</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_hotel_reservation_search"/>
+        <field name="context">{'search_default_today_arrivals': 0}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first reservation
+            </p>
+            <p>Manage guest bookings, check-ins, and check-outs.</p>
+        </field>
+    </record>
+</odoo>

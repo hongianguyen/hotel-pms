@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hotel_reservation_admin,hotel.reservation admin,model_hotel_reservation,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_reservation_reception,hotel.reservation reception,model_hotel_reservation,hotel_core.group_hotel_reception,1,1,1,0
+access_hotel_folio_admin,hotel.folio admin,model_hotel_folio,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_folio_reception,hotel.folio reception,model_hotel_folio,hotel_core.group_hotel_reception,1,1,0,0
+access_hotel_folio_line_admin,hotel.folio.line admin,model_hotel_folio_line,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_folio_line_reception,hotel.folio.line reception,model_hotel_folio_line,hotel_core.group_hotel_reception,1,1,1,0
+access_hotel_add_charge_wizard_admin,hotel.add.charge.wizard admin,model_hotel_add_charge_wizard,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_add_charge_wizard_reception,hotel.add.charge.wizard reception,model_hotel_add_charge_wizard,hotel_core.group_hotel_reception,1,1,1,1

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ── Front Desk Menu ──────────────────────────────────────────── -->
+    <menuitem id="menu_hotel_frontdesk"
+              name="Front Desk"
+              parent="hotel_core.menu_hotel_root"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_reservations"
+              name="Reservations"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_reservation"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_folios"
+              name="Folios"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_folio"
+              sequence="20"/>
+</odoo>

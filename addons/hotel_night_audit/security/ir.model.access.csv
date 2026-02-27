@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hotel_night_audit_admin,hotel.night.audit admin,model_hotel_night_audit,hotel_core.group_hotel_admin,1,1,1,1

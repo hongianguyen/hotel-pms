@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reception Dashboard Client Action -->
+    <record id="action_reception_dashboard" model="ir.actions.client">
+        <field name="name">Reception Dashboard</field>
+        <field name="tag">hotel_reception_dashboard</field>
+    </record>
+
+    <!-- Admin Dashboard Client Action -->
+    <record id="action_admin_dashboard" model="ir.actions.client">
+        <field name="name">Admin Dashboard</field>
+        <field name="tag">hotel_admin_dashboard</field>
+    </record>
+
+    <!-- ── Dashboard Menus ──────────────────────────────────────────── -->
+    <menuitem id="menu_hotel_dashboard"
+              name="Dashboard"
+              parent="hotel_core.menu_hotel_root"
+              sequence="1"/>
+
+    <menuitem id="menu_hotel_reception_dashboard"
+              name="Reception"
+              parent="menu_hotel_dashboard"
+              action="action_reception_dashboard"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_admin_dashboard"
+              name="Admin Dashboard"
+              parent="menu_hotel_dashboard"
+              action="action_admin_dashboard"
+              sequence="20"
+              groups="hotel_core.group_hotel_admin"/>
+</odoo>
