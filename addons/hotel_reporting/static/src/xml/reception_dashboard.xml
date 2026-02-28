@@ -85,9 +85,14 @@
                                     <td class="room-name"><t t-out="room.name"/></td>
                                     <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
                                         <t t-set="cellRes" t-value="getGanttCellContent(room.id, d.date)"/>
-                                        <td t-att-class="d.is_weekend ? 'weekend' : ''">
+                                        <td t-att-class="d.is_weekend ? 'weekend' : ''"
+                                            t-on-dragover="(ev) => this.onDragOver(ev)"
+                                            t-on-dragleave="(ev) => this.onDragLeave(ev)"
+                                            t-on-drop="(ev) => this.onDrop(ev, room.id, d.date)">
                                             <t t-if="cellRes">
                                                 <span t-att-class="'gantt-bar state-' + cellRes.state"
+                                                      draggable="true"
+                                                      t-on-dragstart="(ev) => this.onDragStart(ev, cellRes.id)"
                                                       t-on-click="() => this.openReservation(cellRes.id)"
                                                       t-att-title="cellRes.guest_name">
                                                     <t t-out="cellRes.guest_name"/>

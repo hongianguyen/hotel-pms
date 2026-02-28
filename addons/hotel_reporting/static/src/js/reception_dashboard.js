@@ -16,6 +16,7 @@ export class ReceptionDashboard extends Component {
             gantt: { rooms: [], reservations: [], dates: [] },
             loading: true,
         });
+        this.dragResId = null;
 
         onWillStart(async () => {
             await this.loadData();
@@ -70,6 +71,53 @@ export class ReceptionDashboard extends Component {
             views: [[false, "form"]],
             target: "current",
         });
+    }
+
+    onDragStart(ev, resId) {
+        this.dragResId = resId;
+        ev.dataTransfer.effectAllowed = "move";
+    }
+
+    onDragOver(ev) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = "move";
+        ev.currentTarget.classList.add("drag-over");
+    }
+
+    onDragLeave(ev) {
+        ev.currentTarget.classList.remove("drag-over");
+    }
+
+    async onDrop(ev, roomId, dateStr) {
+        ev.preventDefault();
+        ev.currentTarget.classList.remove("drag-over");
+        const resId = this.dragResId;
+        this.dragResId = null;
+        if (!resId) return;
+
+        const res = this.state.gantt.reservations.find((r) => r.id === resId);
+        if (!res) return;
+
+        // Keep same number of nights, shift to dropped date
+        const nights = Math.round(
+            (new Date(res.checkout_date) - new Date(res.checkin_date)) /
+            (1000 * 60 * 60 * 24)
+        );
+        const newCheckin = new Date(dateStr);
+        const newCheckout = new Date(dateStr);
+        newCheckout.setDate(newCheckout.getDate() + nights);
+        const fmt = (d) => d.toISOString().split("T")[0];
+
+        try {
+            await this.orm.write("hotel.reservation", [resId], {
+                room_id: roomId,
+                checkin_date: fmt(newCheckin),
+                checkout_date: fmt(newCheckout),
+            });
+            await this.loadData();
+        } catch (e) {
+            console.error("Drag-drop update failed:", e);
+        }
     }
 
     formatCurrency(value) {
