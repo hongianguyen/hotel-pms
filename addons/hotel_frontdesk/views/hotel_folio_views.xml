@@ -40,7 +40,7 @@
                             invisible="not invoice_id"/>
                     <button name="%(hotel_frontdesk.action_hotel_add_charge_wizard)d"
                             type="action" string="Add Charge" class="btn-secondary"
-                            context="{'default_folio_id': active_id}"
+                            context="{'default_folio_id': id}"
                             invisible="payment_state == 'paid'"/>
                     <field name="payment_state" widget="statusbar"/>
                 </header>

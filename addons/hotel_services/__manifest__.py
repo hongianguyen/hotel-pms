@@ -5,7 +5,7 @@
     'category': 'Hotel Management',
     'summary': 'Extra charges, tours, POS bridge to folio',
     'author': 'Hotel PMS Team',
-    'depends': ['hotel_frontdesk'],
+    'depends': ['hotel_core'],
     'data': [
         'security/ir.model.access.csv',
         'data/hotel_service_demo.xml',

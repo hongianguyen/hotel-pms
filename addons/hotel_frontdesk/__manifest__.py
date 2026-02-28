@@ -15,7 +15,7 @@ Core PMS operations:
 - Email confirmation templates
     """,
     'author': 'Hotel PMS Team',
-    'depends': ['hotel_core', 'account'],
+    'depends': ['hotel_core', 'hotel_services', 'account'],
     'data': [
         'security/ir.model.access.csv',
         'data/hotel_frontdesk_sequence.xml',
