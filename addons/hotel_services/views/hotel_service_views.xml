@@ -50,7 +50,7 @@
                 <filter string="Tours" name="tours" domain="[('category', '=', 'tour')]"/>
                 <filter string="F&amp;B" name="fnb" domain="[('category', '=', 'fnb')]"/>
                 <filter string="Misc" name="misc" domain="[('category', '=', 'misc')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Category" name="group_category" context="{'group_by': 'category'}"/>
                 </group>
             </search>

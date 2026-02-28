@@ -249,7 +249,7 @@ class HotelNightAudit(models.Model):
         if not admin_group:
             return
 
-        admin_users = admin_group.users
+        admin_users = admin_group.user_ids
         for user in admin_users:
             if user.partner_id.email:
                 template.send_mail(audit.id, force_send=True,

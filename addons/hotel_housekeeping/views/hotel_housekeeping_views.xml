@@ -79,7 +79,7 @@
                 <filter string="Maintenance" name="maintenance" domain="[('status', '=', 'maintenance')]"/>
                 <filter string="Available" name="available" domain="[('status', '=', 'available')]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                     <filter string="Room Type" name="group_type" context="{'group_by': 'room_type_id'}"/>
                     <filter string="Floor" name="group_floor" context="{'group_by': 'floor'}"/>

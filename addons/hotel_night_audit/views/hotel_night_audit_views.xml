@@ -89,7 +89,7 @@
                 <filter string="Locked" name="locked" domain="[('state', '=', 'locked')]"/>
                 <filter string="Has Unpaid Folios" name="unpaid"
                         domain="[('unpaid_folio_count', '>', 0)]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Month" name="group_month" context="{'group_by': 'date:month'}"/>
                 </group>
             </search>

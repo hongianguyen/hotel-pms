@@ -9,7 +9,7 @@ set -e
 
 VPS_HOST=${1:?"Usage: ./deploy.sh <vps_host> [odoo_db]"}
 DB_NAME=${2:-"hotel_db"}
-REMOTE_ADDONS="/opt/odoo/addons"
+REMOTE_ADDONS="/opt/odoo/custom_addons"
 
 MODULES="hotel_core,hotel_frontdesk,hotel_housekeeping,hotel_revenue_basic,hotel_services,hotel_reporting,hotel_night_audit"
 

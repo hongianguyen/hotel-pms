@@ -134,7 +134,7 @@
                 <filter string="Checked Out" name="checked_out" domain="[('state', '=', 'checked_out')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
                     <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>

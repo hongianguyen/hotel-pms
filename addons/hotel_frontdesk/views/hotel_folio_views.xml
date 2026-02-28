@@ -99,7 +99,7 @@
                 <filter string="Open" name="open" domain="[('payment_state', '=', 'open')]"/>
                 <filter string="Invoiced" name="invoiced" domain="[('payment_state', '=', 'invoiced')]"/>
                 <filter string="Paid" name="paid" domain="[('payment_state', '=', 'paid')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
                     <filter string="Payment Status" name="group_payment" context="{'group_by': 'payment_state'}"/>
                 </group>

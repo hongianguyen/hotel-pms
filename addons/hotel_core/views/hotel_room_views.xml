@@ -199,7 +199,7 @@
                 <filter string="Dirty" name="dirty" domain="[('status', '=', 'dirty')]"/>
                 <filter string="Maintenance" name="maintenance" domain="[('status', '=', 'maintenance')]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Room Type" name="group_type" context="{'group_by': 'room_type_id'}"/>
                     <filter string="Floor" name="group_floor" context="{'group_by': 'floor'}"/>
                     <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
