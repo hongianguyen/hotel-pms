@@ -11,29 +11,7 @@ This file provides autonomous instructions and commands for Claude Code to manag
 
 ## 🚀 Autonomous Execution Commands
 
-### 1. Sync Code to Test Server (Upload)
-Use this command to push local addon changes to the test environment:
-```bash
-scp -r addons/hotel_* root@103.200.20.13:/opt/hotel-pms-test/addons/
-```
 
-### 2. Reset Database & Restart Test Server (Fast Iteration)
-When module XML/Python is heavily refactored or corrupted, use this chain to reset the DB and re-initialize all modules autonomously:
-```bash
-ssh root@103.200.20.13 "pkill -f 'odoo-test.conf'; sleep 1; bash /opt/hotel-pms-test/reset_db.sh; truncate -s 0 /var/log/odoo/odoo-test.log; nohup sudo -u odoo /opt/odoo/venv/bin/python3 /opt/odoo/odoo-bin -c /opt/hotel-pms-test/odoo-test.conf -d hotel_pms_test -i hotel_core,hotel_frontdesk,hotel_housekeeping,hotel_revenue_basic,hotel_services,hotel_reporting,hotel_night_audit > /dev/null 2>&1 &"
-```
-
-### 3. Check Server Logs (Debugging)
-To autonomously debug crashes or `ParseError`s during module initialization:
-```bash
-ssh root@103.200.20.13 "tail -50 /var/log/odoo/odoo-test.log | grep -E 'ERROR|CRITICAL|ParseError|odoo.tools.convert'"
-```
-
-### 4. Deploy to Production
-Use the provided deployment script. This will sync files and upgrade the modules on the live database.
-```bash
-./deploy.sh root@103.200.20.13 hotel_db
-```
 
 ## 📝 Coding Guidelines & Conventions (Sourced from Odoo 19 / Master Branch)
 *Note: Since Odoo 19 documentation is still in development, these rules were empirically derived by reverse-engineering the core Odoo framework on the VPS (e.g., `/opt/odoo/odoo/orm/table_objects.py`, `/opt/odoo/addons/base/models/res_groups.py`).*
