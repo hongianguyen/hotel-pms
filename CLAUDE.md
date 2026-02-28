@@ -35,7 +35,9 @@ Use the provided deployment script. This will sync files and upgrade the modules
 ./deploy.sh root@103.200.20.13 hotel_db
 ```
 
-## 📝 Coding Guidelines & Conventions
+## 📝 Coding Guidelines & Conventions (Sourced from Odoo 19 / Master Branch)
+*Note: Since Odoo 19 documentation is still in development, these rules were empirically derived by reverse-engineering the core Odoo framework on the VPS (e.g., `/opt/odoo/odoo/orm/table_objects.py`, `/opt/odoo/addons/base/models/res_groups.py`).*
+
 1. **Odoo 19 Compatibility:** 
    - Replace `_sql_constraints` with `_name = models.Constraint('...sql...', 'msg')` as class-level attributes starting with an underscore.
    - For `res.groups`, the users field is `user_ids`. NEVER use the `users` or `category_id` fields, they are deprecated.

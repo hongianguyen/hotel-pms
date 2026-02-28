@@ -29,6 +29,8 @@
 7. **`hotel_night_audit`**: Automated nightly audit. Runs at 2:00 AM via cron job. Processes draft invoices, flags unpaid folios, logs KPI snapshots, and sends emails to the Admin group.
 
 ## 🐛 Odoo 19 Specific Learnings & Fixes (CRITICAL)
+*Source Note: As Odoo 19 is the cutting-edge Master branch, official documentation is sparse. These architectural changes were directly sourced by reverse-engineering the Odoo source code on the VPS (tracing `odoo.tools.convert.ParseError` logs into `/opt/odoo/odoo/orm/table_objects.py` and `sale` native modules).*
+
 If you ever need to refactor or add to this code, stick to these Odoo 19 patterns discovered during development:
 1. **Model Constraints:** `_sql_constraints = [...]` is **deprecated** in Odoo 19. It **MUST** use the new syntax: `_name_uniq = models.Constraint('UNIQUE(name)', 'Room type name must be unique!')`.
 2. **`res.groups` Fields:** The old `users` field is now `user_ids`. Field `category_id` was removed.
