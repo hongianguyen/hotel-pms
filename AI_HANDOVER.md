@@ -51,3 +51,11 @@ If you ever need to refactor or add to this code, stick to these Odoo 19 pattern
    ```
 3. Ask the user if they'd like to perform any frontend QA on the running Odoo 19 instance at `http://103.200.20.13:8070`.
 4. If testing looks perfect, deploy the code to the production instance using `./deploy.sh root@103.200.20.13 <production_db_name>`.
+
+## 🐛 Existing Bugs / Unverified Features (To-Do List)
+While the modules compile and install via CLI (Exit Code 0), the following areas require immediate verification by the next agent:
+
+1. **OWL Dashboards Runtime Validation:** The `hotel_reporting` module includes custom OWL components for the Gantt chart and KPI dashboards. Odoo 19 introduces strict OWL 2.0 changes. **Bug/Risk:** The dashboards have not been opened in the browser yet; there may be JavaScript runtime errors, missing bundle includes, or OWL component mounting issues.
+2. **UI Activation Quirks:** We resolved `ParseError` exceptions during CLI initialization (related to old `res.groups` fields and search view `<group>` tags). **Risk:** If you click "Activate" directly from the Odoo Apps UI, check the logs (`/var/log/odoo/odoo-test.log`) to ensure no further XML parsing issues block the UI flow.
+3. **Automated Night Audit Cron:** The `ir.cron` job for Night Audit is configured to run at 02:00 AM. **Risk:** The Python logic executing `Folio -> account.move` posting and email generation needs to be manually triggered once to ensure it doesn't hit any unhandled exceptions with Odoo 19's `account.move` posting API.
+4. **Rate Plan / Seasonal Multiplier Calculation:** The logic extending `base_rate` with `season.rate_multiplier` needs an end-to-end booking test to verify the calculated folio charges match expected values.
