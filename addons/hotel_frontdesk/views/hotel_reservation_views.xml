@@ -52,6 +52,13 @@
                     <button name="action_reset_draft" type="object"
                             string="Reset to Draft" class="btn-secondary"
                             invisible="state != 'cancelled'"/>
+                    <button name="action_send_confirmation_email" type="object"
+                            string="✉ Send Confirmation" class="btn-secondary"
+                            invisible="state not in ('confirmed', 'checked_in')"/>
+                    <button name="action_edit_confirmation_template" type="object"
+                            string="Edit Template" class="btn-secondary"
+                            groups="hotel_core.group_hotel_admin"
+                            invisible="state not in ('confirmed', 'checked_in')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirmed,checked_in,checked_out"/>
                 </header>
@@ -83,7 +90,9 @@
                             <field name="nightly_rate" widget="monetary"/>
                             <field name="total_amount" widget="monetary"/>
                         </group>
-                        <group string="Linked Documents">
+                        <group string="Booking Details">
+                            <field name="source_id"/>
+                            <field name="send_confirmation"/>
                             <field name="folio_id" readonly="1"/>
                         </group>
                     </group>

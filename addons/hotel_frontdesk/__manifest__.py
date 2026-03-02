@@ -21,6 +21,8 @@ Core PMS operations:
         'data/hotel_frontdesk_sequence.xml',
         'data/hotel_mail_template.xml',
         'wizards/hotel_add_charge_wizard_views.xml',
+        'wizards/hotel_group_booking_wizard_views.xml',
+        'wizards/hotel_reservation_email_wizard_views.xml',
         'views/hotel_reservation_views.xml',
         'views/hotel_folio_views.xml',
         'views/hotel_frontdesk_menu.xml',

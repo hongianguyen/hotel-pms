@@ -29,12 +29,29 @@
     margin-bottom: 24px;
 }
 
+/* ── Main Layout (30/65 split) ──────────────────────────────── */
+.hotel-main-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.hotel-kpi-panel {
+    width: 30%;
+    flex-shrink: 0;
+}
+
+.hotel-content-panel {
+    width: 65%;
+    min-width: 0;
+}
+
 /* ── KPI Cards ──────────────────────────────────────────────── */
 .hotel-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 0;
 }
 
 .hotel-kpi-card {
@@ -89,11 +106,10 @@
     max-height: 520px;
 }
 
-.hotel-gantt-wrapper h3 {
+.hotel-gantt-header h3 {
     font-size: 16px;
     font-weight: 600;
     color: var(--hotel-text);
-    margin-bottom: 16px;
 }
 
 .hotel-gantt-table {
@@ -150,9 +166,11 @@
 }
 
 .hotel-gantt-table .gantt-bar {
-    display: inline-block;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     border-radius: 4px;
-    padding: 2px 6px;
+    padding: 4px 8px;
     font-size: 10px;
     font-weight: 600;
     color: white;
@@ -160,7 +178,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
     user-select: none;
 }
 
@@ -169,14 +186,47 @@
     opacity: 0.7;
 }
 
+.hotel-gantt-table td.gantt-cell-empty {
+    cursor: cell;
+}
+
+.hotel-gantt-table td.gantt-cell-empty:hover {
+    background: rgba(37, 99, 235, 0.06);
+}
+
 .hotel-gantt-table td.drag-over {
     background: rgba(37, 99, 235, 0.12);
     outline: 2px dashed var(--hotel-primary);
 }
 
-.gantt-bar.state-confirmed { background: var(--hotel-info); }
-.gantt-bar.state-checked_in { background: var(--hotel-success); }
+.gantt-bar.state-confirmed { background: #799DC7; }
+.gantt-bar.state-checked_in { background: #E87C09; }
 .gantt-bar.state-checked_out { background: var(--hotel-muted); }
+
+/* ── Gantt Header with Date Nav ─────────────────────────────── */
+.hotel-gantt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.hotel-gantt-header h3 {
+    margin: 0;
+}
+
+.hotel-gantt-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gantt-date-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--hotel-muted);
+    white-space: nowrap;
+}
 
 /* ── Room Status Board ──────────────────────────────────────── */
 .hotel-room-board {
@@ -223,8 +273,8 @@
 
 .hotel-room-card.status-available { border-color: var(--hotel-success); }
 .hotel-room-card.status-available .room-status-dot { background: var(--hotel-success); }
-.hotel-room-card.status-occupied { border-color: var(--hotel-danger); }
-.hotel-room-card.status-occupied .room-status-dot { background: var(--hotel-danger); }
+.hotel-room-card.status-occupied { border-color: #E87C09; }
+.hotel-room-card.status-occupied .room-status-dot { background: #E87C09; }
 .hotel-room-card.status-dirty { border-color: var(--hotel-warning); }
 .hotel-room-card.status-dirty .room-status-dot { background: var(--hotel-warning); }
 .hotel-room-card.status-cleaning { border-color: var(--hotel-info); }

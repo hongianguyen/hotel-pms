@@ -19,107 +19,131 @@
             </t>
 
             <t t-else="">
-                <!-- KPI Cards -->
-                <div class="hotel-kpi-grid">
-                    <div class="hotel-kpi-card kpi-primary">
-                        <div class="kpi-icon">🛬</div>
-                        <div class="kpi-label">Today Arrivals</div>
-                        <div class="kpi-value"><t t-out="state.kpis.today_arrivals"/></div>
-                    </div>
-                    <div class="hotel-kpi-card kpi-warning">
-                        <div class="kpi-icon">🛫</div>
-                        <div class="kpi-label">Today Departures</div>
-                        <div class="kpi-value"><t t-out="state.kpis.today_departures"/></div>
-                    </div>
-                    <div class="hotel-kpi-card kpi-success">
-                        <div class="kpi-icon">📊</div>
-                        <div class="kpi-label">Occupancy</div>
-                        <div class="kpi-value"><t t-out="state.kpis.occupancy_pct"/>%</div>
-                    </div>
-                    <div class="hotel-kpi-card kpi-danger">
-                        <div class="kpi-icon">🧹</div>
-                        <div class="kpi-label">Dirty Rooms</div>
-                        <div class="kpi-value"><t t-out="state.kpis.dirty_rooms"/></div>
-                    </div>
-                    <div class="hotel-kpi-card kpi-info">
-                        <div class="kpi-icon">💰</div>
-                        <div class="kpi-label">Revenue Today</div>
-                        <div class="kpi-value"><t t-out="formatCurrency(state.kpis.revenue_today)"/>đ</div>
-                    </div>
-                </div>
+                <div class="hotel-main-layout">
 
-                <!-- Legend -->
-                <div class="hotel-legend">
-                    <div class="hotel-legend-item">
-                        <span class="hotel-legend-dot" style="background: #3B82F6;"/>
-                        Confirmed
-                    </div>
-                    <div class="hotel-legend-item">
-                        <span class="hotel-legend-dot" style="background: #22C55E;"/>
-                        Checked In
-                    </div>
-                    <div class="hotel-legend-item">
-                        <span class="hotel-legend-dot" style="background: #64748B;"/>
-                        Checked Out
-                    </div>
-                </div>
-
-                <!-- Gantt Calendar -->
-                <div class="hotel-gantt-wrapper">
-                    <h3>📅 15-Day Booking Calendar</h3>
-                    <table class="hotel-gantt-table">
-                        <thead>
-                            <tr>
-                                <th class="room-name">Room</th>
-                                <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
-                                    <th t-att-class="(d.is_today ? 'today' : '') + (d.is_weekend ? ' weekend' : '')">
-                                        <div><t t-out="d.weekday"/></div>
-                                        <div><t t-out="d.day"/></div>
-                                    </th>
-                                </t>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="state.gantt.rooms" t-as="room" t-key="room.id">
-                                <tr>
-                                    <td class="room-name"><t t-out="room.name"/></td>
-                                    <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
-                                        <t t-set="cellRes" t-value="getGanttCellContent(room.id, d.date)"/>
-                                        <td t-att-class="d.is_weekend ? 'weekend' : ''"
-                                            t-on-dragover="(ev) => this.onDragOver(ev)"
-                                            t-on-dragleave="(ev) => this.onDragLeave(ev)"
-                                            t-on-drop="(ev) => this.onDrop(ev, room.id, d.date)">
-                                            <t t-if="cellRes">
-                                                <span t-att-class="'gantt-bar state-' + cellRes.state"
-                                                      draggable="true"
-                                                      t-on-dragstart="(ev) => this.onDragStart(ev, cellRes.id)"
-                                                      t-on-click="() => this.openReservation(cellRes.id)"
-                                                      t-att-title="cellRes.guest_name">
-                                                    <t t-out="cellRes.guest_name"/>
-                                                </span>
-                                            </t>
-                                        </td>
-                                    </t>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Room Status Board -->
-                <div class="hotel-section-header">
-                    <h3>🏠 Room Status Board</h3>
-                </div>
-                <div class="hotel-room-board">
-                    <t t-foreach="state.rooms" t-as="room" t-key="room.id">
-                        <div t-att-class="'hotel-room-card status-' + room.status"
-                             t-on-click="() => this.openRoom(room.id)">
-                            <div class="room-number"><t t-out="room.name"/></div>
-                            <div class="room-type"><t t-out="room.room_type"/></div>
-                            <span class="room-status-dot"/>
+                    <!-- Left: KPI Panel (30%) -->
+                    <div class="hotel-kpi-panel">
+                        <div class="hotel-kpi-grid">
+                            <div class="hotel-kpi-card kpi-primary">
+                                <div class="kpi-icon">🛬</div>
+                                <div class="kpi-label">Today Arrivals</div>
+                                <div class="kpi-value"><t t-out="state.kpis.today_arrivals"/></div>
+                            </div>
+                            <div class="hotel-kpi-card kpi-warning">
+                                <div class="kpi-icon">🛫</div>
+                                <div class="kpi-label">Today Departures</div>
+                                <div class="kpi-value"><t t-out="state.kpis.today_departures"/></div>
+                            </div>
+                            <div class="hotel-kpi-card kpi-success">
+                                <div class="kpi-icon">📊</div>
+                                <div class="kpi-label">Occupancy</div>
+                                <div class="kpi-value"><t t-out="state.kpis.occupancy_pct"/>%</div>
+                            </div>
+                            <div class="hotel-kpi-card kpi-danger">
+                                <div class="kpi-icon">🧹</div>
+                                <div class="kpi-label">Dirty Rooms</div>
+                                <div class="kpi-value"><t t-out="state.kpis.dirty_rooms"/></div>
+                            </div>
+                            <div class="hotel-kpi-card kpi-info">
+                                <div class="kpi-icon">💰</div>
+                                <div class="kpi-label">Revenue Today</div>
+                                <div class="kpi-value"><t t-out="formatCurrency(state.kpis.revenue_today)"/>đ</div>
+                            </div>
                         </div>
-                    </t>
-                </div>
+                    </div>
+
+                    <!-- Right: Content Panel (65%) -->
+                    <div class="hotel-content-panel">
+
+                        <!-- Legend -->
+                        <div class="hotel-legend">
+                            <div class="hotel-legend-item">
+                                <span class="hotel-legend-dot" style="background: #799DC7;"/>
+                                Confirmed
+                            </div>
+                            <div class="hotel-legend-item">
+                                <span class="hotel-legend-dot" style="background: #E87C09;"/>
+                                Checked In
+                            </div>
+                            <div class="hotel-legend-item">
+                                <span class="hotel-legend-dot" style="background: #64748B;"/>
+                                Checked Out
+                            </div>
+                        </div>
+
+                        <!-- Gantt Calendar -->
+                        <div class="hotel-gantt-wrapper">
+                            <div class="hotel-gantt-header">
+                                <h3>📅 15-Day Booking Calendar</h3>
+                                <div class="hotel-gantt-nav">
+                                    <button class="btn btn-sm btn-outline-secondary" t-on-click="onPrevPeriod">
+                                        ‹ Prev
+                                    </button>
+                                    <span class="gantt-date-label">
+                                        <t t-out="state.gantt.start_date"/> – <t t-out="state.gantt.end_date"/>
+                                    </span>
+                                    <button class="btn btn-sm btn-outline-secondary" t-on-click="onNextPeriod">
+                                        Next ›
+                                    </button>
+                                </div>
+                            </div>
+                            <table class="hotel-gantt-table">
+                                <thead>
+                                    <tr>
+                                        <th class="room-name">Room</th>
+                                        <t t-foreach="state.gantt.dates" t-as="d" t-key="d.date">
+                                            <th t-att-class="(d.is_today ? 'today' : '') + (d.is_weekend ? ' weekend' : '')">
+                                                <div><t t-out="d.weekday"/></div>
+                                                <div><t t-out="d.day"/></div>
+                                            </th>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.gantt.rooms" t-as="room" t-key="room.id">
+                                        <tr>
+                                            <td class="room-name"><t t-out="room.name"/></td>
+                                            <t t-foreach="getGanttRowSegments(room.id)" t-as="seg" t-key="seg.date">
+                                                <td t-att-colspan="seg.colspan"
+                                                    t-att-class="(seg.is_weekend ? 'weekend ' : '') + (seg.type === 'empty' ? 'gantt-cell-empty' : '')"
+                                                    t-on-click="() => this.onGanttCellClick(room.id, seg)"
+                                                    t-on-dragover="(ev) => this.onDragOver(ev)"
+                                                    t-on-dragleave="(ev) => this.onDragLeave(ev)"
+                                                    t-on-drop="(ev) => this.onDrop(ev, room.id, seg.date)">
+                                                    <t t-if="seg.type === 'reservation'">
+                                                        <span t-att-class="'gantt-bar state-' + seg.res.state"
+                                                              draggable="true"
+                                                              t-on-dragstart="(ev) => this.onDragStart(ev, seg.res.id)"
+                                                              t-on-click.stop="() => this.openReservation(seg.res.id)"
+                                                              t-att-title="seg.res.guest_name">
+                                                            <t t-out="seg.res.guest_name"/>
+                                                        </span>
+                                                    </t>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Room Status Board -->
+                        <div class="hotel-section-header">
+                            <h3>🏠 Room Status Board</h3>
+                        </div>
+                        <div class="hotel-room-board">
+                            <t t-foreach="state.rooms" t-as="room" t-key="room.id">
+                                <div t-att-class="'hotel-room-card status-' + room.status"
+                                     t-on-click="() => this.openRoom(room)">
+                                    <div class="room-number"><t t-out="room.name"/></div>
+                                    <div class="room-type"><t t-out="room.room_type"/></div>
+                                    <span class="room-status-dot"/>
+                                </div>
+                            </t>
+                        </div>
+
+                    </div><!-- /hotel-content-panel -->
+                </div><!-- /hotel-main-layout -->
             </t>
         </div>
     </t>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_group_booking_wizard_form" model="ir.ui.view">
+        <field name="name">hotel.group.booking.wizard.form</field>
+        <field name="model">hotel.group.booking.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Group Booking">
+                <sheet>
+                    <group>
+                        <group string="Room Selection">
+                            <field name="room_type_id"/>
+                            <field name="num_rooms"/>
+                            <field name="available_count" readonly="1"/>
+                        </group>
+                        <group string="Guest &amp; Dates">
+                            <field name="guest_id"/>
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Pricing &amp; Source">
+                            <field name="rate_plan_id"/>
+                            <field name="source_id"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1" placeholder="Special requests for the group..."/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_create_group_booking" type="object"
+                            string="Create Group Booking" class="btn-primary"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hotel_group_booking_wizard" model="ir.actions.act_window">
+        <field name="name">Group Booking</field>
+        <field name="res_model">hotel.group.booking.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

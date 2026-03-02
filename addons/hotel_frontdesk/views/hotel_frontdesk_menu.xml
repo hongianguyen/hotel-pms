@@ -17,4 +17,10 @@
               parent="menu_hotel_frontdesk"
               action="action_hotel_folio"
               sequence="20"/>
+
+    <menuitem id="menu_hotel_group_booking"
+              name="Group Booking"
+              parent="menu_hotel_frontdesk"
+              action="hotel_frontdesk.action_hotel_group_booking_wizard"
+              sequence="30"/>
 </odoo>

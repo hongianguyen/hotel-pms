@@ -48,6 +48,8 @@ class HotelReservation(models.Model):
     ], string='Status', default='draft', required=True, tracking=True)
 
     folio_id = fields.Many2one('hotel.folio', string='Folio', readonly=True, copy=False)
+    source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
+    send_confirmation = fields.Boolean('Send Confirmation Email', default=True)
     notes = fields.Text('Notes')
     color = fields.Integer('Color', compute='_compute_color')
 
@@ -146,13 +148,13 @@ class HotelReservation(models.Model):
             if not rec.room_id:
                 raise UserError(_('Please assign a room before confirming.'))
             rec.state = 'confirmed'
-            # Send confirmation email
-            template = self.env.ref(
-                'hotel_frontdesk.mail_template_reservation_confirmation',
-                raise_if_not_found=False,
-            )
-            if template and rec.guest_id.email:
-                template.send_mail(rec.id, force_send=True)
+            if rec.send_confirmation:
+                template = self.env.ref(
+                    'hotel_frontdesk.mail_template_reservation_confirmation',
+                    raise_if_not_found=False,
+                )
+                if template and rec.guest_id.email:
+                    template.send_mail(rec.id, force_send=True)
 
     def action_check_in(self):
         """Confirmed → Checked In. Create folio, set room occupied."""
@@ -212,3 +214,34 @@ class HotelReservation(models.Model):
             if rec.state != 'cancelled':
                 raise UserError(_('Only cancelled reservations can be reset to draft.'))
             rec.state = 'draft'
+
+    def action_send_confirmation_email(self):
+        """Open custom email wizard pre-filled with confirmation template for preview/edit before sending."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Send Confirmation Email'),
+            'res_model': 'hotel.reservation.email.wizard',
+            'views': [(False, 'form')],
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_reservation_id': self.id},
+        }
+
+    def action_edit_confirmation_template(self):
+        """Navigate to the confirmation email template for customization."""
+        self.ensure_one()
+        template = self.env.ref(
+            'hotel_frontdesk.mail_template_reservation_confirmation',
+            raise_if_not_found=False,
+        )
+        if not template:
+            raise UserError(_('Confirmation email template not found.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'mail.template',
+            'res_id': template.id,
+            'views': [(False, 'form')],
+            'view_mode': 'form',
+            'target': 'current',
+        }

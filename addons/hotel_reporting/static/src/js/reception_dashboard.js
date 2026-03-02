@@ -15,6 +15,7 @@ export class ReceptionDashboard extends Component {
             rooms: [],
             gantt: { rooms: [], reservations: [], dates: [] },
             loading: true,
+            ganttStartDate: new Date().toISOString().split('T')[0],
         });
         this.dragResId = null;
 
@@ -29,7 +30,7 @@ export class ReceptionDashboard extends Component {
             const [kpis, rooms, gantt] = await Promise.all([
                 this.orm.call("hotel.dashboard", "get_reception_kpis", []),
                 this.orm.call("hotel.dashboard", "get_room_status_board", []),
-                this.orm.call("hotel.dashboard", "get_gantt_data", []),
+                this.orm.call("hotel.dashboard", "get_gantt_data", [this.state.ganttStartDate]),
             ]);
             this.state.kpis = kpis;
             this.state.rooms = rooms;
@@ -44,13 +45,76 @@ export class ReceptionDashboard extends Component {
         await this.loadData();
     }
 
-    getGanttCellContent(roomId, dateStr) {
-        const res = this.state.gantt.reservations.find(
-            (r) => r.room_id === roomId &&
-                r.checkin_date <= dateStr &&
-                r.checkout_date > dateStr
-        );
-        return res || null;
+    onPrevPeriod() {
+        const d = new Date(this.state.ganttStartDate);
+        d.setDate(d.getDate() - 15);
+        this.state.ganttStartDate = d.toISOString().split('T')[0];
+        this.loadData();
+    }
+
+    onNextPeriod() {
+        const d = new Date(this.state.ganttStartDate);
+        d.setDate(d.getDate() + 15);
+        this.state.ganttStartDate = d.toISOString().split('T')[0];
+        this.loadData();
+    }
+
+    onGanttCellClick(roomId, seg) {
+        if (seg.type !== 'empty') return;
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hotel.reservation",
+            views: [[false, "form"]],
+            target: "new",
+            context: {
+                default_room_id: roomId,
+                default_checkin_date: seg.date,
+            },
+        }, {
+            onClose: () => this.loadData(),
+        });
+    }
+
+    getGanttRowSegments(roomId) {
+        const dates = this.state.gantt.dates;
+        const segments = [];
+        let i = 0;
+        while (i < dates.length) {
+            const d = dates[i];
+            const res = this.state.gantt.reservations.find(
+                (r) => r.room_id === roomId &&
+                    r.checkin_date <= d.date &&
+                    r.checkout_date > d.date
+            );
+            if (res) {
+                let colspan = 0;
+                while (i + colspan < dates.length) {
+                    const nd = dates[i + colspan].date;
+                    if (nd >= res.checkin_date && nd < res.checkout_date) {
+                        colspan++;
+                    } else {
+                        break;
+                    }
+                }
+                segments.push({
+                    type: 'reservation',
+                    date: d.date,
+                    is_weekend: d.is_weekend,
+                    colspan: colspan,
+                    res: res,
+                });
+                i += colspan;
+            } else {
+                segments.push({
+                    type: 'empty',
+                    date: d.date,
+                    is_weekend: d.is_weekend,
+                    colspan: 1,
+                });
+                i++;
+            }
+        }
+        return segments;
     }
 
     openReservation(resId) {
@@ -63,14 +127,24 @@ export class ReceptionDashboard extends Component {
         });
     }
 
-    openRoom(roomId) {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "hotel.room",
-            res_id: roomId,
-            views: [[false, "form"]],
-            target: "current",
-        });
+    openRoom(room) {
+        if (room.status === 'occupied' && room.folio_id) {
+            this.action.doAction({
+                type: "ir.actions.act_window",
+                res_model: "hotel.folio",
+                res_id: room.folio_id,
+                views: [[false, "form"]],
+                target: "current",
+            });
+        } else {
+            this.action.doAction({
+                type: "ir.actions.act_window",
+                res_model: "hotel.room",
+                res_id: room.id,
+                views: [[false, "form"]],
+                target: "current",
+            });
+        }
     }
 
     onDragStart(ev, resId) {

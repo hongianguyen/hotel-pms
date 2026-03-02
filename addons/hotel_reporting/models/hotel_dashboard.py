@@ -53,6 +53,14 @@ class HotelDashboard(models.TransientModel):
         rooms = self.env['hotel.room'].search([('active', '=', True)], order='floor, name')
         result = []
         for room in rooms:
+            folio_id = False
+            if room.status == 'occupied':
+                active_res = self.env['hotel.reservation'].search([
+                    ('room_id', '=', room.id),
+                    ('state', '=', 'checked_in'),
+                ], limit=1)
+                if active_res and active_res.folio_id:
+                    folio_id = active_res.folio_id.id
             result.append({
                 'id': room.id,
                 'name': room.name,
@@ -60,6 +68,7 @@ class HotelDashboard(models.TransientModel):
                 'floor': room.floor,
                 'status': room.status,
                 'color': room.color,
+                'folio_id': folio_id,
             })
         return result
 
