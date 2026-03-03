@@ -121,6 +121,7 @@ class HotelDashboard(models.TransientModel):
                 'day': current.day,
                 'weekday': current.strftime('%a'),
                 'is_today': current == date.today(),
+                'is_past': current < date.today(),
                 'is_weekend': current.weekday() >= 5,
             })
             current += timedelta(days=1)

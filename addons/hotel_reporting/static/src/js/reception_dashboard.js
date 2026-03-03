@@ -100,6 +100,7 @@ export class ReceptionDashboard extends Component {
                     type: 'reservation',
                     date: d.date,
                     is_weekend: d.is_weekend,
+                    is_past: d.is_past,
                     colspan: colspan,
                     res: res,
                 });
@@ -109,6 +110,7 @@ export class ReceptionDashboard extends Component {
                     type: 'empty',
                     date: d.date,
                     is_weekend: d.is_weekend,
+                    is_past: d.is_past,
                     colspan: 1,
                 });
                 i++;
@@ -197,6 +199,12 @@ export class ReceptionDashboard extends Component {
     formatCurrency(value) {
         if (!value) return "0";
         return new Intl.NumberFormat("vi-VN").format(Math.round(value));
+    }
+
+    getCurrentDate() {
+        return new Date().toLocaleDateString("en-GB", {
+            weekday: "long", year: "numeric", month: "long", day: "numeric"
+        });
     }
 }
 
