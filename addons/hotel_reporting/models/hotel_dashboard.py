@@ -50,6 +50,7 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_room_status_board(self):
         """Return all rooms with status for the room board."""
+        today = date.today()
         rooms = self.env['hotel.room'].search([('active', '=', True)], order='floor, name')
         result = []
         for room in rooms:
@@ -61,14 +62,35 @@ class HotelDashboard(models.TransientModel):
                 ], limit=1)
                 if active_res and active_res.folio_id:
                     folio_id = active_res.folio_id.id
+
+            # Compute effective display status for maintenance rooms with dates
+            display_status = room.status
+            maintenance_active = False
+            if room.status == 'maintenance':
+                date_from = room.maintenance_date_from
+                date_to = room.maintenance_date_to
+                if date_from and date_to:
+                    maintenance_active = date_from <= today <= date_to
+                    if today > date_to:
+                        # Expired — show as available until cron releases it
+                        display_status = 'maintenance_expired'
+                else:
+                    # No dates = indefinite block
+                    maintenance_active = True
+
             result.append({
                 'id': room.id,
                 'name': room.name,
                 'room_type': room.room_type_id.name,
                 'floor': room.floor,
                 'status': room.status,
+                'display_status': display_status,
                 'color': room.color,
                 'folio_id': folio_id,
+                'maintenance_date_from': str(room.maintenance_date_from) if room.maintenance_date_from else False,
+                'maintenance_date_to': str(room.maintenance_date_to) if room.maintenance_date_to else False,
+                'maintenance_reason': room.maintenance_reason or False,
+                'maintenance_active': maintenance_active,
             })
         return result
 

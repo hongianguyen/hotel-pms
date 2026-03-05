@@ -19,6 +19,7 @@ Foundation for Internal Hotel PMS.
         'security/ir.model.access.csv',
         'data/hotel_sequence.xml',
         'data/hotel_demo_data.xml',
+        'data/hotel_maintenance_cron.xml',
         'views/hotel_room_views.xml',
         'views/hotel_rate_plan_views.xml',
         'views/hotel_core_menu.xml',

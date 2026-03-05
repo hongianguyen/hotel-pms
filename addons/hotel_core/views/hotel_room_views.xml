@@ -99,6 +99,11 @@
                        decoration-danger="status == 'occupied'"
                        decoration-warning="status == 'dirty'"
                        decoration-info="status == 'cleaning'"/>
+                <field name="maintenance_date_from" optional="show"
+                       invisible="status != 'maintenance'"/>
+                <field name="maintenance_date_to" optional="show"
+                       invisible="status != 'maintenance'"/>
+                <field name="maintenance_reason" optional="hide"/>
             </list>
         </field>
     </record>
@@ -174,6 +179,11 @@
                             <field name="status"/>
                             <field name="active"/>
                         </group>
+                    </group>
+                    <group string="Maintenance Block" invisible="status != 'maintenance'">
+                        <field name="maintenance_date_from"/>
+                        <field name="maintenance_date_to"/>
+                        <field name="maintenance_reason" placeholder="e.g. Plumbing repair, AC replacement..."/>
                     </group>
                     <notebook>
                         <page string="Notes">

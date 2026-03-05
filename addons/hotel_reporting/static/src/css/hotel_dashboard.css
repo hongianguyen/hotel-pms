@@ -456,6 +456,29 @@ thead .hd-room-col {
 .hd-room-card.status-maintenance .hd-room-status-bar { background: var(--status-maintenance); }
 .hd-room-card.status-maintenance .hd-room-status-label { color: #9A3412; }
 
+/* Expired maintenance — visually distinct (greyed out) */
+.hd-room-card.status-maintenance_expired .hd-room-status-bar { background: var(--status-past); }
+.hd-room-card.status-maintenance_expired .hd-room-status-label { color: var(--hd-muted); }
+.hd-room-card.status-maintenance_expired { opacity: 0.65; }
+
+/* Maintenance date/reason display on room card */
+.hd-room-maint-dates {
+    font-size: 9px;
+    font-weight: 600;
+    color: #9A3412;
+    padding: 2px 6px 0;
+    white-space: nowrap;
+}
+
+.hd-room-maint-reason {
+    font-size: 9px;
+    color: var(--hd-muted);
+    padding: 1px 6px 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* ── Admin Dashboard KPI grid (reuse) ────────────────────────── */
 .hotel-kpi-grid {
     display: grid;

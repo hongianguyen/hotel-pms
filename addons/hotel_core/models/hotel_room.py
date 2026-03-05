@@ -61,6 +61,10 @@ class HotelRoom(models.Model):
         ('maintenance', 'Maintenance'),
     ], string='Status', default='available', required=True, tracking=True)
 
+    maintenance_date_from = fields.Date('Maintenance From', tracking=True)
+    maintenance_date_to = fields.Date('Maintenance To', tracking=True)
+    maintenance_reason = fields.Char('Maintenance Reason', tracking=True)
+
     floor = fields.Integer('Floor', default=1)
     active = fields.Boolean('Active', default=True)
     notes = fields.Text('Internal Notes')
@@ -100,6 +104,23 @@ class HotelRoom(models.Model):
     def action_set_maintenance(self):
         self.write({'status': 'maintenance'})
 
+    @api.model
+    def _cron_auto_release_maintenance(self):
+        """Daily cron: auto-release rooms whose maintenance period has ended."""
+        today = fields.Date.today()
+        expired = self.search([
+            ('status', '=', 'maintenance'),
+            ('maintenance_date_to', '<', today),
+            ('maintenance_date_to', '!=', False),
+        ])
+        if expired:
+            expired.write({
+                'status': 'available',
+                'maintenance_date_from': False,
+                'maintenance_date_to': False,
+                'maintenance_reason': False,
+            })
+
     def action_set_occupied(self):
         self.write({'status': 'occupied'})
 
@@ -131,5 +152,12 @@ class HotelRoom(models.Model):
         ])
         booked_ids = overlapping.mapped('room_id').ids
         return all_rooms.filtered(lambda r: r.id not in booked_ids)
+
+    @api.constrains('maintenance_date_from', 'maintenance_date_to')
+    def _check_maintenance_dates(self):
+        for room in self:
+            if room.maintenance_date_from and room.maintenance_date_to:
+                if room.maintenance_date_to < room.maintenance_date_from:
+                    raise ValidationError(_('Maintenance end date must be after start date.'))
 
     _name_uniq = models.Constraint('UNIQUE(name)', 'Room number must be unique!')

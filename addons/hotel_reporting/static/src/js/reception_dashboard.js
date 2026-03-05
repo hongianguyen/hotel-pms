@@ -210,6 +210,24 @@ export class ReceptionDashboard extends Component {
         return new Intl.NumberFormat("vi-VN").format(Math.round(value));
     }
 
+    formatStatus(status) {
+        const map = {
+            available: 'Available',
+            occupied: 'Occupied',
+            dirty: 'Dirty',
+            cleaning: 'Cleaning',
+            maintenance: 'Maintenance',
+            maintenance_expired: 'Expired Block',
+        };
+        return map[status] || status;
+    }
+
+    formatShortDate(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    }
+
     getCurrentDate() {
         return new Date().toLocaleDateString("en-GB", {
             weekday: "long", year: "numeric", month: "long", day: "numeric"
