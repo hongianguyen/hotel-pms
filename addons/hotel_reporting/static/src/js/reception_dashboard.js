@@ -196,6 +196,15 @@ export class ReceptionDashboard extends Component {
         }
     }
 
+    get roomCounts() {
+        const rooms = this.state.rooms;
+        return {
+            available: rooms.filter(r => r.status === 'available').length,
+            occupied:  rooms.filter(r => r.status === 'occupied').length,
+            dirty:     rooms.filter(r => r.status === 'dirty').length,
+        };
+    }
+
     formatCurrency(value) {
         if (!value) return "0";
         return new Intl.NumberFormat("vi-VN").format(Math.round(value));

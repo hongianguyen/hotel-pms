@@ -133,9 +133,9 @@
                     <div class="hd-card-header">
                         <h3 class="hd-card-title">Room Status Board</h3>
                         <div class="hd-room-counts">
-                            <span class="hd-count-badge available">Available: <t t-out="state.rooms.filter(r => r.status === 'available').length"/></span>
-                            <span class="hd-count-badge occupied">Occupied: <t t-out="state.rooms.filter(r => r.status === 'occupied').length"/></span>
-                            <span class="hd-count-badge dirty">Dirty: <t t-out="state.rooms.filter(r => r.status === 'dirty').length"/></span>
+                            <span class="hd-count-badge available">Available: <t t-out="roomCounts.available"/></span>
+                            <span class="hd-count-badge occupied">Occupied: <t t-out="roomCounts.occupied"/></span>
+                            <span class="hd-count-badge dirty">Dirty: <t t-out="roomCounts.dirty"/></span>
                         </div>
                     </div>
                     <div class="hd-room-board">
