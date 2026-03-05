@@ -13,9 +13,14 @@ class HotelFolio(models.Model):
 
     name = fields.Char('Folio #', readonly=True, copy=False, default='New')
     reservation_id = fields.Many2one(
-        'hotel.reservation', string='Reservation',
-        required=True, ondelete='cascade',
+        'hotel.reservation', string='Primary Reservation',
+        ondelete='set null',
     )
+    # All reservations sharing this folio (single or group)
+    reservation_ids = fields.One2many(
+        'hotel.reservation', 'folio_id', string='Reservations',
+    )
+    is_group = fields.Boolean('Group Folio', compute='_compute_is_group', store=True)
     guest_id = fields.Many2one('res.partner', string='Guest', required=True)
     room_id = fields.Many2one(
         'hotel.room', related='reservation_id.room_id',
@@ -41,6 +46,11 @@ class HotelFolio(models.Model):
         default=lambda self: self.env.company,
     )
 
+    @api.depends('reservation_ids')
+    def _compute_is_group(self):
+        for folio in self:
+            folio.is_group = len(folio.reservation_ids) > 1
+
     @api.depends('line_ids.subtotal')
     def _compute_total(self):
         for folio in self:
@@ -53,10 +63,14 @@ class HotelFolio(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or 'New'
         return super().create(vals_list)
 
-    def _generate_room_charges(self):
-        """Generate one folio line per night of room charges."""
+    def _generate_room_charges(self, reservation=None):
+        """Generate one folio line per night of room charges.
+
+        For group bookings, pass the specific reservation explicitly since
+        the folio may have no single reservation_id.
+        """
         self.ensure_one()
-        res = self.reservation_id
+        res = reservation or self.reservation_id
         if not res:
             return
         current = res.checkin_date

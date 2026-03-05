@@ -68,7 +68,14 @@ class HotelGroupBookingWizard(models.TransientModel):
             )
 
         selected_ids = random.sample(available.ids, self.num_rooms)
-        created = self.env['hotel.reservation']
+
+        # Create ONE shared folio for all rooms in the group
+        folio = self.env['hotel.folio'].create({
+            'guest_id': self.guest_id.id,
+        })
+
+        # Create N reservations, all pre-linked to the shared folio
+        first = True
         for room_id in selected_ids:
             res = self.env['hotel.reservation'].create({
                 'guest_id': self.guest_id.id,
@@ -80,14 +87,19 @@ class HotelGroupBookingWizard(models.TransientModel):
                 'source_id': self.source_id.id if self.source_id else False,
                 'notes': self.notes or '',
                 'state': 'confirmed',
+                'folio_id': folio.id,
             })
-            created |= res
+            # Link primary reservation for folio related fields (room, dates)
+            if first:
+                folio.reservation_id = res.id
+                first = False
 
+        # Open the single shared folio
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Group Booking — %d Reservations') % self.num_rooms,
-            'res_model': 'hotel.reservation',
-            'view_mode': 'list,form',
-            'domain': [('id', 'in', created.ids)],
+            'name': _('Group Folio — %d Rooms') % self.num_rooms,
+            'res_model': 'hotel.folio',
+            'res_id': folio.id,
+            'view_mode': 'form',
             'target': 'current',
         }

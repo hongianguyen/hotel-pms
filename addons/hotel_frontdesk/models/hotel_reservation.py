@@ -157,7 +157,7 @@ class HotelReservation(models.Model):
                     template.send_mail(rec.id, force_send=True)
 
     def action_check_in(self):
-        """Confirmed → Checked In. Create folio, set room occupied."""
+        """Confirmed → Checked In. Create folio (or reuse group folio), set room occupied."""
         for rec in self:
             if rec.state != 'confirmed':
                 raise UserError(_('Only confirmed reservations can be checked in.'))
@@ -169,33 +169,40 @@ class HotelReservation(models.Model):
                     % (rec.room_id.name, rec.room_id.status)
                 )
 
-            # Create folio
-            folio = self.env['hotel.folio'].create({
-                'reservation_id': rec.id,
-                'guest_id': rec.guest_id.id,
-            })
-            # Add room charge lines
-            folio._generate_room_charges()
+            if rec.folio_id:
+                # Group booking: folio already exists — just add room charges
+                rec.folio_id._generate_room_charges(rec)
+            else:
+                # Single booking: create a new folio
+                folio = self.env['hotel.folio'].create({
+                    'reservation_id': rec.id,
+                    'guest_id': rec.guest_id.id,
+                })
+                folio._generate_room_charges(rec)
+                rec.folio_id = folio.id
 
-            rec.write({
-                'state': 'checked_in',
-                'folio_id': folio.id,
-            })
+            rec.state = 'checked_in'
             rec.room_id.action_set_occupied()
 
     def action_check_out(self):
-        """Checked In → Checked Out. Generate invoice, room → dirty."""
+        """Checked In → Checked Out. Generate invoice (only when last room checks out), room → dirty."""
         for rec in self:
             if rec.state != 'checked_in':
                 raise UserError(_('Only checked-in reservations can be checked out.'))
             if not rec.folio_id:
                 raise UserError(_('No folio found for this reservation.'))
 
-            # Generate invoice from folio
-            rec.folio_id.action_create_invoice()
-
             rec.write({'state': 'checked_out'})
             rec.room_id.action_set_dirty()
+
+            # For group folios: only invoice when the last room checks out
+            other_still_in = self.env['hotel.reservation'].search([
+                ('folio_id', '=', rec.folio_id.id),
+                ('id', '!=', rec.id),
+                ('state', '=', 'checked_in'),
+            ], limit=1)
+            if not other_still_in and rec.folio_id.payment_state == 'open':
+                rec.folio_id.action_create_invoice()
 
     def action_cancel(self):
         """Cancel reservation. Free room if was confirmed/checked_in."""

@@ -75,6 +75,23 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Rooms" invisible="not is_group">
+                            <field name="reservation_ids" readonly="1">
+                                <list>
+                                    <field name="reservation_number"/>
+                                    <field name="room_id"/>
+                                    <field name="checkin_date"/>
+                                    <field name="checkout_date"/>
+                                    <field name="nights"/>
+                                    <field name="nightly_rate" widget="monetary"/>
+                                    <field name="state" widget="badge"
+                                           decoration-primary="state == 'confirmed'"
+                                           decoration-success="state == 'checked_in'"
+                                           decoration-muted="state == 'checked_out'"
+                                           decoration-danger="state == 'cancelled'"/>
+                                </list>
+                            </field>
+                        </page>
                     </notebook>
                     <group>
                         <group>
