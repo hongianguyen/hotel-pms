@@ -18,6 +18,7 @@
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
                 <field name="nights"/>
+                <field name="pax_names" optional="show" string="Guests"/>
                 <field name="total_amount" widget="monetary"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
@@ -97,6 +98,18 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Guests (Pax)" name="pax">
+                            <field name="pax_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" placeholder="Full guest name..."/>
+                                    <field name="pax_type"/>
+                                    <field name="id_number" optional="show"/>
+                                    <field name="nationality_id" optional="hide"/>
+                                    <field name="note" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Notes">
                             <field name="notes" placeholder="Special requests, notes..."/>
                         </page>

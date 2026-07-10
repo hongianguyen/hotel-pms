@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import random
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -60,6 +59,19 @@ class HotelGroupBookingWizard(models.TransientModel):
 
     def action_create_group_booking(self):
         self.ensure_one()
+        # Row-lock all candidate rooms of this type so two concurrent group
+        # bookings cannot both read the same "available" set and double-book.
+        # The lock is held until this transaction commits/rolls back.
+        candidate_ids = self.env['hotel.room'].search([
+            ('room_type_id', '=', self.room_type_id.id),
+            ('active', '=', True),
+        ]).ids
+        if candidate_ids:
+            self.env.cr.execute(
+                "SELECT id FROM hotel_room WHERE id IN %s FOR UPDATE",
+                [tuple(candidate_ids)],
+            )
+
         available = self._get_available_rooms()
         if len(available) < self.num_rooms:
             raise UserError(
@@ -67,10 +79,13 @@ class HotelGroupBookingWizard(models.TransientModel):
                 % (len(available), self.room_type_id.name, self.num_rooms)
             )
 
-        selected_ids = random.sample(available.ids, self.num_rooms)
+        # Deterministic pick: first N in floor/name order keeps group rooms
+        # adjacent where possible (available is already ordered by _order).
+        selected_ids = available.ids[:self.num_rooms]
 
-        # Create ONE shared folio for all rooms in the group
-        folio = self.env['hotel.folio'].create({
+        # Create ONE shared folio for all rooms in the group.
+        # sudo: reception lacks folio create rights; see action_check_in.
+        folio = self.env['hotel.folio'].sudo().create({
             'guest_id': self.guest_id.id,
         })
 

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   odoo-test:
-    image: odoo:18
+    image: odoo:19
     container_name: odoo_hotel_test
     ports:
       - "8070:8069"

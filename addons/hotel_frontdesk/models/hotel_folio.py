@@ -26,8 +26,14 @@ class HotelFolio(models.Model):
         'hotel.room', related='reservation_id.room_id',
         string='Room', store=True,
     )
-    checkin_date = fields.Date(related='reservation_id.checkin_date', store=True)
-    checkout_date = fields.Date(related='reservation_id.checkout_date', store=True)
+    checkin_date = fields.Date(
+        'Check-in', compute='_compute_folio_dates', store=True,
+        help='Earliest check-in across all reservations on this folio.',
+    )
+    checkout_date = fields.Date(
+        'Check-out', compute='_compute_folio_dates', store=True,
+        help='Latest check-out across all reservations on this folio.',
+    )
 
     line_ids = fields.One2many('hotel.folio.line', 'folio_id', string='Charges')
     total_amount = fields.Float(
@@ -50,6 +56,16 @@ class HotelFolio(models.Model):
     def _compute_is_group(self):
         for folio in self:
             folio.is_group = len(folio.reservation_ids) > 1
+
+    @api.depends('reservation_ids.checkin_date', 'reservation_ids.checkout_date',
+                 'reservation_id.checkin_date', 'reservation_id.checkout_date')
+    def _compute_folio_dates(self):
+        for folio in self:
+            reservations = folio.reservation_ids or folio.reservation_id
+            checkins = [d for d in reservations.mapped('checkin_date') if d]
+            checkouts = [d for d in reservations.mapped('checkout_date') if d]
+            folio.checkin_date = min(checkins) if checkins else False
+            folio.checkout_date = max(checkouts) if checkouts else False
 
     @api.depends('line_ids.subtotal')
     def _compute_total(self):
@@ -91,6 +107,8 @@ class HotelFolio(models.Model):
                 'charge_type': 'room',
                 'quantity': 1,
                 'amount': day_rate,
+                'date': current,
+                'account_id': res.room_id.room_type_id.revenue_account_id.id or False,
             }))
             current += timedelta(days=1)
 
@@ -105,7 +123,10 @@ class HotelFolio(models.Model):
         if not self.line_ids:
             raise UserError(_('No charges in this folio to invoice.'))
 
-        journal = self.env['account.journal'].search([
+        # sudo: reception users have no accounting access, but check-out must
+        # still be able to generate the guest invoice. Scope is limited to
+        # this folio's own lines, so this does not widen data exposure.
+        journal = self.env['account.journal'].sudo().search([
             ('type', '=', 'sale'),
             ('company_id', '=', self.company_id.id),
         ], limit=1)
@@ -125,11 +146,11 @@ class HotelFolio(models.Model):
                 'account_id': account.id if account else False,
             }))
 
-        invoice = self.env['account.move'].create({
+        invoice = self.env['account.move'].sudo().create({
             'move_type': 'out_invoice',
             'partner_id': self.guest_id.id,
             'journal_id': journal.id,
-            'invoice_date': fields.Date.today(),
+            'invoice_date': fields.Date.context_today(self),
             'invoice_line_ids': invoice_lines,
             'ref': self.name,
         })
@@ -163,6 +184,12 @@ class HotelFolioLine(models.Model):
         'hotel.folio', string='Folio', required=True, ondelete='cascade',
     )
     name = fields.Char('Description', required=True)
+    date = fields.Date(
+        'Charge Date', required=True, index=True,
+        default=fields.Date.context_today,
+        help='Business date this charge belongs to (the hotel night for room '
+             'charges). Revenue reports group by this date, not create_date.',
+    )
     charge_type = fields.Selection([
         ('room', 'Room Charge'),
         ('fnb', 'Food & Beverage'),

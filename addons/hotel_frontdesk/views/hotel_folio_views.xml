@@ -66,6 +66,7 @@
                         <page string="Charges">
                             <field name="line_ids">
                                 <list editable="bottom">
+                                    <field name="date"/>
                                     <field name="name"/>
                                     <field name="charge_type" widget="badge"/>
                                     <field name="quantity"/>
@@ -75,15 +76,17 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Rooms" invisible="not is_group">
+                        <page string="Rooms &amp; Guests" name="rooms_guests">
                             <field name="reservation_ids" readonly="1">
                                 <list>
                                     <field name="reservation_number"/>
                                     <field name="room_id"/>
+                                    <field name="pax_names" string="Guests (Pax)"/>
+                                    <field name="pax_count" string="Pax"/>
                                     <field name="checkin_date"/>
                                     <field name="checkout_date"/>
                                     <field name="nights"/>
-                                    <field name="nightly_rate" widget="monetary"/>
+                                    <field name="nightly_rate" widget="monetary" optional="show"/>
                                     <field name="state" widget="badge"
                                            decoration-primary="state == 'confirmed'"
                                            decoration-success="state == 'checked_in'"

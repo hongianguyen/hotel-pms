@@ -56,6 +56,17 @@ class HotelReservation(models.Model):
     adults = fields.Integer('Adults', default=1)
     children = fields.Integer('Children', default=0)
 
+    # ── Pax (guest names staying in this room) ──────────────────────────
+    pax_ids = fields.One2many(
+        'hotel.reservation.pax', 'reservation_id', string='Guests (Pax)',
+        copy=True,
+    )
+    pax_count = fields.Integer('Pax Count', compute='_compute_pax', store=True)
+    pax_names = fields.Char(
+        'Pax Names', compute='_compute_pax', store=True,
+        help='Comma-separated guest names for lists, folio and dashboards.',
+    )
+
     company_id = fields.Many2one(
         'res.company', string='Company',
         default=lambda self: self.env.company,
@@ -84,10 +95,37 @@ class HotelReservation(models.Model):
             else:
                 rec.nightly_rate = 0.0
 
-    @api.depends('nights', 'nightly_rate')
-    def _compute_total_amount(self):
+    @api.depends('pax_ids.name')
+    def _compute_pax(self):
         for rec in self:
-            rec.total_amount = rec.nights * rec.nightly_rate
+            names = [p.name for p in rec.pax_ids if p.name]
+            rec.pax_count = len(names)
+            rec.pax_names = ', '.join(names)
+
+    @api.depends('nights', 'nightly_rate', 'rate_plan_id',
+                 'checkin_date', 'checkout_date')
+    def _compute_total_amount(self):
+        """Sum per-night rates so the quoted total matches the folio.
+
+        Uses the same per-date rate-plan/season logic as
+        hotel.folio._generate_room_charges; falls back to the flat
+        nightly_rate for dates the plan does not cover.
+        """
+        for rec in self:
+            if not (rec.checkin_date and rec.checkout_date and rec.nights > 0):
+                rec.total_amount = 0.0
+                continue
+            total = 0.0
+            current = rec.checkin_date
+            while current < rec.checkout_date:
+                day_rate = rec.nightly_rate
+                if rec.rate_plan_id:
+                    plan_rate = rec.rate_plan_id.get_rate_for_date(current)
+                    if plan_rate:
+                        day_rate = plan_rate
+                total += day_rate
+                current += timedelta(days=1)
+            rec.total_amount = total
 
     @api.depends('state')
     def _compute_color(self):
@@ -173,8 +211,11 @@ class HotelReservation(models.Model):
                 # Group booking: folio already exists — just add room charges
                 rec.folio_id._generate_room_charges(rec)
             else:
-                # Single booking: create a new folio
-                folio = self.env['hotel.folio'].create({
+                # Single booking: create a new folio.
+                # sudo: reception has folio read/write but not create; folio
+                # creation is an internal side-effect of check-in, values are
+                # fully derived from this reservation.
+                folio = self.env['hotel.folio'].sudo().create({
                     'reservation_id': rec.id,
                     'guest_id': rec.guest_id.id,
                 })
@@ -205,13 +246,19 @@ class HotelReservation(models.Model):
                 rec.folio_id.action_create_invoice()
 
     def action_cancel(self):
-        """Cancel reservation. Free room if was confirmed/checked_in."""
+        """Cancel reservation. Free room if it was confirmed."""
         for rec in self:
-            if rec.state in ('checked_out',):
+            if rec.state == 'checked_out':
                 raise UserError(_('Cannot cancel a checked-out reservation.'))
+            if rec.state == 'checked_in':
+                raise UserError(_(
+                    'Reservation %s is checked in. Check the guest out '
+                    '(which settles the folio) instead of cancelling, '
+                    'otherwise the folio charges would be left dangling.'
+                ) % rec.reservation_number)
             old_state = rec.state
             rec.state = 'cancelled'
-            if old_state in ('confirmed', 'checked_in') and rec.room_id:
+            if old_state == 'confirmed' and rec.room_id:
                 if rec.room_id.status == 'occupied':
                     rec.room_id.action_set_dirty()
 
@@ -252,3 +299,39 @@ class HotelReservation(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+
+class HotelReservationPax(models.Model):
+    """One line per guest name staying in the room of a reservation.
+
+    Since each reservation maps to exactly one room, this gives a
+    room-by-room record of every client name (pax) in the property,
+    including for group bookings where each room is its own reservation.
+    """
+    _name = 'hotel.reservation.pax'
+    _description = 'Reservation Guest (Pax)'
+    _order = 'sequence, id'
+
+    reservation_id = fields.Many2one(
+        'hotel.reservation', string='Reservation',
+        required=True, ondelete='cascade', index=True,
+    )
+    sequence = fields.Integer(default=10)
+    name = fields.Char('Guest Name', required=True)
+    pax_type = fields.Selection([
+        ('adult', 'Adult'),
+        ('child', 'Child'),
+    ], string='Type', default='adult', required=True)
+    id_number = fields.Char('ID / Passport #')
+    nationality_id = fields.Many2one('res.country', string='Nationality')
+    note = fields.Char('Note')
+
+    room_id = fields.Many2one(
+        related='reservation_id.room_id', string='Room', store=True,
+    )
+    checkin_date = fields.Date(
+        related='reservation_id.checkin_date', store=True,
+    )
+    checkout_date = fields.Date(
+        related='reservation_id.checkout_date', store=True,
+    )

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
-from datetime import date, timedelta
+from odoo import models, fields, api
+from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -51,7 +50,9 @@ class HotelNightAudit(models.Model):
     @api.model
     def _cron_run_night_audit(self):
         """Automated night audit — runs daily at 02:00 AM."""
-        audit_date = date.today() - timedelta(days=1)  # Audit yesterday
+        # Audit yesterday, in the cron user's timezone (not server UTC),
+        # so a 02:00 local run audits the correct hotel night.
+        audit_date = fields.Date.context_today(self) - timedelta(days=1)
         _logger.info('Hotel Night Audit: Starting audit for %s', audit_date)
 
         # Check if already done
@@ -106,8 +107,18 @@ class HotelNightAudit(models.Model):
 
     @api.model
     def _post_draft_invoices(self, audit_date):
-        """Find all draft invoices from audit_date and post them."""
+        """Post draft invoices that belong to hotel folios only.
+
+        Scoped via hotel.folio.invoice_id so the audit never touches
+        unrelated draft invoices elsewhere in the company.
+        """
+        folio_invoice_ids = self.env['hotel.folio'].search([
+            ('invoice_id', '!=', False),
+        ]).mapped('invoice_id').ids
+        if not folio_invoice_ids:
+            return 0
         draft_invoices = self.env['account.move'].search([
+            ('id', 'in', folio_invoice_ids),
             ('move_type', '=', 'out_invoice'),
             ('state', '=', 'draft'),
             ('invoice_date', '<=', audit_date),
@@ -115,20 +126,15 @@ class HotelNightAudit(models.Model):
         count = len(draft_invoices)
         if draft_invoices:
             draft_invoices.action_post()
-            _logger.info('Posted %d draft invoices for %s', count, audit_date)
+            _logger.info('Posted %d draft folio invoices for %s', count, audit_date)
         return count
 
     @api.model
     def _flag_unpaid_folios(self, audit_date):
-        """Count folios from audit_date that are still open (no payment)."""
+        """Count folios up to audit_date that are still open (no invoice)."""
         unpaid = self.env['hotel.folio'].search([
             ('payment_state', '=', 'open'),
-            ('create_date', '<=', fields.Datetime.to_string(
-                fields.Datetime.now().replace(
-                    year=audit_date.year, month=audit_date.month,
-                    day=audit_date.day, hour=23, minute=59, second=59
-                )
-            )),
+            ('checkin_date', '<=', audit_date),
         ])
         if unpaid:
             _logger.warning(
@@ -157,24 +163,10 @@ class HotelNightAudit(models.Model):
 
         occupancy_pct = (occupied_rooms / total_rooms * 100) if total_rooms else 0
 
-        # Revenue from folio lines on audit date
-        next_day = audit_date + timedelta(days=1)
-        day_start = fields.Datetime.to_string(
-            fields.Datetime.now().replace(
-                year=audit_date.year, month=audit_date.month,
-                day=audit_date.day, hour=0, minute=0, second=0
-            )
-        )
-        day_end = fields.Datetime.to_string(
-            fields.Datetime.now().replace(
-                year=next_day.year, month=next_day.month,
-                day=next_day.day, hour=0, minute=0, second=0
-            )
-        )
-
+        # Revenue = folio lines whose business date is the audit date.
+        # line.date is a plain Date (per hotel night), so no UTC math needed.
         day_lines = FolioLine.search([
-            ('create_date', '>=', day_start),
-            ('create_date', '<', day_end),
+            ('date', '=', audit_date),
         ])
 
         room_revenue = sum(day_lines.filtered(lambda l: l.charge_type == 'room').mapped('subtotal'))
@@ -252,6 +244,14 @@ class HotelNightAudit(models.Model):
         admin_users = admin_group.user_ids
         for user in admin_users:
             if user.partner_id.email:
-                template.send_mail(audit.id, force_send=True,
-                                   email_values={'email_to': user.partner_id.email})
-                _logger.info('Night audit email sent to %s', user.partner_id.email)
+                try:
+                    # No force_send: queue via the mail scheduler so an SMTP
+                    # outage cannot fail (and roll back) the whole audit.
+                    template.send_mail(audit.id,
+                                       email_values={'email_to': user.partner_id.email})
+                    _logger.info('Night audit email queued for %s', user.partner_id.email)
+                except Exception:
+                    _logger.exception(
+                        'Night audit email to %s failed; audit continues.',
+                        user.partner_id.email,
+                    )

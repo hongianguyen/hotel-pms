@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
-from datetime import date, timedelta
+from odoo import models, fields, api
+from datetime import timedelta
 
 
 class HotelDashboard(models.TransientModel):
@@ -10,7 +10,7 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_reception_kpis(self):
         """Return Reception Dashboard KPIs."""
-        today = date.today()
+        today = fields.Date.context_today(self)
         Reservation = self.env['hotel.reservation']
         Room = self.env['hotel.room']
 
@@ -29,11 +29,11 @@ class HotelDashboard(models.TransientModel):
 
         occupancy_pct = (occupied_rooms / total_rooms * 100) if total_rooms else 0
 
-        # Revenue today from folio lines created today
+        # Revenue today = folio lines whose business date is today.
+        # (line.date, not create_date: room charges are dated per night and
+        # this is timezone-safe since it is a plain Date field.)
         today_lines = self.env['hotel.folio.line'].search([
-            ('create_date', '>=', fields.Datetime.to_string(
-                fields.Datetime.now().replace(hour=0, minute=0, second=0)
-            )),
+            ('date', '=', today),
         ])
         revenue_today = sum(today_lines.mapped('subtotal'))
 
@@ -50,7 +50,7 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_room_status_board(self):
         """Return all rooms with status for the room board."""
-        today = date.today()
+        today = fields.Date.context_today(self)
         rooms = self.env['hotel.room'].search([('active', '=', True)], order='floor, name')
         result = []
         for room in rooms:
@@ -98,7 +98,7 @@ class HotelDashboard(models.TransientModel):
     def get_gantt_data(self, start_date=None, days=15):
         """Return reservation data for the Gantt calendar."""
         if not start_date:
-            start_date = date.today()
+            start_date = fields.Date.context_today(self)
         elif isinstance(start_date, str):
             start_date = fields.Date.from_string(start_date)
 
@@ -142,8 +142,8 @@ class HotelDashboard(models.TransientModel):
                 'date': str(current),
                 'day': current.day,
                 'weekday': current.strftime('%a'),
-                'is_today': current == date.today(),
-                'is_past': current < date.today(),
+                'is_today': current == fields.Date.context_today(self),
+                'is_past': current < fields.Date.context_today(self),
                 'is_weekend': current.weekday() >= 5,
             })
             current += timedelta(days=1)
@@ -159,7 +159,7 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_admin_kpis(self):
         """Return Admin Dashboard KPIs (monthly)."""
-        today = date.today()
+        today = fields.Date.context_today(self)
         first_of_month = today.replace(day=1)
 
         Room = self.env['hotel.room']
@@ -181,11 +181,10 @@ class HotelDashboard(models.TransientModel):
 
         occupancy_pct = (total_room_nights / available_room_nights * 100) if available_room_nights else 0
 
-        # Revenue by category this month
+        # Revenue by category this month, grouped by business date
         monthly_lines = FolioLine.search([
-            ('create_date', '>=', fields.Datetime.to_string(
-                fields.Datetime.now().replace(day=1, hour=0, minute=0, second=0)
-            )),
+            ('date', '>=', first_of_month),
+            ('date', '<=', today),
         ])
 
         room_revenue = sum(monthly_lines.filtered(lambda l: l.charge_type == 'room').mapped('subtotal'))
@@ -193,9 +192,10 @@ class HotelDashboard(models.TransientModel):
         service_revenue = sum(monthly_lines.filtered(lambda l: l.charge_type in ('service', 'manual')).mapped('subtotal'))
         total_revenue = room_revenue + fnb_revenue + service_revenue
 
-        occupied_rooms_count = len(monthly_reservations)
-        adr = (room_revenue / occupied_rooms_count) if occupied_rooms_count else 0
-        revpar = (room_revenue / total_rooms) if total_rooms else 0
+        # ADR = room revenue / room-nights SOLD (industry definition).
+        # RevPAR = room revenue / room-nights AVAILABLE.
+        adr = (room_revenue / total_room_nights) if total_room_nights else 0
+        revpar = (room_revenue / available_room_nights) if available_room_nights else 0
 
         return {
             'monthly_occupancy': round(occupancy_pct, 1),
@@ -210,34 +210,34 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_revenue_chart_data(self, days=30):
         """Return daily revenue for the last N days."""
-        today = date.today()
+        today = fields.Date.context_today(self)
         start_date = today - timedelta(days=days - 1)
 
-        FolioLine = self.env['hotel.folio.line']
+        # One query for the whole window, bucketed in Python by business date.
+        lines = self.env['hotel.folio.line'].search([
+            ('date', '>=', start_date),
+            ('date', '<=', today),
+        ])
+        buckets = {}
+        for line in lines:
+            bucket = buckets.setdefault(line.date, {'room': 0.0, 'fnb': 0.0, 'service': 0.0})
+            if line.charge_type == 'room':
+                bucket['room'] += line.subtotal
+            elif line.charge_type == 'fnb':
+                bucket['fnb'] += line.subtotal
+            else:  # service / manual
+                bucket['service'] += line.subtotal
+
         data = []
         current = start_date
         while current <= today:
-            next_day = current + timedelta(days=1)
-            day_lines = FolioLine.search([
-                ('create_date', '>=', fields.Datetime.to_string(
-                    fields.Datetime.now().replace(
-                        year=current.year, month=current.month, day=current.day,
-                        hour=0, minute=0, second=0
-                    )
-                )),
-                ('create_date', '<', fields.Datetime.to_string(
-                    fields.Datetime.now().replace(
-                        year=next_day.year, month=next_day.month, day=next_day.day,
-                        hour=0, minute=0, second=0
-                    )
-                )),
-            ])
+            bucket = buckets.get(current, {'room': 0.0, 'fnb': 0.0, 'service': 0.0})
             data.append({
                 'date': str(current),
                 'label': current.strftime('%d/%m'),
-                'room': sum(day_lines.filtered(lambda l: l.charge_type == 'room').mapped('subtotal')),
-                'fnb': sum(day_lines.filtered(lambda l: l.charge_type == 'fnb').mapped('subtotal')),
-                'service': sum(day_lines.filtered(lambda l: l.charge_type in ('service', 'manual')).mapped('subtotal')),
+                'room': bucket['room'],
+                'fnb': bucket['fnb'],
+                'service': bucket['service'],
             })
             current += timedelta(days=1)
 
@@ -246,20 +246,25 @@ class HotelDashboard(models.TransientModel):
     @api.model
     def get_occupancy_trend(self, days=30):
         """Return daily occupancy % for the last N days."""
-        today = date.today()
+        today = fields.Date.context_today(self)
         start_date = today - timedelta(days=days - 1)
         Room = self.env['hotel.room']
-        Reservation = self.env['hotel.reservation']
         total_rooms = Room.search_count([('active', '=', True)])
+
+        # One query for all reservations overlapping the window.
+        reservations = self.env['hotel.reservation'].search_read([
+            ('state', 'in', ['checked_in', 'checked_out']),
+            ('checkin_date', '<=', today),
+            ('checkout_date', '>', start_date),
+        ], ['checkin_date', 'checkout_date'])
 
         data = []
         current = start_date
         while current <= today:
-            occupied = Reservation.search_count([
-                ('state', 'in', ['checked_in', 'checked_out']),
-                ('checkin_date', '<=', current),
-                ('checkout_date', '>', current),
-            ])
+            occupied = sum(
+                1 for r in reservations
+                if r['checkin_date'] <= current < r['checkout_date']
+            )
             pct = (occupied / total_rooms * 100) if total_rooms else 0
             data.append({
                 'date': str(current),

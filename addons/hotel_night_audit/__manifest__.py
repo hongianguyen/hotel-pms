@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Hotel Night Audit',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Hotel Management',
     'summary': 'Automated nightly audit: post invoices, lock day, KPI snapshot, email admin',
     'author': 'Hotel PMS Team',
