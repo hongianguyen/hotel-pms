@@ -160,6 +160,16 @@ class HotelBookingGroup(models.Model):
                 raise UserError(_('Nothing to cancel in this group.'))
             todo.action_cancel()
 
+    def action_exit(self):
+        """Leave the group booking screen: back to the Reception Dashboard
+        (falls back to the group bookings list if reporting is not installed)."""
+        try:
+            return self.env['ir.actions.actions']._for_xml_id(
+                'hotel_reporting.action_reception_dashboard')
+        except ValueError:
+            return self.env['ir.actions.actions']._for_xml_id(
+                'hotel_frontdesk.action_hotel_booking_group')
+
     def action_view_master_folio(self):
         self.ensure_one()
         if not self.master_folio_id:

@@ -48,8 +48,14 @@
                             string="Cancel" class="btn-secondary"
                             invisible="state in ('checked_in', 'checked_out', 'cancelled')"
                             confirm="Cancel all bookings in this group?"/>
+                    <!-- Exit: unsaved record → discard/close; saved record →
+                         navigate back to the dashboard. -->
                     <button string="Exit" special="cancel"
-                            class="btn-secondary" data-hotkey="x"/>
+                            class="btn-secondary" data-hotkey="x"
+                            invisible="id"/>
+                    <button string="Exit" type="object" name="action_exit"
+                            class="btn-secondary" data-hotkey="x"
+                            invisible="not id"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirmed,checked_in,checked_out"/>
                 </header>

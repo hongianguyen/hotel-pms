@@ -323,6 +323,16 @@ class HotelReservation(models.Model):
                 raise UserError(_('Only cancelled or no-show reservations can be reset to draft.'))
             rec.state = 'draft'
 
+    def action_exit(self):
+        """Leave the booking screen: back to the Reception Dashboard
+        (falls back to the reservations list if reporting is not installed)."""
+        try:
+            return self.env['ir.actions.actions']._for_xml_id(
+                'hotel_reporting.action_reception_dashboard')
+        except ValueError:
+            return self.env['ir.actions.actions']._for_xml_id(
+                'hotel_frontdesk.action_hotel_reservation')
+
     # ── Write guard (spec §3.1: cannot modify CHECKED_OUT) ──────────────
     _PROTECTED_AFTER_CHECKOUT = (
         'room_id', 'room_type_id', 'checkin_date', 'checkout_date',
