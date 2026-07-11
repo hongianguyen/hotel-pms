@@ -52,6 +52,10 @@ class HotelReservation(models.Model):
         index=True)
 
     folio_id = fields.Many2one('hotel.folio', string='Folio', readonly=True, copy=False)
+    group_id = fields.Many2one(
+        'hotel.booking.group', string='Group Booking', ondelete='set null',
+        index=True, tracking=True, copy=False,
+    )
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
     payment_required = fields.Boolean(
         'Prepayment Required', tracking=True,
@@ -187,7 +191,17 @@ class HotelReservation(models.Model):
             if vals.get('reservation_number', 'New') == 'New':
                 vals['reservation_number'] = self.env['ir.sequence'].next_by_code(
                     'hotel.reservation') or 'New'
-        return super().create(vals_list)
+            # Bookings inside a group charge to the group's master folio
+            if vals.get('group_id') and not vals.get('folio_id'):
+                group = self.env['hotel.booking.group'].browse(vals['group_id'])
+                if group.master_folio_id:
+                    vals['folio_id'] = group.master_folio_id.id
+        records = super().create(vals_list)
+        # Keep the folio's primary-reservation convention (room/dates display)
+        for rec in records:
+            if rec.group_id and rec.folio_id and not rec.folio_id.reservation_id:
+                rec.folio_id.reservation_id = rec.id
+        return records
 
     # ── Workflow Buttons ─────────────────────────────────────────────────
 

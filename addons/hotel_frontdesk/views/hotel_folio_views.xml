@@ -53,6 +53,7 @@
                     <group>
                         <group string="Reservation Info">
                             <field name="reservation_id"/>
+                            <field name="group_id" invisible="not group_id"/>
                             <field name="guest_id"/>
                             <field name="room_id"/>
                         </group>

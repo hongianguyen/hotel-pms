@@ -83,16 +83,20 @@ class HotelGroupBookingWizard(models.TransientModel):
         # adjacent where possible (available is already ordered by _order).
         selected_ids = available.ids[:self.num_rooms]
 
-        # Create ONE shared folio for all rooms in the group.
-        # sudo: reception lacks folio create rights; see action_check_in.
-        folio = self.env['hotel.folio'].sudo().create({
+        # Create the group booking (it auto-creates its master folio).
+        group = self.env['hotel.booking.group'].create({
             'guest_id': self.guest_id.id,
+            'checkin_date': self.checkin_date,
+            'checkout_date': self.checkout_date,
+            'rate_plan_id': self.rate_plan_id.id if self.rate_plan_id else False,
+            'source_id': self.source_id.id if self.source_id else False,
+            'notes': self.notes or '',
         })
 
-        # Create N reservations, all pre-linked to the shared folio
-        first = True
+        # Create N bookings inside the group; each links to the master folio
+        # automatically via hotel.reservation.create().
         for room_id in selected_ids:
-            res = self.env['hotel.reservation'].create({
+            self.env['hotel.reservation'].create({
                 'guest_id': self.guest_id.id,
                 'room_id': room_id,
                 'room_type_id': self.room_type_id.id,
@@ -102,19 +106,15 @@ class HotelGroupBookingWizard(models.TransientModel):
                 'source_id': self.source_id.id if self.source_id else False,
                 'notes': self.notes or '',
                 'state': 'draft',
-                'folio_id': folio.id,
+                'group_id': group.id,
             })
-            # Link primary reservation for folio related fields (room, dates)
-            if first:
-                folio.reservation_id = res.id
-                first = False
 
-        # Open the single shared folio
+        # Open the group booking — book / cancel / amend from here
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Group Folio — %d Rooms') % self.num_rooms,
-            'res_model': 'hotel.folio',
-            'res_id': folio.id,
+            'name': _('Group Booking — %d Rooms') % self.num_rooms,
+            'res_model': 'hotel.booking.group',
+            'res_id': group.id,
             'view_mode': 'form',
             'target': 'current',
         }

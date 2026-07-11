@@ -100,6 +100,7 @@
                             <field name="source_id"/>
                             <field name="send_confirmation"/>
                             <field name="folio_id" readonly="1"/>
+                            <field name="group_id" readonly="1" invisible="not group_id"/>
                         </group>
                     </group>
                     <notebook>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         GROUP BOOKING VIEWS
+         ════════════════════════════════════════════════════════════════ -->
+
+    <!-- Group Booking List -->
+    <record id="view_hotel_booking_group_list" model="ir.ui.view">
+        <field name="name">hotel.booking.group.list</field>
+        <field name="model">hotel.booking.group</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'checked_in'"
+                  decoration-info="state == 'confirmed'">
+                <field name="name"/>
+                <field name="guest_id"/>
+                <field name="checkin_date"/>
+                <field name="checkout_date"/>
+                <field name="room_count"/>
+                <field name="total_amount" widget="monetary"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state == 'draft'"
+                       decoration-primary="state == 'confirmed'"
+                       decoration-success="state == 'checked_in'"
+                       decoration-muted="state == 'checked_out'"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Group Booking Form -->
+    <record id="view_hotel_booking_group_form" model="ir.ui.view">
+        <field name="name">hotel.booking.group.form</field>
+        <field name="model">hotel.booking.group</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object"
+                            string="Confirm" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_check_in" type="object"
+                            string="Check In" class="btn-primary"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_check_out" type="object"
+                            string="Check Out" class="btn-primary"
+                            invisible="state != 'checked_in'"/>
+                    <button name="action_cancel" type="object"
+                            string="Cancel" class="btn-secondary"
+                            invisible="state in ('checked_in', 'checked_out', 'cancelled')"
+                            confirm="Cancel all bookings in this group?"/>
+                    <button string="Exit" special="cancel"
+                            class="btn-secondary" data-hotkey="x"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,checked_in,checked_out"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_master_folio" type="object"
+                                class="oe_stat_button" icon="fa-book">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Master</span>
+                                <span class="o_stat_text">Folio</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Group Details">
+                            <field name="guest_id"/>
+                            <field name="source_id"/>
+                            <field name="rate_plan_id"/>
+                        </group>
+                        <group string="Dates &amp; Totals">
+                            <field name="checkin_date"/>
+                            <field name="checkout_date"/>
+                            <field name="room_count"/>
+                            <field name="total_amount" widget="monetary"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bookings" name="bookings">
+                            <field name="reservation_ids"
+                                   context="{'default_guest_id': guest_id,
+                                             'default_checkin_date': checkin_date,
+                                             'default_checkout_date': checkout_date,
+                                             'default_rate_plan_id': rate_plan_id,
+                                             'default_source_id': source_id}">
+                                <list decoration-muted="state in ('cancelled', 'no_show')">
+                                    <field name="reservation_number"/>
+                                    <field name="guest_id"/>
+                                    <field name="room_type_id"/>
+                                    <field name="room_id"/>
+                                    <field name="checkin_date"/>
+                                    <field name="checkout_date"/>
+                                    <field name="nights"/>
+                                    <field name="total_amount" widget="monetary"/>
+                                    <field name="state" widget="badge"
+                                           decoration-warning="state == 'draft'"
+                                           decoration-primary="state == 'confirmed'"
+                                           decoration-success="state == 'checked_in'"
+                                           decoration-muted="state == 'checked_out'"
+                                           decoration-danger="state in ('cancelled', 'no_show')"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Group notes, special requests..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Group Booking Search -->
+    <record id="view_hotel_booking_group_search" model="ir.ui.view">
+        <field name="name">hotel.booking.group.search</field>
+        <field name="model">hotel.booking.group</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="guest_id"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Checked In" name="checked_in" domain="[('state', '=', 'checked_in')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <group>
+                    <filter string="Group Leader" name="group_leader" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Check-in Date" name="group_checkin" context="{'group_by': 'checkin_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Group Booking Action -->
+    <record id="action_hotel_booking_group" model="ir.actions.act_window">
+        <field name="name">Group Bookings</field>
+        <field name="res_model">hotel.booking.group</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_booking_group_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No group bookings yet
+            </p>
+            <p>Use "New Group Booking" to book several rooms at once with a shared master folio.</p>
+        </field>
+    </record>
+</odoo>

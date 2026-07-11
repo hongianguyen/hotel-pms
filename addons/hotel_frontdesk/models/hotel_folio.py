@@ -21,6 +21,11 @@ class HotelFolio(models.Model):
         'hotel.reservation', 'folio_id', string='Reservations',
     )
     is_group = fields.Boolean('Group Folio', compute='_compute_is_group', store=True)
+    group_id = fields.Many2one(
+        'hotel.booking.group', string='Group Booking', readonly=True,
+        ondelete='set null', copy=False,
+        help='Set when this folio is the master folio of a group booking.',
+    )
     guest_id = fields.Many2one('res.partner', string='Guest', required=True)
     room_id = fields.Many2one(
         'hotel.room', related='reservation_id.room_id',
