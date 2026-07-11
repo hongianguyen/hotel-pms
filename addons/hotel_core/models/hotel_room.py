@@ -71,6 +71,14 @@ class HotelRoom(models.Model):
     maintenance_reason = fields.Char('Maintenance Reason', tracking=True)
 
     floor = fields.Integer('Floor', default=1)
+    last_cleaned_at = fields.Datetime(
+        'Last Cleaned At', readonly=True,
+        help='Stamped when the room is set back to Available after cleaning.',
+    )
+    last_used_at = fields.Datetime(
+        'Last Used At', readonly=True,
+        help='Stamped at guest check-out.',
+    )
     active = fields.Boolean('Active', default=True)
     notes = fields.Text('Internal Notes')
     color = fields.Integer('Color Index', compute='_compute_color', store=True)

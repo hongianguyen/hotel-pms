@@ -106,7 +106,7 @@ class HotelDashboard(models.TransientModel):
 
         rooms = self.env['hotel.room'].search([('active', '=', True)], order='floor, name')
         reservations = self.env['hotel.reservation'].search([
-            ('state', 'in', ['confirmed', 'checked_in', 'checked_out']),
+            ('state', 'in', ['draft', 'confirmed', 'checked_in', 'checked_out']),
             ('checkin_date', '<', end_date),
             ('checkout_date', '>', start_date),
         ])
@@ -149,6 +149,8 @@ class HotelDashboard(models.TransientModel):
                 color_key, priority = 'checked_in', 40
             elif res.state == 'confirmed':
                 color_key, priority = 'confirmed', 20
+            elif res.state == 'draft':
+                color_key, priority = 'unconfirmed', 15
             else:
                 color_key, priority = 'other', 10
             payment_issue = bool(

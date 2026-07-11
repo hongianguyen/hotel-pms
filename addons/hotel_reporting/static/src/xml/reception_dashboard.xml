@@ -70,6 +70,7 @@
                             <h3 class="hd-card-title">Booking Calendar</h3>
                             <!-- Legend -->
                             <div class="hd-legend">
+                                <span class="hd-legend-item"><span class="hd-dot" style="background:#FACC15"/>Unconfirmed</span>
                                 <span class="hd-legend-item"><span class="hd-dot" style="background:#799DC7"/>Confirmed</span>
                                 <span class="hd-legend-item"><span class="hd-dot" style="background:#E87C09"/>Checked In</span>
                                 <span class="hd-legend-item"><span class="hd-dot" style="background:#DD9200"/>Dirty</span>

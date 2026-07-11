@@ -22,7 +22,7 @@
                 <field name="pax_names" optional="show" string="Guests"/>
                 <field name="total_amount" widget="monetary"/>
                 <field name="state" widget="badge"
-                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'draft'"
                        decoration-primary="state == 'confirmed'"
                        decoration-success="state == 'checked_in'"
                        decoration-muted="state == 'checked_out'"
@@ -61,6 +61,8 @@
                             string="Edit Template" class="btn-secondary"
                             groups="hotel_core.group_hotel_admin"
                             invisible="state not in ('confirmed', 'checked_in')"/>
+                    <button string="Exit" special="cancel"
+                            class="btn-secondary" data-hotkey="x"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,confirmed,checked_in,checked_out"/>
                 </header>

@@ -11,6 +11,7 @@
     --hd-radius:      12px;
     --hd-shadow:      0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
     /* Status colors */
+    --status-draft:       #FACC15;
     --status-confirmed:   #799DC7;
     --status-active:      #E87C09;
     --status-dirty:       #DD9200;
@@ -366,6 +367,7 @@ thead .hd-room-col {
 
 .hd-bar:active { cursor: grabbing; opacity: 0.75; }
 
+.hd-bar.state-draft      { background: var(--status-draft); color: #713F12; }
 .hd-bar.state-confirmed  { background: var(--status-confirmed); }
 .hd-bar.state-checked_in { background: var(--status-active); }
 .hd-bar.state-checked_out { background: var(--status-past); }

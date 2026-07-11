@@ -109,7 +109,7 @@
                 <filter string="Open" name="open" domain="[('status', 'in', ['todo', 'in_progress'])]"/>
                 <filter string="High Priority" name="high" domain="[('priority', '=', '1')]"/>
                 <filter string="Done" name="done" domain="[('status', '=', 'done')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                     <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
                     <filter string="Assignee" name="group_assignee" context="{'group_by': 'assigned_to'}"/>

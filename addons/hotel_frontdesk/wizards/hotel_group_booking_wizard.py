@@ -101,7 +101,7 @@ class HotelGroupBookingWizard(models.TransientModel):
                 'rate_plan_id': self.rate_plan_id.id if self.rate_plan_id else False,
                 'source_id': self.source_id.id if self.source_id else False,
                 'notes': self.notes or '',
-                'state': 'confirmed',
+                'state': 'draft',
                 'folio_id': folio.id,
             })
             # Link primary reservation for folio related fields (room, dates)
