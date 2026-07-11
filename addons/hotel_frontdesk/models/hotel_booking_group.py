@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class HotelBookingGroup(models.Model):
@@ -19,6 +19,11 @@ class HotelBookingGroup(models.Model):
     checkout_date = fields.Date('Check-out Date', required=True, tracking=True)
     rate_plan_id = fields.Many2one('hotel.rate.plan', string='Rate Plan', tracking=True)
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
+    send_confirmation = fields.Boolean(
+        'Send Confirmation Email', default=True,
+        help='Send one group confirmation email to the group leader on '
+             'confirm (individual per-room emails are skipped).',
+    )
     notes = fields.Text('Notes')
 
     reservation_ids = fields.One2many(
@@ -73,12 +78,18 @@ class HotelBookingGroup(models.Model):
             else:
                 group.state = 'confirmed'
 
+    # Belt & braces: same rule at DB level so no code path can bypass it
+    _dates_order = models.Constraint(
+        'CHECK(checkout_date > checkin_date)',
+        'Check-in date must always be before check-out date!',
+    )
+
     @api.constrains('checkin_date', 'checkout_date')
     def _check_dates(self):
         for group in self:
             if group.checkin_date and group.checkout_date:
                 if group.checkout_date <= group.checkin_date:
-                    raise UserError(_('Check-out date must be after check-in date.'))
+                    raise ValidationError(_('Check-in date must always be before check-out date.'))
 
     # ── CRUD ──────────────────────────────────────────────────────────────
 
@@ -130,7 +141,26 @@ class HotelBookingGroup(models.Model):
             todo = group.reservation_ids.filtered(lambda r: r.state == 'draft')
             if not todo:
                 raise UserError(_('No draft bookings to confirm in this group.'))
-            todo.action_confirm()
+            # One group-level confirmation email instead of one per room
+            todo.with_context(skip_confirmation_email=True).action_confirm()
+            if group.send_confirmation:
+                group._send_confirmation_email()
+
+    def _send_confirmation_email(self):
+        self.ensure_one()
+        template = self.env.ref(
+            'hotel_frontdesk.mail_template_group_booking_confirmation',
+            raise_if_not_found=False,
+        )
+        if template and self.guest_id.email:
+            template.send_mail(self.id, force_send=True)
+
+    def action_send_confirmation_email(self):
+        for group in self:
+            if not group.guest_id.email:
+                raise UserError(_('Group leader %s has no email address.')
+                                % group.guest_id.name)
+            group._send_confirmation_email()
 
     def action_check_in(self):
         for group in self:

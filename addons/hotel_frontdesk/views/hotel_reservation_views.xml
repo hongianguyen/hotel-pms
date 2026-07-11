@@ -15,6 +15,7 @@
                   decoration-info="state == 'confirmed'">
                 <field name="reservation_number"/>
                 <field name="guest_id"/>
+                <field name="group_id" optional="show"/>
                 <field name="room_id"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
@@ -157,6 +158,9 @@
                 <field name="reservation_number"/>
                 <field name="guest_id"/>
                 <field name="room_id"/>
+                <field name="group_id"/>
+                <separator/>
+                <filter string="Group Bookings" name="in_group" domain="[('group_id', '!=', False)]"/>
                 <separator/>
                 <filter string="Today Arrivals" name="today_arrivals"
                         domain="[('checkin_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
@@ -172,6 +176,7 @@
                 <separator/>
                 <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Group Booking" name="group_booking" context="{'group_by': 'group_id'}"/>
                     <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Check-in Date" name="group_checkin" context="{'group_by': 'checkin_date'}"/>

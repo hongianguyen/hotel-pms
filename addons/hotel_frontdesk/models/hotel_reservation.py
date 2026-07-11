@@ -158,12 +158,18 @@ class HotelReservation(models.Model):
 
     # ── Constraints ──────────────────────────────────────────────────────
 
+    # Belt & braces: same rule at DB level so no code path can bypass it
+    _dates_order = models.Constraint(
+        'CHECK(checkout_date > checkin_date)',
+        'Check-in date must always be before check-out date!',
+    )
+
     @api.constrains('checkin_date', 'checkout_date')
     def _check_dates(self):
         for rec in self:
             if rec.checkin_date and rec.checkout_date:
                 if rec.checkout_date <= rec.checkin_date:
-                    raise ValidationError(_('Check-out date must be after check-in date.'))
+                    raise ValidationError(_('Check-in date must always be before check-out date.'))
 
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
@@ -213,7 +219,8 @@ class HotelReservation(models.Model):
             if not rec.room_id:
                 raise UserError(_('Please assign a room before confirming.'))
             rec.state = 'confirmed'
-            if rec.send_confirmation:
+            # Group confirm sends one group-level email instead
+            if rec.send_confirmation and not self.env.context.get('skip_confirmation_email'):
                 template = self.env.ref(
                     'hotel_frontdesk.mail_template_reservation_confirmation',
                     raise_if_not_found=False,

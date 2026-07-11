@@ -48,6 +48,9 @@
                             string="Cancel" class="btn-secondary"
                             invisible="state in ('checked_in', 'checked_out', 'cancelled')"
                             confirm="Cancel all bookings in this group?"/>
+                    <button name="action_send_confirmation_email" type="object"
+                            string="✉ Send Confirmation" class="btn-secondary"
+                            invisible="state not in ('confirmed', 'checked_in')"/>
                     <!-- Exit: unsaved record → discard/close; saved record →
                          navigate back to the dashboard. -->
                     <button string="Exit" special="cancel"
@@ -77,6 +80,7 @@
                             <field name="guest_id"/>
                             <field name="source_id"/>
                             <field name="rate_plan_id"/>
+                            <field name="send_confirmation"/>
                         </group>
                         <group string="Dates &amp; Totals">
                             <field name="checkin_date"/>

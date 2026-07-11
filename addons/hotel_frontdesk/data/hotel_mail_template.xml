@@ -6,6 +6,9 @@
             <field name="model_id" ref="hotel_frontdesk.model_hotel_reservation"/>
             <field name="subject">Reservation Confirmation - {{ object.reservation_number }}</field>
             <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+            <!-- use_default_to must be off: it would ignore email_to and look
+                 for a partner_id/email field, which our model does not have -->
+            <field name="use_default_to" eval="False"/>
             <field name="email_to">{{ object.guest_id.email }}</field>
             <field name="body_html" type="html">
 <div style="margin: 0px; padding: 0px;">
@@ -39,6 +42,64 @@
     </table>
     <p>We look forward to welcoming you!</p>
     <p>Best regards,<br/><t t-out="object.company_id.name"/></p>
+</div>
+            </field>
+        </record>
+
+        <record id="mail_template_group_booking_confirmation" model="mail.template">
+            <field name="name">Hotel: Group Booking Confirmation</field>
+            <field name="model_id" ref="hotel_frontdesk.model_hotel_booking_group"/>
+            <field name="subject">Group Booking Confirmation - {{ object.name }}</field>
+            <field name="email_from">{{ (object.master_folio_id.company_id.email or user.email) }}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="email_to">{{ object.guest_id.email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p>Dear <t t-out="object.guest_id.name"/>,</p>
+    <p>Your group booking has been confirmed!</p>
+    <table style="border-collapse: collapse; width: 100%;">
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Group Booking #</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.name"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Check-in</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkin_date"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Check-out</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkout_date"/></td>
+        </tr>
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong>Rooms</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.room_count"/></td>
+        </tr>
+    </table>
+    <p><strong>Rooms in this booking:</strong></p>
+    <table style="border-collapse: collapse; width: 100%;">
+        <tr style="background: #f0f0f0;">
+            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Booking #</th>
+            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Room</th>
+            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Check-in</th>
+            <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Check-out</th>
+            <th style="padding: 8px; border: 1px solid #ddd; text-align: right;">Amount</th>
+        </tr>
+        <t t-foreach="object.reservation_ids" t-as="res">
+            <tr t-if="res.state not in ('cancelled', 'no_show')">
+                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="res.reservation_number"/></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="res.room_id.display_name"/></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="res.checkin_date"/></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="res.checkout_date"/></td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: right;"><t t-out="res.total_amount"/></td>
+            </tr>
+        </t>
+        <tr>
+            <td colspan="4" style="padding: 8px; border: 1px solid #ddd;"><strong>Total</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd; text-align: right;"><strong><t t-out="object.total_amount"/></strong></td>
+        </tr>
+    </table>
+    <p>We look forward to welcoming your group!</p>
+    <p>Best regards</p>
 </div>
             </field>
         </record>
