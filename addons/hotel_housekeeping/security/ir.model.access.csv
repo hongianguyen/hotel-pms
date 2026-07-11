@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hotel_housekeeping_task_admin,hotel.housekeeping.task admin,model_hotel_housekeeping_task,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_housekeeping_task_reception,hotel.housekeeping.task reception,model_hotel_housekeeping_task,hotel_core.group_hotel_reception,1,1,1,0

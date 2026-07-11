@@ -121,8 +121,43 @@ class HotelDashboard(models.TransientModel):
                 'status': room.status,
             })
 
+        # Conflict detection (spec §7.2 top priority): two active
+        # reservations overlapping on the same room.
+        active = reservations.filtered(lambda r: r.state in ('confirmed', 'checked_in'))
+        conflict_ids = set()
+        by_room = {}
+        for r in active:
+            by_room.setdefault(r.room_id.id, []).append(r)
+        for room_res in by_room.values():
+            room_res.sort(key=lambda r: r.checkin_date)
+            for a, b in zip(room_res, room_res[1:]):
+                if a.checkout_date > b.checkin_date:
+                    conflict_ids.update((a.id, b.id))
+
+        today = fields.Date.context_today(self)
         reservation_list = []
         for res in reservations:
+            # Color priority (spec §7.2/7.3): conflict > today arrival >
+            # today departure > checked_in > confirmed > other.
+            if res.id in conflict_ids:
+                color_key, priority = 'conflict', 100
+            elif res.state == 'confirmed' and res.checkin_date == today:
+                color_key, priority = 'arrival', 60
+            elif res.state == 'checked_in' and res.checkout_date == today:
+                color_key, priority = 'departure', 60
+            elif res.state == 'checked_in':
+                color_key, priority = 'checked_in', 40
+            elif res.state == 'confirmed':
+                color_key, priority = 'confirmed', 20
+            else:
+                color_key, priority = 'other', 10
+            payment_issue = bool(
+                res.folio_id
+                and res.folio_id.payment_state != 'paid'
+                and res.state in ('checked_in', 'checked_out')
+            )
+            if payment_issue:
+                priority = max(priority, 80)
             reservation_list.append({
                 'id': res.id,
                 'reservation_number': res.reservation_number,
@@ -131,8 +166,13 @@ class HotelDashboard(models.TransientModel):
                 'checkin_date': str(res.checkin_date),
                 'checkout_date': str(res.checkout_date),
                 'state': res.state,
+                'color_key': color_key,
+                'payment_issue': payment_issue,
+                'priority': priority,
                 'total_amount': res.total_amount,
             })
+        # Highest priority renders first when bars compete for a cell
+        reservation_list.sort(key=lambda r: -r['priority'])
 
         # Generate date headers
         dates = []

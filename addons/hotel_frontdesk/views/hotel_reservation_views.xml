@@ -10,6 +10,7 @@
         <field name="model">hotel.reservation</field>
         <field name="arch" type="xml">
             <list decoration-muted="state == 'cancelled'"
+                  decoration-danger="state == 'no_show'"
                   decoration-success="state == 'checked_in'"
                   decoration-info="state == 'confirmed'">
                 <field name="reservation_number"/>
@@ -25,7 +26,7 @@
                        decoration-primary="state == 'confirmed'"
                        decoration-success="state == 'checked_in'"
                        decoration-muted="state == 'checked_out'"
-                       decoration-danger="state == 'cancelled'"/>
+                       decoration-danger="state in ('cancelled', 'no_show')"/>
             </list>
         </field>
     </record>
@@ -52,7 +53,7 @@
                             confirm="Are you sure you want to cancel this reservation?"/>
                     <button name="action_reset_draft" type="object"
                             string="Reset to Draft" class="btn-secondary"
-                            invisible="state != 'cancelled'"/>
+                            invisible="state not in ('cancelled', 'no_show')"/>
                     <button name="action_send_confirmation_email" type="object"
                             string="✉ Send Confirmation" class="btn-secondary"
                             invisible="state not in ('confirmed', 'checked_in')"/>
@@ -88,6 +89,8 @@
                     <group>
                         <group string="Pricing">
                             <field name="rate_plan_id"/>
+                            <field name="payment_required"/>
+                            <field name="prepaid" invisible="not payment_required"/>
                             <field name="nightly_rate" widget="monetary"/>
                             <field name="total_amount" widget="monetary"/>
                         </group>
@@ -155,6 +158,7 @@
                 <filter string="Checked In" name="checked_in" domain="[('state', '=', 'checked_in')]"/>
                 <filter string="Checked Out" name="checked_out" domain="[('state', '=', 'checked_out')]"/>
                 <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <filter string="No Show" name="no_show" domain="[('state', '=', 'no_show')]"/>
                 <separator/>
                 <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>

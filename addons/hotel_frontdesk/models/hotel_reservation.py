@@ -32,8 +32,10 @@ class HotelReservation(models.Model):
         'hotel.rate.plan', string='Rate Plan', tracking=True,
     )
 
-    checkin_date = fields.Date('Check-in Date', required=True, tracking=True)
-    checkout_date = fields.Date('Check-out Date', required=True, tracking=True)
+    checkin_date = fields.Date('Check-in Date', required=True, tracking=True,
+                               index=True)
+    checkout_date = fields.Date('Check-out Date', required=True, tracking=True,
+                                index=True)
     nights = fields.Integer('Nights', compute='_compute_nights', store=True)
 
     nightly_rate = fields.Float('Nightly Rate', digits=(16, 2), compute='_compute_nightly_rate', store=True)
@@ -44,11 +46,22 @@ class HotelReservation(models.Model):
         ('confirmed', 'Confirmed'),
         ('checked_in', 'Checked In'),
         ('checked_out', 'Checked Out'),
+        ('no_show', 'No Show'),
         ('cancelled', 'Cancelled'),
-    ], string='Status', default='draft', required=True, tracking=True)
+    ], string='Status', default='draft', required=True, tracking=True,
+        index=True)
 
     folio_id = fields.Many2one('hotel.folio', string='Folio', readonly=True, copy=False)
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
+    payment_required = fields.Boolean(
+        'Prepayment Required', tracking=True,
+        help='Block check-in until prepayment is marked as received '
+             '(e.g. non-refundable OTA rates).',
+    )
+    prepaid = fields.Boolean(
+        'Prepayment Received', tracking=True,
+        help='Tick when the required prepayment has been received.',
+    )
     send_confirmation = fields.Boolean('Send Confirmation Email', default=True)
     notes = fields.Text('Notes')
     color = fields.Integer('Color', compute='_compute_color')
@@ -199,6 +212,11 @@ class HotelReservation(models.Model):
         for rec in self:
             if rec.state != 'confirmed':
                 raise UserError(_('Only confirmed reservations can be checked in.'))
+            if rec.payment_required and not rec.prepaid:
+                raise UserError(_(
+                    'Reservation %s requires prepayment before check-in. '
+                    'Mark "Prepayment Received" once payment arrives.'
+                ) % rec.reservation_number)
             if rec.room_id.status == 'maintenance':
                 raise UserError(_('Room %s is under maintenance.') % rec.room_id.name)
             if rec.room_id.status not in ('available', 'cleaning'):
@@ -233,7 +251,29 @@ class HotelReservation(models.Model):
             if not rec.folio_id:
                 raise UserError(_('No folio found for this reservation.'))
 
+            # Late checkout: auto-charge each night past the scheduled
+            # checkout date at the reservation's nightly rate (spec §16).
+            today = fields.Date.context_today(rec)
+            extra = today - rec.checkout_date
+            if extra.days > 0:
+                lines = []
+                current = rec.checkout_date
+                room_name = rec.room_id.name or 'Room'
+                while current < today:
+                    lines.append((0, 0, {
+                        'name': _('Late checkout — Room %s — %s') % (
+                            room_name, current.strftime('%d/%m/%Y')),
+                        'charge_type': 'room',
+                        'quantity': 1,
+                        'amount': rec.nightly_rate,
+                        'date': current,
+                        'account_id': rec.room_id.room_type_id.revenue_account_id.id or False,
+                    }))
+                    current += timedelta(days=1)
+                rec.folio_id.write({'line_ids': lines})
+
             rec.write({'state': 'checked_out'})
+            rec.room_id.write({'last_used_at': fields.Datetime.now()})
             rec.room_id.action_set_dirty()
 
             # For group folios: only invoice when the last room checks out
@@ -263,11 +303,72 @@ class HotelReservation(models.Model):
                     rec.room_id.action_set_dirty()
 
     def action_reset_draft(self):
-        """Reset cancelled back to draft."""
+        """Reset cancelled / no-show back to draft."""
         for rec in self:
-            if rec.state != 'cancelled':
-                raise UserError(_('Only cancelled reservations can be reset to draft.'))
+            if rec.state not in ('cancelled', 'no_show'):
+                raise UserError(_('Only cancelled or no-show reservations can be reset to draft.'))
             rec.state = 'draft'
+
+    # ── Write guard (spec §3.1: cannot modify CHECKED_OUT) ──────────────
+    _PROTECTED_AFTER_CHECKOUT = (
+        'room_id', 'room_type_id', 'checkin_date', 'checkout_date',
+        'nightly_rate', 'rate_plan_id', 'guest_id',
+    )
+
+    def write(self, vals):
+        protected = set(vals) & set(self._PROTECTED_AFTER_CHECKOUT)
+        if protected and not self.env.context.get('bypass_checkout_guard'):
+            locked = self.filtered(lambda r: r.state == 'checked_out')
+            if locked:
+                raise UserError(_(
+                    'Reservation(s) %s are checked out and can no longer be '
+                    'modified (fields: %s).'
+                ) % (', '.join(locked.mapped('reservation_number')),
+                     ', '.join(sorted(protected))))
+        return super().write(vals)
+
+    # ── No-show cron (spec §6.1) ─────────────────────────────────────────
+    @api.model
+    def _cron_mark_no_shows(self):
+        """Mark confirmed reservations as NO_SHOW after the grace period.
+
+        Grace = end of the check-in day in the company timezone: a guest
+        who has not checked in by midnight after their arrival date is a
+        no-show. Runs hourly; idempotent.
+        """
+        today = fields.Date.context_today(self)
+        stale = self.search([
+            ('state', '=', 'confirmed'),
+            ('checkin_date', '<', today),
+        ])
+        for rec in stale:
+            rec.state = 'no_show'
+            rec.message_post(body=_(
+                'Automatically marked as No Show: guest did not check in '
+                'by end of %s.') % rec.checkin_date)
+        return len(stale)
+
+    # ── Pre-arrival reminder cron (spec §6.3) ───────────────────────────
+    @api.model
+    def _cron_send_prearrival_reminders(self):
+        """Email tomorrow's confirmed arrivals a pre-arrival reminder."""
+        template = self.env.ref(
+            'hotel_frontdesk.mail_template_prearrival_reminder',
+            raise_if_not_found=False,
+        )
+        if not template:
+            return 0
+        tomorrow = fields.Date.context_today(self) + timedelta(days=1)
+        arrivals = self.search([
+            ('state', '=', 'confirmed'),
+            ('checkin_date', '=', tomorrow),
+        ])
+        sent = 0
+        for rec in arrivals:
+            if rec.guest_id.email:
+                template.send_mail(rec.id)
+                sent += 1
+        return sent
 
     def action_send_confirmation_email(self):
         """Open custom email wizard pre-filled with confirmation template for preview/edit before sending."""

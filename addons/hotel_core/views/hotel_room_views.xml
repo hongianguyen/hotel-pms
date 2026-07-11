@@ -36,6 +36,7 @@
                             <field name="capacity"/>
                             <field name="base_rate" widget="monetary"/>
                             <field name="revenue_account_id"/>
+                            <field name="housekeeping_sla_minutes"/>
                         </group>
                         <group string="Info">
                             <field name="room_count"/>
@@ -177,6 +178,8 @@
                         </group>
                         <group string="Status">
                             <field name="status"/>
+                            <field name="last_cleaned_at" readonly="1"/>
+                            <field name="last_used_at" readonly="1"/>
                             <field name="active"/>
                         </group>
                     </group>

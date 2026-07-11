@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
 export class ReceptionDashboard extends Component {
@@ -22,6 +22,11 @@ export class ReceptionDashboard extends Component {
         onWillStart(async () => {
             await this.loadData();
         });
+
+        // Spec 1.2: reads may be cached up to 30s -> poll every 30s so the
+        // board stays near-live without manual refreshes.
+        this.refreshTimer = setInterval(() => this.loadData(), 30000);
+        onWillUnmount(() => clearInterval(this.refreshTimer));
     }
 
     async loadData() {

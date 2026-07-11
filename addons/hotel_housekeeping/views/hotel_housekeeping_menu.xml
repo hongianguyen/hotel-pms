@@ -3,6 +3,17 @@
     <menuitem id="menu_hotel_housekeeping"
               name="Housekeeping"
               parent="hotel_core.menu_hotel_root"
-              action="action_hotel_housekeeping"
               sequence="30"/>
+
+    <menuitem id="menu_hotel_housekeeping_board"
+              name="Room Board"
+              parent="menu_hotel_housekeeping"
+              action="action_hotel_housekeeping"
+              sequence="10"/>
+
+    <menuitem id="menu_hotel_housekeeping_tasks"
+              name="Cleaning Tasks"
+              parent="menu_hotel_housekeeping"
+              action="action_hotel_housekeeping_task"
+              sequence="20"/>
 </odoo>

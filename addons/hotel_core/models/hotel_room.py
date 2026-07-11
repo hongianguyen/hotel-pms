@@ -22,6 +22,11 @@ class HotelRoomType(models.Model):
         help='GL account for room revenue (e.g. 4000 Room Revenue)',
     )
 
+    housekeeping_sla_minutes = fields.Integer(
+        'Housekeeping SLA (minutes)', default=30,
+        help='Target cleaning time after checkout (e.g. 30 for standard, '
+             '60 for villa/bungalow).',
+    )
     room_ids = fields.One2many('hotel.room', 'room_type_id', string='Rooms')
     room_count = fields.Integer('Room Count', compute='_compute_room_count', store=True)
 
@@ -45,7 +50,7 @@ class HotelRoom(models.Model):
     name = fields.Char('Room Number', required=True, tracking=True)
     room_type_id = fields.Many2one(
         'hotel.room.type', string='Room Type', required=True,
-        ondelete='restrict', tracking=True,
+        ondelete='restrict', tracking=True, index=True,
     )
     base_rate = fields.Float(
         'Rate / Night', related='room_type_id.base_rate', store=True,
@@ -93,7 +98,10 @@ class HotelRoom(models.Model):
     def action_set_available(self):
         for room in self:
             room._check_no_active_checkin()
-        self.write({'status': 'available'})
+        self.write({
+            'status': 'available',
+            'last_cleaned_at': fields.Datetime.now(),
+        })
 
     def action_set_dirty(self):
         self.write({'status': 'dirty'})

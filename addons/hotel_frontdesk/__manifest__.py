@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Hotel Front Desk',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Hotel Management',
     'summary': 'Reservations, check-in/out, folios, invoicing',
     'description': """
@@ -20,6 +20,7 @@ Core PMS operations:
         'security/ir.model.access.csv',
         'data/hotel_frontdesk_sequence.xml',
         'data/hotel_mail_template.xml',
+        'data/hotel_frontdesk_cron.xml',
         'wizards/hotel_add_charge_wizard_views.xml',
         'wizards/hotel_group_booking_wizard_views.xml',
         'wizards/hotel_reservation_email_wizard_views.xml',
