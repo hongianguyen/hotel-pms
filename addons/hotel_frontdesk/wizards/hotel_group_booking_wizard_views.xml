@@ -6,6 +6,11 @@
         <field name="arch" type="xml">
             <form string="Group Booking">
                 <sheet>
+                    <field name="is_roh" invisible="1"/>
+                    <div class="alert alert-info" role="alert" invisible="not is_roh">
+                        Run of House: rooms will be assigned <b>randomly</b> across all
+                        room types, all charged at the ROH rate.
+                    </div>
                     <group>
                         <group string="Room Selection">
                             <field name="room_type_id"/>

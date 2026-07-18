@@ -97,12 +97,17 @@ class HotelFolio(models.Model):
         current = res.checkin_date
         rate = res.nightly_rate
         room_name = res.room_id.name or 'Room'
+        # ROH/combo bookings: revenue account of the booked (virtual) type
+        # wins over the physical room's type.
+        account = (res.room_type_id.revenue_account_id
+                   or res.room_id.room_type_id.revenue_account_id)
 
         lines = []
         while current < res.checkout_date:
             # Check rate plan for per-day rate if available
+            # (combo bookings use the combo's fixed rate instead)
             day_rate = rate
-            if res.rate_plan_id:
+            if res.rate_plan_id and not res.combo_id:
                 plan_rate = res.rate_plan_id.get_rate_for_date(current)
                 if plan_rate:
                     day_rate = plan_rate
@@ -113,10 +118,29 @@ class HotelFolio(models.Model):
                 'quantity': 1,
                 'amount': day_rate,
                 'date': current,
-                'account_id': res.room_id.room_type_id.revenue_account_id.id or False,
+                'account_id': account.id or False,
             }))
             current += timedelta(days=1)
 
+        if lines:
+            self.write({'line_ids': lines})
+
+    def _generate_combo_charges(self, reservation):
+        """Add the reservation's combo services as folio charge lines."""
+        self.ensure_one()
+        lines = []
+        for line in reservation.combo_id.line_ids:
+            charge_type = 'fnb' if line.service_id.category == 'fnb' else 'service'
+            lines.append((0, 0, {
+                'name': _('%(service)s — Combo %(combo)s',
+                          service=line.service_id.name,
+                          combo=reservation.combo_id.name),
+                'charge_type': charge_type,
+                'quantity': line.quantity,
+                'amount': line.price_unit,
+                'date': reservation.checkin_date,
+                'account_id': line.service_id.account_id.id or False,
+            }))
         if lines:
             self.write({'line_ids': lines})
 

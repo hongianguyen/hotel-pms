@@ -89,7 +89,10 @@
                             <field name="children"/>
                         </group>
                         <group string="Room &amp; Dates">
-                            <field name="room_type_id"/>
+                            <field name="is_roh" invisible="1"/>
+                            <field name="allowed_room_type_ids" invisible="1"/>
+                            <field name="room_type_id"
+                                   domain="[('is_roh', '=', False)]"/>
                             <field name="room_id"/>
                             <field name="checkin_date"/>
                             <field name="checkout_date"/>
@@ -98,10 +101,13 @@
                     </group>
                     <group>
                         <group string="Pricing">
-                            <field name="rate_plan_id"/>
+                            <field name="combo_id"/>
+                            <field name="rate_plan_id" invisible="combo_id"/>
                             <field name="payment_required"/>
                             <field name="prepaid" invisible="not payment_required"/>
                             <field name="nightly_rate" widget="monetary"/>
+                            <field name="services_total" widget="monetary"
+                                   invisible="not service_line_ids"/>
                             <field name="total_amount" widget="monetary"/>
                         </group>
                         <group string="Booking Details">
@@ -112,6 +118,20 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Services" name="services">
+                            <field name="service_line_ids"
+                                   readonly="state in ('checked_out', 'cancelled')">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
+                                    <field name="date" optional="show"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit" widget="monetary"/>
+                                    <field name="subtotal" widget="monetary"/>
+                                    <field name="note" optional="show"/>
+                                    <field name="is_charged" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Guests (Pax)" name="pax">
                             <field name="pax_ids">
                                 <list editable="bottom">

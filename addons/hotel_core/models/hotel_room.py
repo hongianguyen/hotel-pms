@@ -15,6 +15,12 @@ class HotelRoomType(models.Model):
     description = fields.Text('Description', translate=True)
     active = fields.Boolean('Active', default=True)
     color = fields.Integer('Color', default=0)
+    is_roh = fields.Boolean(
+        'Run of House (ROH)', tracking=True,
+        help='Virtual room type for group bookings only: the system assigns '
+             'any available room at random and every room is charged at this '
+             'type\'s base rate, regardless of the room actually assigned.',
+    )
 
     revenue_account_id = fields.Many2one(
         'account.account',

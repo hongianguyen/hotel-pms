@@ -3,4 +3,5 @@ from . import hotel_booking_source
 from . import res_partner
 from . import hotel_booking_group
 from . import hotel_reservation
+from . import hotel_reservation_service
 from . import hotel_folio

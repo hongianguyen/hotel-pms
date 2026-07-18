@@ -2,6 +2,13 @@
 <odoo>
     <data noupdate="1">
         <!-- ── Room Types ───────────────────────────────────────────── -->
+        <record id="room_type_roh" model="hotel.room.type">
+            <field name="name">ROH (Run of House)</field>
+            <field name="capacity">2</field>
+            <field name="base_rate">250000</field>
+            <field name="is_roh" eval="True"/>
+            <field name="description">Run of House — group bookings only. Rooms are assigned randomly from all available rooms; every room is charged at this flat rate.</field>
+        </record>
         <record id="room_type_tent" model="hotel.room.type">
             <field name="name">Tent</field>
             <field name="capacity">2</field>

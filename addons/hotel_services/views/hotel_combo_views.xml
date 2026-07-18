@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Combo List -->
+    <record id="view_hotel_combo_list" model="ir.ui.view">
+        <field name="name">hotel.combo.list</field>
+        <field name="model">hotel.combo</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <field name="nights"/>
+                <field name="accommodation_total" widget="monetary" optional="show"/>
+                <field name="services_total" widget="monetary" optional="show"/>
+                <field name="total_price" widget="monetary"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Combo Form -->
+    <record id="view_hotel_combo_form" model="ir.ui.view">
+        <field name="name">hotel.combo.form</field>
+        <field name="model">hotel.combo</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Combo Name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Accommodation">
+                            <field name="room_type_id"/>
+                            <field name="nights"/>
+                            <field name="nightly_rate" widget="monetary"/>
+                        </group>
+                        <group string="Pricing">
+                            <field name="accommodation_total" widget="monetary"/>
+                            <field name="services_total" widget="monetary"/>
+                            <field name="total_price" widget="monetary" class="fw-bold"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Included Services" name="services">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit" widget="monetary"/>
+                                    <field name="subtotal" widget="monetary"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="What this combo includes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Combo Search -->
+    <record id="view_hotel_combo_search" model="ir.ui.view">
+        <field name="name">hotel.combo.search</field>
+        <field name="model">hotel.combo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="room_type_id"/>
+                <group>
+                    <filter string="Room Type" name="group_room_type" context="{'group_by': 'room_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Combo Action -->
+    <record id="action_hotel_combo" model="ir.actions.act_window">
+        <field name="name">Combo Packages</field>
+        <field name="res_model">hotel.combo</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hotel_combo_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first combo package
+            </p>
+            <p>Bundle accommodation with tours, meals and other services at a package price. Booking the combo books the room and adds the services to the guest folio at check-in.</p>
+        </field>
+    </record>
+</odoo>

@@ -14,6 +14,7 @@
                 <field name="capacity"/>
                 <field name="base_rate" widget="monetary"/>
                 <field name="room_count"/>
+                <field name="is_roh" optional="show"/>
                 <field name="active" column_invisible="1"/>
             </list>
         </field>
@@ -40,6 +41,7 @@
                         </group>
                         <group string="Info">
                             <field name="room_count"/>
+                            <field name="is_roh"/>
                             <field name="active"/>
                         </group>
                     </group>

@@ -1,3 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hotel_service_admin,hotel.service admin,model_hotel_service,hotel_core.group_hotel_admin,1,1,1,1
 access_hotel_service_reception,hotel.service reception,model_hotel_service,hotel_core.group_hotel_reception,1,0,0,0
+access_hotel_combo_admin,hotel.combo admin,model_hotel_combo,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_combo_reception,hotel.combo reception,model_hotel_combo,hotel_core.group_hotel_reception,1,0,0,0
+access_hotel_combo_line_admin,hotel.combo.line admin,model_hotel_combo_line,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_combo_line_reception,hotel.combo.line reception,model_hotel_combo_line,hotel_core.group_hotel_reception,1,0,0,0

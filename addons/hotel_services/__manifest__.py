@@ -8,9 +8,10 @@
     'depends': ['hotel_core'],
     'data': [
         'security/ir.model.access.csv',
-        'data/hotel_service_demo.xml',
         'views/hotel_service_views.xml',
+        'views/hotel_combo_views.xml',
         'views/hotel_service_menu.xml',
+        'data/hotel_service_demo.xml',
     ],
     'installable': True,
     'application': False,

@@ -41,5 +41,26 @@
             <field name="price">500000</field>
             <field name="category">misc</field>
         </record>
+
+        <!-- ── Sample Combo Package ─────────────────────────────────── -->
+        <record id="combo_bungalow_adventure" model="hotel.combo">
+            <field name="name">Bungalow Adventure Combo (2N)</field>
+            <field name="room_type_id" ref="hotel_core.room_type_bungalow"/>
+            <field name="nights">2</field>
+            <field name="nightly_rate">700000</field>
+            <field name="description">2 nights in a Bungalow, daily breakfast for two and the Waterfall Trekking Tour, at a package price.</field>
+        </record>
+        <record id="combo_line_breakfast" model="hotel.combo.line">
+            <field name="combo_id" ref="combo_bungalow_adventure"/>
+            <field name="service_id" ref="service_breakfast"/>
+            <field name="quantity">4</field>
+            <field name="price_unit">70000</field>
+        </record>
+        <record id="combo_line_waterfall" model="hotel.combo.line">
+            <field name="combo_id" ref="combo_bungalow_adventure"/>
+            <field name="service_id" ref="service_waterfall_tour"/>
+            <field name="quantity">2</field>
+            <field name="price_unit">300000</field>
+        </record>
     </data>
 </odoo>

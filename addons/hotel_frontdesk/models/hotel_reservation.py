@@ -24,12 +24,24 @@ class HotelReservation(models.Model):
     room_type_id = fields.Many2one(
         'hotel.room.type', string='Room Type', tracking=True,
     )
+    is_roh = fields.Boolean(related='room_type_id.is_roh', string='Run of House')
+    # ROH bookings may hold a room of any physical type; the domain below
+    # widens accordingly via this computed helper.
+    allowed_room_type_ids = fields.Many2many(
+        'hotel.room.type', compute='_compute_allowed_room_type_ids',
+    )
     room_id = fields.Many2one(
         'hotel.room', string='Room', tracking=True,
-        domain="[('room_type_id', '=', room_type_id), ('active', '=', True)]",
+        domain="[('room_type_id', 'in', allowed_room_type_ids), ('active', '=', True)]",
     )
     rate_plan_id = fields.Many2one(
         'hotel.rate.plan', string='Rate Plan', tracking=True,
+    )
+    combo_id = fields.Many2one(
+        'hotel.combo', string='Combo Package', tracking=True,
+        help='Package of accommodation + services. Selecting a combo books '
+             'the accommodation and adds the included services to the folio '
+             'at check-in.',
     )
 
     checkin_date = fields.Date('Check-in Date', required=True, tracking=True,
@@ -84,6 +96,16 @@ class HotelReservation(models.Model):
         help='Comma-separated guest names for lists, folio and dashboards.',
     )
 
+    # ── Services booked with the reservation (from draft onwards) ───────
+    service_line_ids = fields.One2many(
+        'hotel.reservation.service', 'reservation_id', string='Services',
+        copy=True,
+    )
+    services_total = fields.Float(
+        'Services Total', compute='_compute_services_total', store=True,
+        digits=(16, 2),
+    )
+
     company_id = fields.Many2one(
         'res.company', string='Company',
         default=lambda self: self.env.company,
@@ -100,11 +122,26 @@ class HotelReservation(models.Model):
             else:
                 rec.nights = 0
 
-    @api.depends('rate_plan_id', 'room_id', 'room_type_id')
+    @api.depends('room_type_id')
+    def _compute_allowed_room_type_ids(self):
+        physical_types = self.env['hotel.room.type'].search([('is_roh', '=', False)])
+        for rec in self:
+            if rec.room_type_id.is_roh:
+                rec.allowed_room_type_ids = physical_types
+            else:
+                rec.allowed_room_type_ids = rec.room_type_id
+
+    @api.depends('rate_plan_id', 'room_id', 'room_type_id',
+                 'room_type_id.is_roh', 'combo_id')
     def _compute_nightly_rate(self):
         for rec in self:
-            if rec.rate_plan_id and rec.rate_plan_id.base_rate:
+            if rec.combo_id:
+                rec.nightly_rate = rec.combo_id.nightly_rate
+            elif rec.rate_plan_id and rec.rate_plan_id.base_rate:
                 rec.nightly_rate = rec.rate_plan_id.base_rate
+            elif rec.room_type_id and rec.room_type_id.is_roh:
+                # ROH: flat rate regardless of the room actually assigned
+                rec.nightly_rate = rec.room_type_id.base_rate
             elif rec.room_id:
                 rec.nightly_rate = rec.room_id.base_rate
             elif rec.room_type_id:
@@ -119,14 +156,21 @@ class HotelReservation(models.Model):
             rec.pax_count = len(names)
             rec.pax_names = ', '.join(names)
 
-    @api.depends('nights', 'nightly_rate', 'rate_plan_id',
-                 'checkin_date', 'checkout_date')
+    @api.depends('service_line_ids.subtotal')
+    def _compute_services_total(self):
+        for rec in self:
+            rec.services_total = sum(rec.service_line_ids.mapped('subtotal'))
+
+    @api.depends('nights', 'nightly_rate', 'rate_plan_id', 'combo_id',
+                 'checkin_date', 'checkout_date', 'services_total')
     def _compute_total_amount(self):
         """Sum per-night rates so the quoted total matches the folio.
 
         Uses the same per-date rate-plan/season logic as
         hotel.folio._generate_room_charges; falls back to the flat
-        nightly_rate for dates the plan does not cover.
+        nightly_rate for dates the plan does not cover. Combo bookings
+        use the combo's fixed accommodation rate (rate plans ignored)
+        plus the combo's included services.
         """
         for rec in self:
             if not (rec.checkin_date and rec.checkout_date and rec.nights > 0):
@@ -136,12 +180,15 @@ class HotelReservation(models.Model):
             current = rec.checkin_date
             while current < rec.checkout_date:
                 day_rate = rec.nightly_rate
-                if rec.rate_plan_id:
+                if rec.rate_plan_id and not rec.combo_id:
                     plan_rate = rec.rate_plan_id.get_rate_for_date(current)
                     if plan_rate:
                         day_rate = plan_rate
                 total += day_rate
                 current += timedelta(days=1)
+            if rec.combo_id:
+                total += rec.combo_id.services_total
+            total += rec.services_total
             rec.total_amount = total
 
     @api.depends('state')
@@ -170,6 +217,31 @@ class HotelReservation(models.Model):
             if rec.checkin_date and rec.checkout_date:
                 if rec.checkout_date <= rec.checkin_date:
                     raise ValidationError(_('Check-in date must always be before check-out date.'))
+
+    @api.constrains('room_type_id', 'group_id')
+    def _check_roh_group_only(self):
+        for rec in self:
+            if rec.room_type_id.is_roh and not rec.group_id:
+                raise ValidationError(_(
+                    'Room type "%s" is Run of House (ROH) and is only '
+                    'available for group bookings.') % rec.room_type_id.name)
+
+    # ── Onchanges ─────────────────────────────────────────────────────────
+
+    @api.onchange('combo_id')
+    def _onchange_combo_id(self):
+        if self.combo_id:
+            self.room_type_id = self.combo_id.room_type_id
+            self.rate_plan_id = False
+            if self.checkin_date:
+                self.checkout_date = self.checkin_date + timedelta(
+                    days=self.combo_id.nights)
+
+    @api.onchange('checkin_date')
+    def _onchange_checkin_date_combo(self):
+        if self.combo_id and self.checkin_date:
+            self.checkout_date = self.checkin_date + timedelta(
+                days=self.combo_id.nights)
 
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
@@ -233,6 +305,13 @@ class HotelReservation(models.Model):
         for rec in self:
             if rec.state != 'confirmed':
                 raise UserError(_('Only confirmed reservations can be checked in.'))
+            if rec.checkin_date > fields.Date.context_today(rec):
+                raise UserError(_(
+                    'Reservation %(number)s cannot be checked in before its '
+                    'check-in date (%(date)s).',
+                    number=rec.reservation_number,
+                    date=rec.checkin_date.strftime('%d/%m/%Y'),
+                ))
             if rec.payment_required and not rec.prepaid:
                 raise UserError(_(
                     'Reservation %s requires prepayment before check-in. '
@@ -260,6 +339,12 @@ class HotelReservation(models.Model):
                 })
                 folio._generate_room_charges(rec)
                 rec.folio_id = folio.id
+
+            if rec.combo_id:
+                rec.folio_id._generate_combo_charges(rec)
+
+            # Services booked with the reservation hit the folio at check-in
+            rec.service_line_ids._post_to_folio()
 
             rec.state = 'checked_in'
             rec.room_id.action_set_occupied()

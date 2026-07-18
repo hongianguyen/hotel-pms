@@ -10,4 +10,10 @@
               parent="menu_hotel_services"
               action="action_hotel_service"
               sequence="10"/>
+
+    <menuitem id="menu_hotel_combo_list"
+              name="Combo Packages"
+              parent="menu_hotel_services"
+              action="action_hotel_combo"
+              sequence="20"/>
 </odoo>
