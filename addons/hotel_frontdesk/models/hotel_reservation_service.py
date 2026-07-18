@@ -34,6 +34,12 @@ class HotelReservationService(models.Model):
              'when posted to the folio.',
     )
     note = fields.Char('Note')
+    combo_id = fields.Many2one(
+        'hotel.combo', string='From Combo', readonly=True,
+        ondelete='set null',
+        help='Set when this line was added automatically by selecting a '
+             'combo package on the reservation.',
+    )
     folio_line_id = fields.Many2one(
         'hotel.folio.line', string='Folio Charge', readonly=True, copy=False,
         ondelete='set null',
@@ -72,6 +78,9 @@ class HotelReservationService(models.Model):
                 continue
             charge_type = 'fnb' if line.service_id.category == 'fnb' else 'service'
             name = line.service_id.name
+            if line.combo_id:
+                name = _('%(service)s — Combo %(combo)s',
+                         service=name, combo=line.combo_id.name)
             if line.note:
                 name = '%s — %s' % (name, line.note)
             # sudo mirrors folio creation at check-in: posting is an internal

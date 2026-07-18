@@ -125,25 +125,6 @@ class HotelFolio(models.Model):
         if lines:
             self.write({'line_ids': lines})
 
-    def _generate_combo_charges(self, reservation):
-        """Add the reservation's combo services as folio charge lines."""
-        self.ensure_one()
-        lines = []
-        for line in reservation.combo_id.line_ids:
-            charge_type = 'fnb' if line.service_id.category == 'fnb' else 'service'
-            lines.append((0, 0, {
-                'name': _('%(service)s — Combo %(combo)s',
-                          service=line.service_id.name,
-                          combo=reservation.combo_id.name),
-                'charge_type': charge_type,
-                'quantity': line.quantity,
-                'amount': line.price_unit,
-                'date': reservation.checkin_date,
-                'account_id': line.service_id.account_id.id or False,
-            }))
-        if lines:
-            self.write({'line_ids': lines})
-
     def action_create_invoice(self):
         """Create account.move (customer invoice) from folio lines."""
         self.ensure_one()

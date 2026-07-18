@@ -186,8 +186,8 @@ class HotelReservation(models.Model):
                         day_rate = plan_rate
                 total += day_rate
                 current += timedelta(days=1)
-            if rec.combo_id:
-                total += rec.combo_id.services_total
+            # Combo services are materialized as service lines, so they
+            # are already covered by services_total.
             total += rec.services_total
             rec.total_amount = total
 
@@ -226,6 +226,36 @@ class HotelReservation(models.Model):
                     'Room type "%s" is Run of House (ROH) and is only '
                     'available for group bookings.') % rec.room_type_id.name)
 
+    # ── Combo → service lines ────────────────────────────────────────────
+
+    def _combo_service_line_vals(self):
+        """Service-line values for every component of the selected combo."""
+        self.ensure_one()
+        return [{
+            'service_id': line.service_id.id,
+            'quantity': line.quantity,
+            'price_unit': line.price_unit,
+            'combo_id': self.combo_id.id,
+        } for line in self.combo_id.line_ids]
+
+    def _sync_combo_services(self):
+        """Mirror the selected combo's components into the service lines.
+
+        Idempotent: drops un-charged lines of a previously selected combo
+        and adds the current combo's components unless they are already
+        present (e.g. saved by the form after the onchange preview).
+        """
+        for rec in self:
+            stale = rec.service_line_ids.filtered(
+                lambda l: l.combo_id and l.combo_id != rec.combo_id
+                and not l.folio_line_id)
+            stale.unlink()
+            if rec.combo_id and not rec.service_line_ids.filtered(
+                    lambda l: l.combo_id == rec.combo_id):
+                self.env['hotel.reservation.service'].create([
+                    dict(vals, reservation_id=rec.id)
+                    for vals in rec._combo_service_line_vals()])
+
     # ── Onchanges ─────────────────────────────────────────────────────────
 
     @api.onchange('combo_id')
@@ -236,6 +266,16 @@ class HotelReservation(models.Model):
             if self.checkin_date:
                 self.checkout_date = self.checkin_date + timedelta(
                     days=self.combo_id.nights)
+        # Live preview: swap combo-originated service lines so the guest
+        # sees every component of the package before confirming.
+        stale = self.service_line_ids.filtered(
+            lambda l: l.combo_id and l.combo_id != self.combo_id
+            and not l.folio_line_id)
+        self.service_line_ids -= stale
+        if self.combo_id and not self.service_line_ids.filtered(
+                lambda l: l.combo_id == self.combo_id):
+            self.service_line_ids = [
+                (0, 0, vals) for vals in self._combo_service_line_vals()]
 
     @api.onchange('checkin_date')
     def _onchange_checkin_date_combo(self):
@@ -279,6 +319,8 @@ class HotelReservation(models.Model):
         for rec in records:
             if rec.group_id and rec.folio_id and not rec.folio_id.reservation_id:
                 rec.folio_id.reservation_id = rec.id
+        # Combo picked programmatically (wizard/import): materialize services
+        records.filtered('combo_id')._sync_combo_services()
         return records
 
     # ── Workflow Buttons ─────────────────────────────────────────────────
@@ -340,10 +382,10 @@ class HotelReservation(models.Model):
                 folio._generate_room_charges(rec)
                 rec.folio_id = folio.id
 
-            if rec.combo_id:
-                rec.folio_id._generate_combo_charges(rec)
-
-            # Services booked with the reservation hit the folio at check-in
+            # Services booked with the reservation (incl. combo components)
+            # hit the folio at check-in. Sync first so pre-upgrade combo
+            # bookings without materialized lines still get charged.
+            rec._sync_combo_services()
             rec.service_line_ids._post_to_folio()
 
             rec.state = 'checked_in'
@@ -441,7 +483,10 @@ class HotelReservation(models.Model):
                     'modified (fields: %s).'
                 ) % (', '.join(locked.mapped('reservation_number')),
                      ', '.join(sorted(protected))))
-        return super().write(vals)
+        res = super().write(vals)
+        if 'combo_id' in vals:
+            self._sync_combo_services()
+        return res
 
     # ── No-show cron (spec §6.1) ─────────────────────────────────────────
     @api.model

@@ -123,6 +123,7 @@
                                    readonly="state in ('checked_out', 'cancelled')">
                                 <list editable="bottom">
                                     <field name="service_id"/>
+                                    <field name="combo_id" force_save="1" optional="show"/>
                                     <field name="date" optional="show"/>
                                     <field name="quantity"/>
                                     <field name="price_unit" widget="monetary"/>
