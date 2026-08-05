@@ -14,6 +14,7 @@
                   decoration-info="state == 'confirmed'">
                 <field name="name"/>
                 <field name="guest_id"/>
+                <field name="agency_id" optional="show"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
                 <field name="room_count"/>
@@ -80,6 +81,11 @@
                             <field name="guest_id"/>
                             <field name="source_id"/>
                             <field name="rate_plan_id"/>
+                            <field name="agency_id"/>
+                            <field name="booker_id" invisible="not agency_id"
+                                   required="agency_id"/>
+                            <field name="booker_email" invisible="not agency_id"/>
+                            <field name="agency_credit_term" invisible="not agency_id"/>
                             <field name="send_confirmation"/>
                         </group>
                         <group string="Dates &amp; Totals">
@@ -96,7 +102,9 @@
                                              'default_checkin_date': checkin_date,
                                              'default_checkout_date': checkout_date,
                                              'default_rate_plan_id': rate_plan_id,
-                                             'default_source_id': source_id}">
+                                             'default_source_id': source_id,
+                                             'default_agency_id': agency_id,
+                                             'default_booker_id': booker_id}">
                                 <list decoration-muted="state in ('cancelled', 'no_show')">
                                     <field name="reservation_number"/>
                                     <field name="guest_id"/>
@@ -133,6 +141,10 @@
             <search>
                 <field name="name"/>
                 <field name="guest_id"/>
+                <field name="agency_id"/>
+                <separator/>
+                <filter string="Agency / Corporate" name="agency"
+                        domain="[('agency_id', '!=', False)]"/>
                 <separator/>
                 <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>

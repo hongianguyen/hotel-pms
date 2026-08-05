@@ -13,6 +13,7 @@
                 <field name="name"/>
                 <field name="reservation_id"/>
                 <field name="guest_id"/>
+                <field name="bill_to_id" optional="show"/>
                 <field name="room_id"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
@@ -56,6 +57,9 @@
                             <field name="group_id" invisible="not group_id"/>
                             <field name="guest_id"/>
                             <field name="room_id"/>
+                            <field name="agency_id" invisible="not agency_id"/>
+                            <field name="agency_credit_term" invisible="not agency_id"/>
+                            <field name="bill_to_id"/>
                         </group>
                         <group string="Dates &amp; Totals">
                             <field name="checkin_date"/>
@@ -116,12 +120,16 @@
             <search>
                 <field name="name"/>
                 <field name="guest_id"/>
+                <field name="agency_id"/>
                 <field name="reservation_id"/>
+                <filter string="Agency / Corporate" name="agency"
+                        domain="[('agency_id', '!=', False)]"/>
                 <filter string="Open" name="open" domain="[('payment_state', '=', 'open')]"/>
                 <filter string="Invoiced" name="invoiced" domain="[('payment_state', '=', 'invoiced')]"/>
                 <filter string="Paid" name="paid" domain="[('payment_state', '=', 'paid')]"/>
                 <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Agency / Company" name="group_agency" context="{'group_by': 'agency_id'}"/>
                     <filter string="Payment Status" name="group_payment" context="{'group_by': 'payment_state'}"/>
                 </group>
             </search>

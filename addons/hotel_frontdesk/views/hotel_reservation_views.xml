@@ -15,6 +15,7 @@
                   decoration-info="state == 'confirmed'">
                 <field name="reservation_number"/>
                 <field name="guest_id"/>
+                <field name="agency_id" optional="hide"/>
                 <field name="group_id" optional="show"/>
                 <field name="room_id"/>
                 <field name="checkin_date"/>
@@ -112,6 +113,12 @@
                         </group>
                         <group string="Booking Details">
                             <field name="source_id"/>
+                            <field name="agency_id"/>
+                            <field name="booker_id" invisible="not agency_id"
+                                   required="agency_id"/>
+                            <field name="booker_email" invisible="not agency_id"/>
+                            <field name="agency_credit_term" invisible="not agency_id"/>
+                            <field name="bill_to_id" invisible="not agency_id"/>
                             <field name="send_confirmation"/>
                             <field name="folio_id" readonly="1"/>
                             <field name="group_id" readonly="1" invisible="not group_id"/>
@@ -180,8 +187,11 @@
                 <field name="guest_id"/>
                 <field name="room_id"/>
                 <field name="group_id"/>
+                <field name="agency_id"/>
                 <separator/>
                 <filter string="Group Bookings" name="in_group" domain="[('group_id', '!=', False)]"/>
+                <filter string="Agency / Corporate" name="agency"
+                        domain="[('agency_id', '!=', False)]"/>
                 <separator/>
                 <filter string="Today Arrivals" name="today_arrivals"
                         domain="[('checkin_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
@@ -197,6 +207,7 @@
                 <separator/>
                 <group>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
+                    <filter string="Agency / Company" name="group_agency" context="{'group_by': 'agency_id'}"/>
                     <filter string="Group Booking" name="group_booking" context="{'group_by': 'group_id'}"/>
                     <filter string="Room" name="group_room" context="{'group_by': 'room_id'}"/>
                     <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>

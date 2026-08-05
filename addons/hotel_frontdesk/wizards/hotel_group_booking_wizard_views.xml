@@ -27,6 +27,9 @@
                         <group string="Pricing &amp; Source">
                             <field name="rate_plan_id"/>
                             <field name="source_id"/>
+                            <field name="agency_id"/>
+                            <field name="booker_id" invisible="not agency_id"
+                                   required="agency_id"/>
                         </group>
                         <group string="Notes">
                             <field name="notes" nolabel="1" placeholder="Special requests for the group..."/>

@@ -29,4 +29,10 @@
               parent="menu_hotel_frontdesk"
               action="hotel_frontdesk.action_hotel_group_booking_wizard"
               sequence="40"/>
+
+    <menuitem id="menu_hotel_corporate_accounts"
+              name="Corporate Accounts"
+              parent="menu_hotel_frontdesk"
+              action="action_hotel_corporate_accounts"
+              sequence="50"/>
 </odoo>

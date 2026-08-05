@@ -19,6 +19,27 @@ class HotelBookingGroup(models.Model):
     checkout_date = fields.Date('Check-out Date', required=True, tracking=True)
     rate_plan_id = fields.Many2one('hotel.rate.plan', string='Rate Plan', tracking=True)
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
+
+    # ── Travel agent / corporate account billing ────────────────────────
+    agency_id = fields.Many2one(
+        'res.partner', string='Agency / Company', tracking=True,
+        domain="[('is_hotel_agency', '=', True)]",
+        help='Travel agency or corporate account that sent this group '
+             'booking. The master folio is invoiced to this company and '
+             'confirmation emails go to the booker.',
+    )
+    booker_id = fields.Many2one(
+        'res.partner', string='Booker', tracking=True,
+        domain="['|', ('id', '=', agency_id), ('parent_id', '=', agency_id)]",
+        help='Contact at the agency/company who made the booking. '
+             'Confirmation emails are sent to this person.',
+    )
+    booker_email = fields.Char(
+        'Booker Email', compute='_compute_booker_email',
+    )
+    agency_credit_term = fields.Boolean(
+        related='agency_id.hotel_credit_term', string='Credit Terms',
+    )
     send_confirmation = fields.Boolean(
         'Send Confirmation Email', default=True,
         help='Send one group confirmation email to the group leader on '
@@ -43,6 +64,21 @@ class HotelBookingGroup(models.Model):
         ('checked_out', 'Checked Out'),
         ('cancelled', 'Cancelled'),
     ], string='Status', compute='_compute_state', store=True, tracking=True)
+
+    @api.depends('booker_id.email', 'agency_id.email')
+    def _compute_booker_email(self):
+        for group in self:
+            group.booker_email = (group.booker_id.email
+                                  or group.agency_id.email or False)
+
+    @api.onchange('agency_id')
+    def _onchange_agency_id(self):
+        if self.agency_id:
+            if (self.booker_id != self.agency_id
+                    and self.booker_id.parent_id != self.agency_id):
+                self.booker_id = self.agency_id
+        else:
+            self.booker_id = False
 
     @api.depends('reservation_ids')
     def _compute_room_count(self):
@@ -107,6 +143,7 @@ class HotelBookingGroup(models.Model):
                 group.master_folio_id = self.env['hotel.folio'].sudo().create({
                     'guest_id': group.guest_id.id,
                     'group_id': group.id,
+                    'agency_id': group.agency_id.id,
                 })
         return groups
 
@@ -125,6 +162,18 @@ class HotelBookingGroup(models.Model):
             for group in self:
                 if group.master_folio_id:
                     group.master_folio_id.guest_id = group.guest_id
+        if 'agency_id' in vals or 'booker_id' in vals:
+            # Billing follows the group: master folio invoices the agency,
+            # child bookings mirror it while still amendable.
+            for group in self:
+                if 'agency_id' in vals and group.master_folio_id:
+                    group.master_folio_id.sudo().agency_id = group.agency_id
+                amendable = group.reservation_ids.filtered(
+                    lambda r: r.state in ('draft', 'confirmed'))
+                if amendable:
+                    amendable.write({
+                        k: vals[k] for k in ('agency_id', 'booker_id')
+                        if k in vals})
         return res
 
     def unlink(self):
@@ -146,18 +195,41 @@ class HotelBookingGroup(models.Model):
             if group.send_confirmation:
                 group._send_confirmation_email()
 
+    def _get_confirmation_template(self):
+        """Confirmation template + recipient email for this group.
+
+        Corporate/agency groups notify the booker at the sending company;
+        direct groups notify the group leader.
+        """
+        self.ensure_one()
+        if self.agency_id:
+            return (
+                self.env.ref(
+                    'hotel_frontdesk.mail_template_group_booking_confirmation_corporate',
+                    raise_if_not_found=False),
+                self.booker_email,
+            )
+        return (
+            self.env.ref(
+                'hotel_frontdesk.mail_template_group_booking_confirmation',
+                raise_if_not_found=False),
+            self.guest_id.email,
+        )
+
     def _send_confirmation_email(self):
         self.ensure_one()
-        template = self.env.ref(
-            'hotel_frontdesk.mail_template_group_booking_confirmation',
-            raise_if_not_found=False,
-        )
-        if template and self.guest_id.email:
+        template, recipient = self._get_confirmation_template()
+        if template and recipient:
             template.send_mail(self.id, force_send=True)
 
     def action_send_confirmation_email(self):
         for group in self:
-            if not group.guest_id.email:
+            template, recipient = group._get_confirmation_template()
+            if not recipient:
+                if group.agency_id:
+                    raise UserError(_(
+                        'No email address set on the booker or agency %s.'
+                    ) % group.agency_id.name)
                 raise UserError(_('Group leader %s has no email address.')
                                 % group.guest_id.name)
             group._send_confirmation_email()

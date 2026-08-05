@@ -18,10 +18,7 @@ class HotelReservationEmailWizard(models.TransientModel):
         reservation_id = self.env.context.get('default_reservation_id')
         if reservation_id:
             reservation = self.env['hotel.reservation'].browse(reservation_id)
-            template = self.env.ref(
-                'hotel_frontdesk.mail_template_reservation_confirmation',
-                raise_if_not_found=False,
-            )
+            template, recipient = reservation._get_confirmation_template()
             if template:
                 rendered = template._render_field(
                     'subject', reservation.ids,
@@ -38,7 +35,7 @@ class HotelReservationEmailWizard(models.TransientModel):
                 res['body_html'] = _('<p>Dear %s,</p><p>Your reservation %s has been confirmed.</p>') % (
                     reservation.guest_id.name, reservation.reservation_number
                 )
-            res['email_to'] = reservation.guest_id.email or ''
+            res['email_to'] = recipient or ''
         return res
 
     def action_send(self):

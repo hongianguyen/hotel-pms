@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         PARTNER: TRAVEL AGENCY / CORPORATE ACCOUNT
+         ════════════════════════════════════════════════════════════════ -->
+
+    <record id="view_partner_form_hotel_agency" model="ir.ui.view">
+        <field name="name">res.partner.form.hotel.agency</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id'][1]" position="after">
+                <field name="is_hotel_agency" invisible="not is_company"/>
+                <field name="hotel_agency_type" invisible="not is_hotel_agency"/>
+                <field name="hotel_credit_term" invisible="not is_hotel_agency"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_list_hotel_agency" model="ir.ui.view">
+        <field name="name">res.partner.list.hotel.agency</field>
+        <field name="model">res.partner</field>
+        <field name="priority">50</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="hotel_agency_type"/>
+                <field name="hotel_credit_term"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city" optional="show"/>
+                <field name="country_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_hotel_corporate_accounts" model="ir.actions.act_window">
+        <field name="name">Corporate Accounts</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_partner_list_hotel_agency"/>
+        <field name="domain">[('is_hotel_agency', '=', True)]</field>
+        <field name="context">{'default_is_company': True,
+                               'default_is_hotel_agency': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No corporate accounts yet
+            </p>
+            <p>Register travel agencies and corporate clients here.
+               Their bookings are invoiced to the company (not the guest),
+               confirmations go to the booker, and accounts with credit
+               terms settle by invoice instead of prepayment.</p>
+        </field>
+    </record>
+</odoo>

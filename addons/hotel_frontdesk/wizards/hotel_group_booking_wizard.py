@@ -20,6 +20,17 @@ class HotelGroupBookingWizard(models.TransientModel):
     )
     rate_plan_id = fields.Many2one('hotel.rate.plan', string='Rate Plan')
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source')
+    agency_id = fields.Many2one(
+        'res.partner', string='Agency / Company',
+        domain="[('is_hotel_agency', '=', True)]",
+        help='Travel agency or corporate account sending this booking: the '
+             'master folio is invoiced to this company and the confirmation '
+             'email goes to the booker.',
+    )
+    booker_id = fields.Many2one(
+        'res.partner', string='Booker',
+        domain="['|', ('id', '=', agency_id), ('parent_id', '=', agency_id)]",
+    )
     notes = fields.Text('Notes')
     available_count = fields.Integer(
         string='Available Rooms', compute='_compute_available_count',
@@ -32,6 +43,15 @@ class HotelGroupBookingWizard(models.TransientModel):
                 rec.available_count = len(rec._get_available_rooms())
             else:
                 rec.available_count = 0
+
+    @api.onchange('agency_id')
+    def _onchange_agency_id(self):
+        if self.agency_id:
+            if (self.booker_id != self.agency_id
+                    and self.booker_id.parent_id != self.agency_id):
+                self.booker_id = self.agency_id
+        else:
+            self.booker_id = False
 
     @api.constrains('checkin_date', 'checkout_date')
     def _check_dates(self):
@@ -102,6 +122,8 @@ class HotelGroupBookingWizard(models.TransientModel):
             'checkout_date': self.checkout_date,
             'rate_plan_id': self.rate_plan_id.id if self.rate_plan_id else False,
             'source_id': self.source_id.id if self.source_id else False,
+            'agency_id': self.agency_id.id if self.agency_id else False,
+            'booker_id': self.booker_id.id if self.booker_id else False,
             'notes': self.notes or '',
         })
 
@@ -116,6 +138,8 @@ class HotelGroupBookingWizard(models.TransientModel):
                 'checkout_date': self.checkout_date,
                 'rate_plan_id': self.rate_plan_id.id if self.rate_plan_id else False,
                 'source_id': self.source_id.id if self.source_id else False,
+                'agency_id': self.agency_id.id if self.agency_id else False,
+                'booker_id': self.booker_id.id if self.booker_id else False,
                 'notes': self.notes or '',
                 'state': 'draft',
                 'group_id': group.id,

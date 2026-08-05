@@ -27,6 +27,22 @@ class HotelFolio(models.Model):
         help='Set when this folio is the master folio of a group booking.',
     )
     guest_id = fields.Many2one('res.partner', string='Guest', required=True)
+    agency_id = fields.Many2one(
+        'res.partner', string='Agency / Company',
+        domain="[('is_hotel_agency', '=', True)]",
+        help='Travel agency or corporate account this booking came from. '
+             'When set, the invoice is issued to this company instead of '
+             'the guest.',
+    )
+    agency_credit_term = fields.Boolean(
+        related='agency_id.hotel_credit_term', string='Credit Terms',
+    )
+    bill_to_id = fields.Many2one(
+        'res.partner', string='Bill To', compute='_compute_bill_to_id',
+        store=True,
+        help='Party the invoice is issued to: the agency/company for '
+             'corporate bookings, otherwise the guest.',
+    )
     room_id = fields.Many2one(
         'hotel.room', related='reservation_id.room_id',
         string='Room', store=True,
@@ -71,6 +87,11 @@ class HotelFolio(models.Model):
             checkouts = [d for d in reservations.mapped('checkout_date') if d]
             folio.checkin_date = min(checkins) if checkins else False
             folio.checkout_date = max(checkouts) if checkouts else False
+
+    @api.depends('agency_id', 'guest_id')
+    def _compute_bill_to_id(self):
+        for folio in self:
+            folio.bill_to_id = folio.agency_id or folio.guest_id
 
     @api.depends('line_ids.subtotal')
     def _compute_total(self):
@@ -156,14 +177,23 @@ class HotelFolio(models.Model):
                 'account_id': account.id if account else False,
             }))
 
-        invoice = self.env['account.move'].sudo().create({
+        # Corporate/agency bookings: invoice the sending company, not the
+        # staying guest. With credit terms the company pays on account per
+        # its payment terms; the guest column stays for reference only.
+        bill_to = self.bill_to_id or self.guest_id
+        move_vals = {
             'move_type': 'out_invoice',
-            'partner_id': self.guest_id.id,
+            'partner_id': bill_to.id,
             'journal_id': journal.id,
             'invoice_date': fields.Date.context_today(self),
             'invoice_line_ids': invoice_lines,
             'ref': self.name,
-        })
+        }
+        if self.agency_id and self.agency_id.hotel_credit_term:
+            term = self.agency_id.sudo().property_payment_term_id
+            if term:
+                move_vals['invoice_payment_term_id'] = term.id
+        invoice = self.env['account.move'].sudo().create(move_vals)
 
         self.write({
             'invoice_id': invoice.id,

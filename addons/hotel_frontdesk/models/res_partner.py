@@ -5,6 +5,23 @@ from odoo import models, fields
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    is_hotel_agency = fields.Boolean(
+        'Travel Agency / Corporate Account',
+        help='This company sends bookings to the hotel. Invoices for its '
+             'bookings are issued to the company, not to the staying guests.',
+    )
+    hotel_agency_type = fields.Selection([
+        ('travel_agent', 'Travel Agent'),
+        ('corporate', 'Corporate'),
+    ], string='Account Type', default='travel_agent')
+    hotel_credit_term = fields.Boolean(
+        'Credit Terms',
+        help='The hotel extends credit to this account: its bookings can '
+             'check in without prepayment and the invoice is payable per the '
+             'payment terms set on this partner. Without credit terms, '
+             'prepayment is required before check-in.',
+    )
+
     hotel_total_stays = fields.Integer(
         'Total Stays', compute='_compute_hotel_stats',
         help='Number of completed (checked-out) stays.',

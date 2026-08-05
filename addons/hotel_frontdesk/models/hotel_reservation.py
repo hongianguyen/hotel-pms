@@ -69,6 +69,33 @@ class HotelReservation(models.Model):
         index=True, tracking=True, copy=False,
     )
     source_id = fields.Many2one('hotel.booking.source', string='Booking Source', tracking=True)
+
+    # ── Travel agent / corporate account billing ────────────────────────
+    agency_id = fields.Many2one(
+        'res.partner', string='Agency / Company', tracking=True,
+        domain="[('is_hotel_agency', '=', True)]",
+        help='Travel agency or corporate account that sent this booking. '
+             'The invoice is issued to this company instead of the guest, '
+             'and confirmation emails go to the booker.',
+    )
+    booker_id = fields.Many2one(
+        'res.partner', string='Booker', tracking=True,
+        domain="['|', ('id', '=', agency_id), ('parent_id', '=', agency_id)]",
+        help='Contact at the agency/company who made the booking. '
+             'Confirmation emails are sent to this person.',
+    )
+    booker_email = fields.Char(
+        'Booker Email', compute='_compute_booker_email',
+    )
+    agency_credit_term = fields.Boolean(
+        related='agency_id.hotel_credit_term', string='Credit Terms',
+    )
+    bill_to_id = fields.Many2one(
+        'res.partner', string='Bill To', compute='_compute_bill_to_id',
+        store=True,
+        help='Party the invoice is issued to: the agency/company for '
+             'corporate bookings, otherwise the guest.',
+    )
     payment_required = fields.Boolean(
         'Prepayment Required', tracking=True,
         help='Block check-in until prepayment is marked as received '
@@ -148,6 +175,16 @@ class HotelReservation(models.Model):
                 rec.nightly_rate = rec.room_type_id.base_rate
             else:
                 rec.nightly_rate = 0.0
+
+    @api.depends('booker_id.email', 'agency_id.email')
+    def _compute_booker_email(self):
+        for rec in self:
+            rec.booker_email = rec.booker_id.email or rec.agency_id.email or False
+
+    @api.depends('agency_id', 'guest_id')
+    def _compute_bill_to_id(self):
+        for rec in self:
+            rec.bill_to_id = rec.agency_id or rec.guest_id
 
     @api.depends('pax_ids.name')
     def _compute_pax(self):
@@ -258,6 +295,19 @@ class HotelReservation(models.Model):
 
     # ── Onchanges ─────────────────────────────────────────────────────────
 
+    @api.onchange('agency_id')
+    def _onchange_agency_id(self):
+        if self.agency_id:
+            # Keep the booker only if it belongs to the selected company
+            if (self.booker_id != self.agency_id
+                    and self.booker_id.parent_id != self.agency_id):
+                self.booker_id = self.agency_id
+            # No credit terms → the company must prepay before check-in;
+            # with credit terms the invoice is settled on account later.
+            self.payment_required = not self.agency_id.hotel_credit_term
+        else:
+            self.booker_id = False
+
     @api.onchange('combo_id')
     def _onchange_combo_id(self):
         if self.combo_id:
@@ -335,12 +385,30 @@ class HotelReservation(models.Model):
             rec.state = 'confirmed'
             # Group confirm sends one group-level email instead
             if rec.send_confirmation and not self.env.context.get('skip_confirmation_email'):
-                template = self.env.ref(
-                    'hotel_frontdesk.mail_template_reservation_confirmation',
-                    raise_if_not_found=False,
-                )
-                if template and rec.guest_id.email:
+                template, recipient = rec._get_confirmation_template()
+                if template and recipient:
                     template.send_mail(rec.id, force_send=True)
+
+    def _get_confirmation_template(self):
+        """Confirmation template + recipient email for this reservation.
+
+        Corporate/agency bookings notify the booker at the sending company;
+        direct bookings notify the guest.
+        """
+        self.ensure_one()
+        if self.agency_id:
+            return (
+                self.env.ref(
+                    'hotel_frontdesk.mail_template_reservation_confirmation_corporate',
+                    raise_if_not_found=False),
+                self.booker_email,
+            )
+        return (
+            self.env.ref(
+                'hotel_frontdesk.mail_template_reservation_confirmation',
+                raise_if_not_found=False),
+            self.guest_id.email,
+        )
 
     def action_check_in(self):
         """Confirmed → Checked In. Create folio (or reuse group folio), set room occupied."""
@@ -378,6 +446,7 @@ class HotelReservation(models.Model):
                 folio = self.env['hotel.folio'].sudo().create({
                     'reservation_id': rec.id,
                     'guest_id': rec.guest_id.id,
+                    'agency_id': rec.agency_id.id,
                 })
                 folio._generate_room_charges(rec)
                 rec.folio_id = folio.id
