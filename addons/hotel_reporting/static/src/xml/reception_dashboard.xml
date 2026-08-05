@@ -64,7 +64,7 @@
                 </div>
 
                 <!-- Gantt Section -->
-                <div class="hd-card">
+                <div class="hd-card hd-card--gantt">
                     <div class="hd-card-header">
                         <div class="hd-card-title-row">
                             <h3 class="hd-card-title">Booking Calendar</h3>
@@ -130,7 +130,7 @@
                 </div>
 
                 <!-- Room Status Board -->
-                <div class="hd-card">
+                <div class="hd-card hd-card--rooms">
                     <div class="hd-card-header">
                         <h3 class="hd-card-title">Room Status Board</h3>
                         <div class="hd-room-counts">

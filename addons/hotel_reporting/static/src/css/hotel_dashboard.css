@@ -41,6 +41,16 @@
     --hd-radius:      16px;
     --hd-shadow:      0 2px 6px rgba(30,27,75,0.08), 0 10px 28px rgba(30,27,75,0.08);
     --hd-display:     'Big Shoulders Display', 'Arial Narrow', 'Segoe UI', sans-serif;
+    /* ── Gantt sizing ──────────────────────────────────────────────
+       The board is the working surface of this screen: the Gantt is
+       sized to show HD_VISIBLE_ROWS room rows without inner scrolling.
+       --hd-row-h shrinks at short viewport heights (see the
+       height-based media queries near the bottom) so the same 25 rows
+       keep fitting on laptops as well as large desks. */
+    --hd-visible-rows: 25;
+    --hd-row-h:        26px;
+    --hd-thead-h:      32px;
+    --hd-date-col-w:   48px;
     /* Deep KPI blocks (white text ≥ 4.5:1 on all) */
     --kpi-blue:       #1D4ED8;
     --kpi-orange:     #C2410C;
@@ -67,10 +77,17 @@
 }
 
 /* ── Base ─────────────────────────────────────────────────────── */
+/* Fills the action area below the Odoo navbar and owns its own scroll, so
+   the Gantt can claim the visible height while the room board sits below
+   the fold. The parent .o_action_manager is height:100%/overflow:hidden,
+   which makes this percentage height resolve. */
 .hotel-dashboard {
-    padding: 0 28px 28px;
+    padding: 0 28px 20px;
     background: var(--hd-bg);
-    min-height: 100%;
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--hd-text);
     box-sizing: border-box;
@@ -78,13 +95,14 @@
 
 /* ── Header: the marquee band ────────────────────────────────── */
 .hd-header {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 0 -28px 0;
-    padding: 26px 28px 66px;
+    padding: 11px 28px 40px;
     background: linear-gradient(135deg, var(--hd-ink) 0%, var(--hd-ink-2) 70%, #3B3591 100%);
-    border-top: 5px solid;
+    border-top: 4px solid;
     border-image: var(--hd-marquee) 1;
 }
 
@@ -96,7 +114,7 @@
 
 .hd-title {
     font-family: var(--hd-display);
-    font-size: 34px;
+    font-size: 23px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -106,7 +124,7 @@
 }
 
 .hd-date {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: rgba(255,255,255,0.75);
 }
@@ -115,9 +133,9 @@
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.35);
     color: #FFFFFF;
-    padding: 8px 18px;
+    padding: 6px 16px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
@@ -155,10 +173,11 @@
 
 /* ── KPI Row: color blocks hanging off the marquee ───────────── */
 .hd-kpi-row {
+    flex: 0 0 auto;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin: -42px 0 22px;
+    gap: 12px;
+    margin: -27px 0 12px;
     position: relative;
     z-index: 1;
 }
@@ -166,9 +185,9 @@
 .hd-kpi-card {
     position: relative;
     overflow: hidden;
-    border-radius: var(--hd-radius);
-    box-shadow: 0 8px 24px rgba(30,27,75,0.25);
-    padding: 18px 20px 16px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(30,27,75,0.25);
+    padding: 9px 14px 8px;
     display: flex;
     align-items: center;
     color: #FFFFFF;
@@ -183,9 +202,9 @@
 /* Icon becomes a big translucent watermark in the corner */
 .hd-kpi-icon {
     position: absolute;
-    right: 10px;
-    bottom: -6px;
-    font-size: 52px;
+    right: 8px;
+    bottom: -8px;
+    font-size: 38px;
     line-height: 1;
     font-weight: 700;
     color: rgba(255,255,255,0.22);
@@ -198,7 +217,7 @@
 
 .hd-kpi-value {
     font-family: var(--hd-display);
-    font-size: 40px;
+    font-size: 27px;
     font-weight: 800;
     line-height: 0.95;
     color: #FFFFFF;
@@ -208,12 +227,12 @@
 }
 
 .hd-kpi-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: rgba(255,255,255,0.85);
     text-transform: uppercase;
-    letter-spacing: 0.09em;
-    margin-top: 6px;
+    letter-spacing: 0.08em;
+    margin-top: 3px;
 }
 
 /* KPI color blocks */
@@ -228,18 +247,33 @@
     background: var(--hd-card);
     border-radius: var(--hd-radius);
     box-shadow: var(--hd-shadow);
-    margin-bottom: 22px;
+    margin-bottom: 14px;
     overflow: hidden;
 }
 
+/* The Gantt card is the primary surface: it takes the height left over
+   after the header and KPI strip, capped at --hd-visible-rows rows. */
+.hd-card--gantt {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* The room board keeps its natural height below the fold */
+.hd-card--rooms {
+    flex: 0 0 auto;
+}
+
 .hd-card-header {
-    padding: 16px 20px 13px;
+    flex: 0 0 auto;
+    padding: 9px 16px 8px;
     border-bottom: 1px solid var(--hd-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
 }
 
 .hd-card-title-row {
@@ -251,7 +285,7 @@
 
 .hd-card-title {
     font-family: var(--hd-display);
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -317,10 +351,15 @@
 }
 
 /* ── Gantt Table ─────────────────────────────────────────────── */
+/* Fills the card, but never grows past --hd-visible-rows rows: with the
+   property's 23 rooms nothing scrolls; a larger inventory scrolls inside
+   the board while the surrounding layout stays put. */
 .hd-gantt-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: 500px;
+    max-height: calc(var(--hd-row-h) * var(--hd-visible-rows) + var(--hd-thead-h));
 }
 
 .hd-gantt-table {
@@ -330,16 +369,19 @@
     min-width: 800px;
 }
 
+/* 1px grid: at compact row heights a 2px rule costs a visible slice of
+   every row and reads as heavier than the bars it separates. */
 .hd-gantt-table th,
 .hd-gantt-table td {
-    border: 2px solid #C9C5E2;
+    border: 1px solid #C9C5E2;
 }
 
 /* Ink header strip — day numbers read like a hotel key rack */
 .hd-gantt-table thead th {
     background: var(--hd-ink);
     border-color: var(--hd-ink-2);
-    padding: 6px 4px;
+    height: var(--hd-thead-h);
+    padding: 2px 4px;
     text-align: center;
     font-weight: 600;
     color: rgba(255,255,255,0.85);
@@ -349,13 +391,13 @@
 }
 
 .hd-room-col {
-    min-width: 80px;
+    min-width: 74px;
     text-align: left !important;
-    padding: 6px 12px !important;
+    padding: 2px 10px !important;
     background: #F7F6FC !important;
     color: var(--hd-ink);
     font-family: var(--hd-display);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700 !important;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -371,11 +413,11 @@ thead .hd-room-col {
 }
 
 .hd-date-col {
-    min-width: 48px;
+    min-width: var(--hd-date-col-w);
 }
 
-.hd-th-day { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
-.hd-th-num { font-family: var(--hd-display); font-size: 17px; font-weight: 800; }
+.hd-th-day { font-size: 9px; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.06em; }
+.hd-th-num { font-family: var(--hd-display); font-size: 15px; line-height: 1.05; font-weight: 800; }
 
 /* Date column states */
 .hd-date-col.is-today {
@@ -398,12 +440,12 @@ thead .hd-room-col {
     color: var(--hd-ink) !important;
 }
 
-/* Body cells */
+/* Body cells — one room row, sized by --hd-row-h */
 .hd-gantt-table tbody td {
-    padding: 3px;
-    height: 34px;
+    padding: 0 2px;
+    height: var(--hd-row-h);
     text-align: center;
-    min-width: 48px;
+    min-width: var(--hd-date-col-w);
 }
 
 .hd-cell.is-past    { background: #F4F3F9; }
@@ -417,15 +459,19 @@ thead .hd-room-col {
     outline-offset: -2px;
 }
 
-/* Gantt bars */
+/* Gantt bars — height follows the row so they stay centred and never
+   overflow as --hd-row-h shrinks on smaller screens */
 .hd-bar {
-    display: block;
+    display: flex;
+    align-items: center;
     width: 100%;
+    height: calc(var(--hd-row-h) - 6px);
     box-sizing: border-box;
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 11px;
+    border-radius: 5px;
+    padding: 0 7px;
+    font-size: clamp(9px, calc(var(--hd-row-h) * 0.42), 12px);
     font-weight: 700;
+    line-height: 1;
     color: white;
     cursor: grab;
     white-space: nowrap;
@@ -674,6 +720,48 @@ thead .hd-room-col {
     overscroll-behavior-x: contain;
 }
 
+/* ── Viewport HEIGHT adaptation ───────────────────────────────────
+   Keeping 25 room rows on screen is a vertical budget problem, so the
+   rows and the band above them tighten together as the viewport gets
+   shorter — the board loses chrome, not rooms. Declared before the
+   width queries so the touch sizing below still wins on phones. */
+@media (max-height: 940px) {
+    :root { --hd-row-h: 24px; }
+}
+
+@media (max-height: 870px) {
+    :root { --hd-row-h: 22px; --hd-thead-h: 30px; }
+    .hd-header { padding: 9px 28px 36px; }
+    .hd-title { font-size: 21px; }
+    .hd-kpi-row { margin: -24px 0 10px; }
+    .hd-kpi-card { padding: 7px 13px 6px; }
+    .hd-kpi-value { font-size: 24px; }
+    .hd-kpi-icon { font-size: 34px; }
+}
+
+@media (max-height: 800px) {
+    :root { --hd-row-h: 20px; --hd-thead-h: 28px; }
+    .hd-card-header { padding: 7px 14px 6px; }
+    .hd-card-title { font-size: 16px; }
+    .hd-legend-item { font-size: 11px; }
+    .hd-card { margin-bottom: 10px; }
+}
+
+@media (max-height: 750px) {
+    :root { --hd-row-h: 18px; --hd-thead-h: 25px; }
+    .hd-header { padding: 7px 28px 31px; }
+    .hd-title { font-size: 19px; }
+    .hd-date { font-size: 11px; }
+    .hd-kpi-row { margin: -21px 0 8px; }
+    .hd-kpi-card { padding: 6px 12px 5px; }
+    .hd-kpi-value { font-size: 21px; }
+    .hd-kpi-label { font-size: 9px; margin-top: 2px; }
+    .hd-kpi-icon { font-size: 28px; }
+    .hd-th-day { font-size: 8px; }
+    .hd-th-num { font-size: 13px; }
+    .hd-room-col { font-size: 12px; }
+}
+
 @media (max-width: 1100px) {
     .hd-kpi-row { grid-template-columns: repeat(3, 1fr); }
 }
@@ -692,38 +780,48 @@ thead .hd-room-col {
 
 /* Phones (landscape) & small tablets */
 @media (max-width: 768px) {
-    .hotel-dashboard { padding: 0 12px 16px; }
-    .hd-header, .hotel-section-header { margin: 0 -12px 0; padding: 16px 12px 52px; }
+    /* Odoo hands the scroll to .o_action on small screens, so stop owning
+       it here: the dashboard grows naturally and the page scrolls as one. */
+    .hotel-dashboard {
+        height: auto;
+        min-height: 100%;
+        overflow: visible;
+        display: block;
+        padding: 0 12px 16px;
+    }
+    .hd-header, .hotel-section-header { margin: 0 -12px 0; padding: 14px 12px 46px; }
     .hotel-section-header { padding-bottom: 20px; }
 
     .hd-header { flex-wrap: wrap; gap: 10px; }
     .hd-header-left { flex-wrap: wrap; gap: 4px 12px; }
     .hd-title { font-size: 24px; }
 
-    .hd-kpi-row { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: -38px; }
+    .hd-kpi-row { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: -32px; }
     /* Odd 5th card spans the full row instead of leaving a hole */
     .hd-kpi-card:nth-child(5) { grid-column: 1 / -1; }
-    .hd-kpi-card { padding: 14px 16px 12px; }
-    .hd-kpi-value { font-size: 30px; }
-    .hd-kpi-icon { font-size: 40px; }
+    .hd-kpi-card { padding: 10px 14px 9px; }
+    .hd-kpi-value { font-size: 26px; }
+    .hd-kpi-icon { font-size: 36px; }
 
-    .hd-card { margin-bottom: 16px; border-radius: 12px; }
-    .hd-card-header { padding: 12px 14px 10px; }
-    .hd-card-title { font-size: 18px; }
+    .hd-card { margin-bottom: 14px; border-radius: 12px; }
+    .hd-card--gantt { flex: none; display: block; }
+    .hd-card-header { padding: 10px 14px 9px; }
+    .hd-card-title { font-size: 17px; }
     .hd-legend { gap: 8px 10px; }
     .hd-legend-item { font-size: 11px; }
 
     /* Touch-friendly controls (≥40px targets) */
     .hd-refresh-btn, .hd-nav-btn { min-height: 40px; padding: 8px 16px; }
 
-    /* Denser Gantt grid, taller rows for finger taps */
-    .hd-gantt-scroll { max-height: 60vh; }
+    /* Phones: fitting 25 rows would mean unreadable, un-tappable rows, so
+       the board keeps finger-sized rows and scrolls instead. Driving the
+       row height through the variable keeps the bars sized with it. */
+    :root { --hd-row-h: 38px; --hd-thead-h: 34px; --hd-date-col-w: 42px; }
+    .hd-gantt-scroll { max-height: 62vh; }
     .hd-gantt-table { min-width: 640px; }
-    .hd-date-col, .hd-gantt-table tbody td { min-width: 42px; }
-    .hd-gantt-table tbody td { height: 40px; }
-    .hd-room-col { min-width: 60px; font-size: 13px; padding: 6px 8px !important; }
+    .hd-room-col { min-width: 58px; font-size: 13px; padding: 2px 8px !important; }
+    .hd-th-day { font-size: 9px; }
     .hd-th-num { font-size: 15px; }
-    .hd-bar { padding: 6px 6px; }
 
     .hd-room-board { grid-template-columns: repeat(4, 1fr); padding: 12px 12px 14px; gap: 8px; }
     .hotel-chart-grid { grid-template-columns: 1fr; }
