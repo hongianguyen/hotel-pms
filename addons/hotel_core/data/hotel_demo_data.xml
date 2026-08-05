@@ -2,6 +2,8 @@
 <odoo>
     <data noupdate="1">
         <!-- ── Room Types ───────────────────────────────────────────── -->
+        <!-- Real Lak Tented Camp inventory (replaces earlier 30-room
+             placeholder set; sourced from old-PMS booking export, 05 Aug 2026). -->
         <record id="room_type_roh" model="hotel.room.type">
             <field name="name">ROH (Run of House)</field>
             <field name="capacity">2</field>
@@ -10,187 +12,152 @@
             <field name="description">Run of House — group bookings only. Rooms are assigned randomly from all available rooms; every room is charged at this flat rate.</field>
         </record>
         <record id="room_type_tent" model="hotel.room.type">
-            <field name="name">Tent</field>
-            <field name="capacity">2</field>
-            <field name="base_rate">300000</field>
-            <field name="description">Outdoor tent with basic amenities</field>
+            <field name="name">Lake View Tent</field>
+            <field name="capacity">3</field>
+            <field name="base_rate">1720000</field>
+            <field name="description">Lake-facing tent accommodation.</field>
         </record>
         <record id="room_type_bungalow" model="hotel.room.type">
-            <field name="name">Bungalow</field>
+            <field name="name">Lake Front Wooden Bungalow</field>
             <field name="capacity">4</field>
-            <field name="base_rate">800000</field>
-            <field name="description">Standalone bungalow with full amenities</field>
+            <field name="base_rate">3500000</field>
+            <field name="description">Standalone wooden bungalow on the lake front.</field>
         </record>
         <record id="room_type_dorm" model="hotel.room.type">
-            <field name="name">Dorm</field>
-            <field name="capacity">6</field>
-            <field name="base_rate">150000</field>
-            <field name="description">Shared dormitory bed</field>
+            <field name="name">Dormitory- Y Lieng House</field>
+            <field name="capacity">1</field>
+            <field name="base_rate">2780000</field>
+            <field name="description">Shared dormitory bed, Y Lieng House.</field>
         </record>
         <record id="room_type_kpan" model="hotel.room.type">
-            <field name="name">Kpan Tiny House</field>
+            <field name="name">KPAN-Bungalow on the Lake</field>
             <field name="capacity">2</field>
-            <field name="base_rate">600000</field>
-            <field name="description">Cozy Kpan-style tiny house</field>
+            <field name="base_rate">1720000</field>
+            <field name="description">Kpan-style tiny house on the lake.</field>
         </record>
 
-        <!-- ── Rooms: 30 total ──────────────────────────────────────── -->
-        <!-- Tents: T01-T08 (Floor 0) -->
-        <record id="room_t01" model="hotel.room">
-            <field name="name">T01</field>
+        <!-- ── Rooms: 23 total ──────────────────────────────────────── -->
+        <!-- Lake View Tents: TENT01-TENT12, TENT14, TENT15 (TENT13 does not exist) -->
+        <record id="room_tent01" model="hotel.room">
+            <field name="name">TENT01</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t02" model="hotel.room">
-            <field name="name">T02</field>
+        <record id="room_tent02" model="hotel.room">
+            <field name="name">TENT02</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t03" model="hotel.room">
-            <field name="name">T03</field>
+        <record id="room_tent03" model="hotel.room">
+            <field name="name">TENT03</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t04" model="hotel.room">
-            <field name="name">T04</field>
+        <record id="room_tent04" model="hotel.room">
+            <field name="name">TENT04</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t05" model="hotel.room">
-            <field name="name">T05</field>
+        <record id="room_tent05" model="hotel.room">
+            <field name="name">TENT05</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t06" model="hotel.room">
-            <field name="name">T06</field>
+        <record id="room_tent06" model="hotel.room">
+            <field name="name">TENT06</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t07" model="hotel.room">
-            <field name="name">T07</field>
+        <record id="room_tent07" model="hotel.room">
+            <field name="name">TENT07</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
-        <record id="room_t08" model="hotel.room">
-            <field name="name">T08</field>
+        <record id="room_tent08" model="hotel.room">
+            <field name="name">TENT08</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent09" model="hotel.room">
+            <field name="name">TENT09</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent10" model="hotel.room">
+            <field name="name">TENT10</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent11" model="hotel.room">
+            <field name="name">TENT11</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent12" model="hotel.room">
+            <field name="name">TENT12</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent14" model="hotel.room">
+            <field name="name">TENT14</field>
+            <field name="room_type_id" ref="room_type_tent"/>
+            <field name="floor">0</field>
+        </record>
+        <record id="room_tent15" model="hotel.room">
+            <field name="name">TENT15</field>
             <field name="room_type_id" ref="room_type_tent"/>
             <field name="floor">0</field>
         </record>
 
-        <!-- Bungalows: B01-B10 (Floor 1) -->
-        <record id="room_b01" model="hotel.room">
-            <field name="name">B01</field>
+        <!-- Lake Front Wooden Bungalows: BUN01-BUN04 -->
+        <record id="room_bun01" model="hotel.room">
+            <field name="name">BUN01</field>
             <field name="room_type_id" ref="room_type_bungalow"/>
             <field name="floor">1</field>
         </record>
-        <record id="room_b02" model="hotel.room">
-            <field name="name">B02</field>
+        <record id="room_bun02" model="hotel.room">
+            <field name="name">BUN02</field>
             <field name="room_type_id" ref="room_type_bungalow"/>
             <field name="floor">1</field>
         </record>
-        <record id="room_b03" model="hotel.room">
-            <field name="name">B03</field>
+        <record id="room_bun03" model="hotel.room">
+            <field name="name">BUN03</field>
             <field name="room_type_id" ref="room_type_bungalow"/>
             <field name="floor">1</field>
         </record>
-        <record id="room_b04" model="hotel.room">
-            <field name="name">B04</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b05" model="hotel.room">
-            <field name="name">B05</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b06" model="hotel.room">
-            <field name="name">B06</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b07" model="hotel.room">
-            <field name="name">B07</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b08" model="hotel.room">
-            <field name="name">B08</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b09" model="hotel.room">
-            <field name="name">B09</field>
-            <field name="room_type_id" ref="room_type_bungalow"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_b10" model="hotel.room">
-            <field name="name">B10</field>
+        <record id="room_bun04" model="hotel.room">
+            <field name="name">BUN04</field>
             <field name="room_type_id" ref="room_type_bungalow"/>
             <field name="floor">1</field>
         </record>
 
-        <!-- Dorms: D01-D06 (Floor 2) -->
-        <record id="room_d01" model="hotel.room">
-            <field name="name">D01</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
+        <!-- KPAN-Bungalow on the Lake: KPAN01-KPAN04 -->
+        <record id="room_kpan01" model="hotel.room">
+            <field name="name">KPAN01</field>
+            <field name="room_type_id" ref="room_type_kpan"/>
+            <field name="floor">1</field>
         </record>
-        <record id="room_d02" model="hotel.room">
-            <field name="name">D02</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
+        <record id="room_kpan02" model="hotel.room">
+            <field name="name">KPAN02</field>
+            <field name="room_type_id" ref="room_type_kpan"/>
+            <field name="floor">1</field>
         </record>
-        <record id="room_d03" model="hotel.room">
-            <field name="name">D03</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
+        <record id="room_kpan03" model="hotel.room">
+            <field name="name">KPAN03</field>
+            <field name="room_type_id" ref="room_type_kpan"/>
+            <field name="floor">1</field>
         </record>
-        <record id="room_d04" model="hotel.room">
-            <field name="name">D04</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
-        </record>
-        <record id="room_d05" model="hotel.room">
-            <field name="name">D05</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
-        </record>
-        <record id="room_d06" model="hotel.room">
-            <field name="name">D06</field>
-            <field name="room_type_id" ref="room_type_dorm"/>
-            <field name="floor">2</field>
+        <record id="room_kpan04" model="hotel.room">
+            <field name="name">KPAN04</field>
+            <field name="room_type_id" ref="room_type_kpan"/>
+            <field name="floor">1</field>
         </record>
 
-        <!-- Kpan Tiny House: K01-K06 (Floor 1) -->
-        <record id="room_k01" model="hotel.room">
-            <field name="name">K01</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_k02" model="hotel.room">
-            <field name="name">K02</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_k03" model="hotel.room">
-            <field name="name">K03</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_k04" model="hotel.room">
-            <field name="name">K04</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_k05" model="hotel.room">
-            <field name="name">K05</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
-        </record>
-        <record id="room_k06" model="hotel.room">
-            <field name="name">K06</field>
-            <field name="room_type_id" ref="room_type_kpan"/>
-            <field name="floor">1</field>
+        <!-- Dormitory - Y Lieng House: BERTH1 -->
+        <record id="room_berth1" model="hotel.room">
+            <field name="name">BERTH1</field>
+            <field name="room_type_id" ref="room_type_dorm"/>
+            <field name="floor">2</field>
         </record>
 
         <!-- ── Default Rate Plans ───────────────────────────────────── -->
