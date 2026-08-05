@@ -129,44 +129,6 @@
                     </div>
                 </div>
 
-                <!-- Room Status Board -->
-                <div class="hd-card hd-card--rooms">
-                    <div class="hd-card-header">
-                        <h3 class="hd-card-title">Room Status Board</h3>
-                        <div class="hd-room-counts">
-                            <span class="hd-count-badge available">Available: <t t-out="roomCounts.available"/></span>
-                            <span class="hd-count-badge occupied">Occupied: <t t-out="roomCounts.occupied"/></span>
-                            <span class="hd-count-badge dirty">Dirty: <t t-out="roomCounts.dirty"/></span>
-                        </div>
-                    </div>
-                    <div class="hd-room-board">
-                        <t t-foreach="state.rooms" t-as="room" t-key="room.id">
-                            <div t-att-class="'hd-room-card status-' + room.display_status"
-                                 t-on-click="() => this.openRoom(room)">
-                                <div class="hd-room-status-bar"/>
-                                <div class="hd-room-number"><t t-out="room.name"/></div>
-                                <div class="hd-room-type"><t t-out="room.room_type"/></div>
-                                <div class="hd-room-status-label"><t t-out="formatStatus(room.display_status)"/></div>
-                                <t t-if="room.status === 'maintenance'">
-                                    <div class="hd-room-maint-dates">
-                                        <t t-if="room.maintenance_date_from and room.maintenance_date_to">
-                                            <t t-out="formatShortDate(room.maintenance_date_from)"/>
-                                            –
-                                            <t t-out="formatShortDate(room.maintenance_date_to)"/>
-                                        </t>
-                                        <t t-else="">Indefinite</t>
-                                    </div>
-                                    <t t-if="room.maintenance_reason">
-                                        <div class="hd-room-maint-reason" t-att-title="room.maintenance_reason">
-                                            <t t-out="room.maintenance_reason"/>
-                                        </div>
-                                    </t>
-                                </t>
-                            </div>
-                        </t>
-                    </div>
-                </div>
-
             </t>
         </div>
     </t>

@@ -12,7 +12,6 @@ export class ReceptionDashboard extends Component {
         this.action = useService("action");
         this.state = useState({
             kpis: {},
-            rooms: [],
             gantt: { rooms: [], reservations: [], dates: [] },
             loading: true,
             ganttStartDate: new Date().toISOString().split('T')[0],
@@ -32,13 +31,11 @@ export class ReceptionDashboard extends Component {
     async loadData() {
         this.state.loading = true;
         try {
-            const [kpis, rooms, gantt] = await Promise.all([
+            const [kpis, gantt] = await Promise.all([
                 this.orm.call("hotel.dashboard", "get_reception_kpis", []),
-                this.orm.call("hotel.dashboard", "get_room_status_board", []),
                 this.orm.call("hotel.dashboard", "get_gantt_data", [this.state.ganttStartDate]),
             ]);
             this.state.kpis = kpis;
-            this.state.rooms = rooms;
             this.state.gantt = gantt;
         } catch (e) {
             console.error("Failed to load dashboard data:", e);
@@ -134,26 +131,6 @@ export class ReceptionDashboard extends Component {
         });
     }
 
-    openRoom(room) {
-        if (room.status === 'occupied' && room.folio_id) {
-            this.action.doAction({
-                type: "ir.actions.act_window",
-                res_model: "hotel.folio",
-                res_id: room.folio_id,
-                views: [[false, "form"]],
-                target: "current",
-            });
-        } else {
-            this.action.doAction({
-                type: "ir.actions.act_window",
-                res_model: "hotel.room",
-                res_id: room.id,
-                views: [[false, "form"]],
-                target: "current",
-            });
-        }
-    }
-
     onDragStart(ev, resId) {
         this.dragResId = resId;
         ev.dataTransfer.effectAllowed = "move";
@@ -201,36 +178,9 @@ export class ReceptionDashboard extends Component {
         }
     }
 
-    get roomCounts() {
-        const rooms = this.state.rooms;
-        return {
-            available: rooms.filter(r => r.status === 'available').length,
-            occupied:  rooms.filter(r => r.status === 'occupied').length,
-            dirty:     rooms.filter(r => r.status === 'dirty').length,
-        };
-    }
-
     formatCurrency(value) {
         if (!value) return "0";
         return new Intl.NumberFormat("vi-VN").format(Math.round(value));
-    }
-
-    formatStatus(status) {
-        const map = {
-            available: 'Available',
-            occupied: 'Occupied',
-            dirty: 'Dirty',
-            cleaning: 'Cleaning',
-            maintenance: 'Maintenance',
-            maintenance_expired: 'Expired Block',
-        };
-        return map[status] || status;
-    }
-
-    formatShortDate(dateStr) {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
     }
 
     getCurrentDate() {

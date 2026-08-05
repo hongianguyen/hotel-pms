@@ -42,12 +42,11 @@
     --hd-shadow:      0 2px 6px rgba(30,27,75,0.08), 0 10px 28px rgba(30,27,75,0.08);
     --hd-display:     'Big Shoulders Display', 'Arial Narrow', 'Segoe UI', sans-serif;
     /* ── Gantt sizing ──────────────────────────────────────────────
-       The board is the working surface of this screen: the Gantt is
-       sized to show HD_VISIBLE_ROWS room rows without inner scrolling.
-       --hd-row-h shrinks at short viewport heights (see the
-       height-based media queries near the bottom) so the same 25 rows
-       keep fitting on laptops as well as large desks. */
-    --hd-visible-rows: 25;
+       The calendar is the whole screen. Rows stretch to fill it, so
+       --hd-row-h is a floor rather than a fixed height: it is the
+       smallest a row may get, chosen at each viewport height (see the
+       height-based media queries near the bottom) so that 25 rooms
+       still fit without scrolling. */
     --hd-row-h:        26px;
     --hd-thead-h:      32px;
     --hd-date-col-w:   48px;
@@ -82,7 +81,7 @@
    the fold. The parent .o_action_manager is height:100%/overflow:hidden,
    which makes this percentage height resolve. */
 .hotel-dashboard {
-    padding: 0 28px 20px;
+    padding: 0 28px 10px;
     background: var(--hd-bg);
     height: 100%;
     overflow-y: auto;
@@ -256,13 +255,9 @@
 .hd-card--gantt {
     flex: 1 1 auto;
     min-height: 0;
+    margin-bottom: 0;
     display: flex;
     flex-direction: column;
-}
-
-/* The room board keeps its natural height below the fold */
-.hd-card--rooms {
-    flex: 0 0 auto;
 }
 
 .hd-card-header {
@@ -351,19 +346,21 @@
 }
 
 /* ── Gantt Table ─────────────────────────────────────────────── */
-/* Fills the card, but never grows past --hd-visible-rows rows: with the
-   property's 23 rooms nothing scrolls; a larger inventory scrolls inside
-   the board while the surrounding layout stays put. */
+/* The calendar owns every pixel below the KPI strip. */
 .hd-gantt-scroll {
     flex: 1 1 auto;
     min-height: 0;
     overflow-x: auto;
     overflow-y: auto;
-    max-height: calc(var(--hd-row-h) * var(--hd-visible-rows) + var(--hd-thead-h));
 }
 
+/* height:100% makes the rows share the full card height, so a property
+   with fewer rooms than --hd-visible-rows gets taller, easier-to-hit rows
+   instead of dead space. --hd-row-h stays the floor: past that many rooms
+   the table outgrows the card and scrolls. */
 .hd-gantt-table {
     width: 100%;
+    height: 100%;
     border-collapse: collapse;
     font-size: 12px;
     min-width: 800px;
@@ -440,8 +437,11 @@ thead .hd-room-col {
     color: var(--hd-ink) !important;
 }
 
-/* Body cells — one room row, sized by --hd-row-h */
+/* Body cells — one room row; --hd-row-h is the floor, rows stretch past
+   it to fill the card. Positioned so bars can fill whatever height the
+   row ends up with. */
 .hd-gantt-table tbody td {
+    position: relative;
     padding: 0 2px;
     height: var(--hd-row-h);
     text-align: center;
@@ -459,17 +459,18 @@ thead .hd-room-col {
     outline-offset: -2px;
 }
 
-/* Gantt bars — height follows the row so they stay centred and never
-   overflow as --hd-row-h shrinks on smaller screens */
+/* Gantt bars fill their cell whatever height the row settles at — inset
+   from the grid line rather than sized in px, so they track both the
+   stretch above --hd-row-h and the shrink on short viewports. */
 .hd-bar {
+    position: absolute;
+    inset: 3px 2px;
     display: flex;
     align-items: center;
-    width: 100%;
-    height: calc(var(--hd-row-h) - 6px);
     box-sizing: border-box;
     border-radius: 5px;
     padding: 0 7px;
-    font-size: clamp(9px, calc(var(--hd-row-h) * 0.42), 12px);
+    font-size: clamp(9px, calc(var(--hd-row-h) * 0.42), 13px);
     font-weight: 700;
     line-height: 1;
     color: white;
@@ -488,107 +489,10 @@ thead .hd-room-col {
 .hd-bar.state-checked_in  { background: var(--status-active); }
 .hd-bar.state-checked_out { background: var(--status-past); }
 
-/* ── Room Status Board: a solid-color mosaic ─────────────────── */
-.hd-card-header .hd-room-counts {
-    display: flex;
-    gap: 8px;
-}
-
-.hd-count-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 999px;
-    border: none;
-    color: #FFFFFF;
-}
-
-.hd-count-badge.available { background: var(--kpi-green); }
-.hd-count-badge.occupied  { background: var(--kpi-orange); }
-.hd-count-badge.dirty     { background: var(--kpi-amber); }
-
-.hd-room-board {
-    padding: 18px 20px 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 10px;
-    /* Ensure all rooms are visible — no height cap */
-    overflow: visible;
-}
-
-.hd-room-card {
-    border-radius: 12px;
-    border: none;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
-    text-align: center;
-}
-
-.hd-room-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(30,27,75,0.22);
-    filter: brightness(1.05);
-}
-
-.hd-room-status-bar {
-    height: 5px;
-    width: 100%;
-    background: rgba(0,0,0,0.22);
-}
-
-.hd-room-card .hd-room-number {
-    font-family: var(--hd-display);
-    font-size: 24px;
-    font-weight: 800;
-    line-height: 1;
-    padding: 11px 8px 3px;
-}
-
-.hd-room-card .hd-room-type {
-    font-size: 10px;
-    font-weight: 600;
-    opacity: 0.75;
-    padding: 0 8px 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.hd-room-card .hd-room-status-label {
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    padding: 3px 8px 10px;
-}
-
-/* Room mosaic tiles: solid status color, ink-of-the-same-hue text */
-.hd-room-card.status-available { background: var(--status-available); color: #05340F; }
-.hd-room-card.status-occupied  { background: var(--status-active);    color: #3D1B02; }
-.hd-room-card.status-dirty     { background: var(--status-dirty);     color: #3B2602; }
-.hd-room-card.status-cleaning  { background: #3B82F6;                 color: #0B2A66; }
-.hd-room-card.status-maintenance { background: var(--status-maintenance); color: #4A2402; }
-
-/* Expired maintenance — visually distinct (greyed out) */
-.hd-room-card.status-maintenance_expired { background: var(--status-past); color: #2B2F35; opacity: 0.7; }
-
-/* Maintenance date/reason display on room card */
-.hd-room-maint-dates {
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 6px 0;
-    white-space: nowrap;
-}
-
-.hd-room-maint-reason {
-    font-size: 9px;
-    opacity: 0.8;
-    padding: 1px 6px 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+/* The Room Status Board was removed from the reception screen (05 Aug
+   2026): the calendar carries room state on its own, and the tiles cost
+   the vertical space the board needs. Room records stay reachable from
+   Front Desk > Rooms. */
 
 /* ── Admin Dashboard ─────────────────────────────────────────── */
 .hotel-section-header {
@@ -726,11 +630,11 @@ thead .hd-room-col {
    shorter — the board loses chrome, not rooms. Declared before the
    width queries so the touch sizing below still wins on phones. */
 @media (max-height: 940px) {
-    :root { --hd-row-h: 24px; }
+    :root { --hd-row-h: 23px; }
 }
 
 @media (max-height: 870px) {
-    :root { --hd-row-h: 22px; --hd-thead-h: 30px; }
+    :root { --hd-row-h: 21px; --hd-thead-h: 30px; }
     .hd-header { padding: 9px 28px 36px; }
     .hd-title { font-size: 21px; }
     .hd-kpi-row { margin: -24px 0 10px; }
@@ -748,7 +652,7 @@ thead .hd-room-col {
 }
 
 @media (max-height: 750px) {
-    :root { --hd-row-h: 18px; --hd-thead-h: 25px; }
+    :root { --hd-row-h: 17px; --hd-thead-h: 25px; }
     .hd-header { padding: 7px 28px 31px; }
     .hd-title { font-size: 19px; }
     .hd-date { font-size: 11px; }
@@ -823,7 +727,6 @@ thead .hd-room-col {
     .hd-th-day { font-size: 9px; }
     .hd-th-num { font-size: 15px; }
 
-    .hd-room-board { grid-template-columns: repeat(4, 1fr); padding: 12px 12px 14px; gap: 8px; }
     .hotel-chart-grid { grid-template-columns: 1fr; }
     .hotel-kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
@@ -835,24 +738,19 @@ thead .hd-room-col {
     .hd-kpi-value { font-size: 26px; }
     .hd-kpi-label { font-size: 10px; letter-spacing: 0.06em; }
 
-    .hd-room-counts { flex-wrap: wrap; }
-    .hd-room-board { grid-template-columns: repeat(3, 1fr); }
-    .hd-room-card .hd-room-number { font-size: 20px; }
-
     .hotel-kpi-grid { grid-template-columns: 1fr 1fr; }
     .hotel-kpi-card .kpi-value { font-size: 26px; }
 }
 
 /* Touch devices: hover lift effects are dead weight — disable them */
 @media (hover: none) {
-    .hd-kpi-card:hover, .hd-room-card:hover { transform: none; box-shadow: 0 8px 24px rgba(30,27,75,0.25); }
-    .hd-room-card:hover { box-shadow: none; filter: none; }
+    .hd-kpi-card:hover { transform: none; box-shadow: 0 8px 24px rgba(30,27,75,0.25); }
     .hd-bar { cursor: pointer; }
 }
 
 /* ── Reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-    .hd-kpi-card, .hd-room-card, .hd-refresh-btn, .hd-nav-btn, .hotel-bar { transition: none; }
-    .hd-kpi-card:hover, .hd-room-card:hover { transform: none; }
+    .hd-kpi-card, .hd-refresh-btn, .hd-nav-btn, .hotel-bar { transition: none; }
+    .hd-kpi-card:hover { transform: none; }
     .hd-spinner { animation-duration: 1.5s; }
 }
