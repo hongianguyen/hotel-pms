@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_payment_method_view_form_hotel" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.hotel.folio</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="is_hotel_folio"/>
+                <div class="text-muted" invisible="not is_hotel_folio">
+                    Orders paid with this method are posted to the in-house guest's
+                    folio. Set the Intermediary Account below to a reconcilable
+                    Current Asset account — it is debited here and credited again
+                    when the folio is invoiced at check-out.
+                </div>
+            </field>
+        </field>
+    </record>
+</odoo>

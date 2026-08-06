@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_folio_form_pos" model="ir.ui.view">
+        <field name="name">hotel.folio.form.pos</field>
+        <field name="model">hotel.folio</field>
+        <field name="inherit_id" ref="hotel_frontdesk.view_hotel_folio_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_view_pos_orders" type="object"
+                        string="Restaurant Orders" class="btn-secondary"
+                        invisible="pos_order_count == 0"/>
+                <field name="pos_order_count" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

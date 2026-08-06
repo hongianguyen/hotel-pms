@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pos_config_view_form_hotel" model="ir.ui.view">
+        <field name="name">pos.config.form.hotel.folio</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <!--
+                pos.config is a plain form that lays its options out with
+                o_settings_container / <setting> — not the <app>/<block>
+                structure used by res.config.settings. Anchor on an existing
+                <setting> that carries a stable id.
+            -->
+            <xpath expr="//setting[@id='other_devices']" position="after">
+                <setting string="Only In-House Guests"
+                         help="Show only currently checked-in guests in the customer list. Walk-ins can still be served without selecting a customer, but cannot be invoiced from the point of sale.">
+                    <field name="limit_partners_to_in_house"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
