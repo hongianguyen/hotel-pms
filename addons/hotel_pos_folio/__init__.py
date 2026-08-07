@@ -10,6 +10,21 @@ CLEARING_NAME = 'Room Charge Clearing (POS)'
 METHOD_NAME = 'Charge to Room'
 
 
+def backfill_in_house_flags(env):
+    """Set the POS in-house flags for guests already checked in.
+
+    The flags are maintained by create/write hooks from here on, but nothing
+    has written those reservations since — an install (or an import that put
+    reservations straight into `checked_in`) leaves the guests invisible to POS
+    until this runs. Idempotent.
+    """
+    reservations = env['hotel.reservation'].search([('state', '=', 'checked_in')])
+    guests = reservations.mapped('guest_id')
+    guests._recompute_hotel_pos_fields()
+    _logger.info('hotel_pos_folio: refreshed in-house flags for %s guest(s)',
+                 len(guests))
+
+
 def post_init_hook(env):
     """Create the room-charge clearing account and POS payment method.
 
@@ -52,3 +67,5 @@ def post_init_hook(env):
             })
             _logger.info('hotel_pos_folio: created "%s" payment method for %s',
                          METHOD_NAME, company.name)
+
+    backfill_in_house_flags(env)
