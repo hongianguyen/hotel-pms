@@ -9,6 +9,7 @@ Link Point of Sale to the Hotel PMS folio
 =========================================
 - Adds a "Charge to Room" POS payment method
 - The POS customer list shows only currently checked-in guests (per POS toggle)
+- Each guest line shows the room they occupy, so the ticket can be matched to a folio
 - Guests are searchable by room number as well as name
 - A charged order posts an F&B line straight onto the guest's folio
 - Revenue is recognised once, in POS. The folio line carries the same
@@ -24,6 +25,11 @@ Link Point of Sale to the Hotel PMS folio
         'views/pos_config_views.xml',
         'views/hotel_folio_views.xml',
     ],
+    'assets': {
+        'point_of_sale._assets_pos': [
+            'hotel_pos_folio/static/src/**/*',
+        ],
+    },
     'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Show the room the guest occupies next to their name, so the cashier can
+         match the ticket to the right folio. Two xpaths because PartnerLine has
+         a separate mobile and desktop branch. -->
+    <t t-name="hotel_pos_folio.PartnerLine" t-inherit="point_of_sale.PartnerLine" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('justify-content-between')]/div" position="inside">
+            <span t-if="props.partner.hotel_room_number" class="badge text-bg-primary mt-1">
+                Room <t t-esc="props.partner.hotel_room_number"/>
+            </span>
+        </xpath>
+        <xpath expr="//td[hasclass('text-break')]" position="inside">
+            <span t-if="props.partner.hotel_room_number" class="badge text-bg-primary mt-1">
+                Room <t t-esc="props.partner.hotel_room_number"/>
+            </span>
+        </xpath>
+    </t>
+
+</templates>
