@@ -10,7 +10,7 @@ source. Check the **signature first**, behaviour second.
 
 | Override | File | Why it's fragile |
 |---|---|---|
-| `res.partner._load_pos_data_domain(data, config)` | `models/res_partner.py:55` | Private POS loader. Was `_loader_params_res_partner` two versions ago. |
+| `res.partner._load_pos_data_domain(data, config)` | `models/res_partner.py:55` | Private POS loader. Core reads `data['pos.order']` out of the payload, so the **shape of `data`** is part of the contract too, not just the signature — passing `{}` raises `KeyError`. |
 | `res.partner._load_pos_data_fields(config)` | `models/res_partner.py:67` | Same family, same churn. |
 | `res.partner.get_new_partner(config_id, domain, offset)` | `models/res_partner.py:71` | Cashier-side search; three positional args, no stability guarantee. |
 | `res.partner._extract_search_term(domain)` | `models/res_partner.py:87` | Reverse-engineers the *shape* of the domain POS built. Nothing about that shape is contractual. **Fails silently.** |

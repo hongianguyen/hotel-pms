@@ -41,7 +41,7 @@ it. *Silent* = the module loads fine and a feature just stops working, possibly 
 |---|-------|-------------|-------|
 | 1 | `addons/hotel_pos_folio/models/res_partner.py:87` `_extract_search_term` | Reverse-engineers POS's search domain by grabbing the first 3-element leaf it finds. Nothing about that shape is contractual. If v20 builds its OR-domain differently, this returns the wrong term or `None` and room-number search silently stops matching. | **Silent** |
 | 2 | `addons/hotel_pos_folio/static/src/app/screens/partner_list/partner_line/partner_line.xml:8,13` | Two xpaths anchored on **Bootstrap utility classes** in a core POS template — `hasclass('justify-content-between')`, `hasclass('text-break')`. Any POS restyle in v20 drops the match. The room number vanishes from the cashier's guest list and no error is raised. | **Silent** |
-| 3 | `addons/hotel_pos_folio/models/res_partner.py:55,67` `_load_pos_data_domain(self, data, config)`, `_load_pos_data_fields(self, config)` | Underscore-private POS loader API. These signatures have already churned across 17→18→19 (they were `_loader_params_*` two versions ago). Best case a `TypeError` on POS open; worst case v20 calls them differently and the in-house partner filter loads nothing. | Loud *or* Silent |
+| 3 | `addons/hotel_pos_folio/models/res_partner.py:55,67` `_load_pos_data_domain(self, data, config)`, `_load_pos_data_fields(self, config)` | Underscore-private POS loader API, and the coupling runs deeper than the signature: writing the tests proved core reads `data['pos.order']` out of the payload (a bare `{}` raises `KeyError`). So both the argument list **and** the undocumented shape of `data` are load-bearing. Best case a `TypeError` on POS open; worst case v20 calls them differently and the in-house filter loads nothing. | Loud *or* Silent |
 | 4 | `addons/hotel_pos_folio/models/res_partner.py:71` `get_new_partner(config_id, domain, offset)` | Same class of problem — cashier-side search API, three positional args, no stability guarantee. | Loud |
 | 5 | `addons/hotel_frontdesk/models/res_partner.py:37,42` `read_group()` | Deprecated since Odoo 17 in favour of `_read_group`, which returns **tuples, not dicts**. The `g['guest_id'][0]` and `g['guest_id_count']` accesses are exactly the pattern that breaks. Likely removed outright in v20 — and this runs on every partner form open. | Loud |
 | 6 | `addons/hotel_pos_folio/views/pos_config_views.xml:14` | `xpath expr="//setting[@id='other_devices']"`. Settings views are the single most-rewritten view family in Odoo — this exact class of anchor already bit you once in v19 (see MEMORY rule 8). | Loud |
@@ -53,6 +53,7 @@ it. *Silent* = the module loads fine and a feature just stops working, possibly 
 | 12 | `partner_line.xml:10,15` | `t-esc` is superseded by `t-out` in OWL 2. Still works today; free to modernise while you're in the file. | Cosmetic |
 | 13 | **Whole repo** | **No tests.** Nothing in the repo can tell you whether an upgrade broke the reservation state machine, the group cascade, or POS→folio posting. This is what turns a 10-minute verification into a two-day click-through. | — |
 | 14 | External | v20 requires: OCA repos to have published `20.0` branches (12 modules on prod), and `hr_zkteco_attendance` to work on v20 — that one already needed a hand-written v19 settings-view fix. | Loud |
+| 15 | **`hotel_channel_manager` — installed on `hotel_pms_test`, source not in this repo** | An OTA sync module (Booking.com/Agoda, `19.0.1.0.0`, dated 13 Mar 2026) living only in `/opt/hotel-pms-test/addons/` on the test server. It is installed in the test DB but **unversioned and unowned** — nothing in git can carry it to v20. An `-u all` against a DB with an installed module whose code is missing does not fail politely. Its research basis is also stale: the Booking.com Connectivity API findings (07 Aug 2026) invalidated most of its design. | **Loud, and blocks the rehearsal** |
 
 ---
 
@@ -74,6 +75,24 @@ v20 source to be released. All of it is applied, deployed to the test server, an
 - [x] **Wrote the regression suite** — 29 tests, all passing (see below).
 - [x] **Added `addons/hotel_pos_folio/README.md`** listing every private POS API the module
       overrides, so the next person knows it is version-coupled by design.
+
+### Phase 1b — decide `hotel_channel_manager`'s fate *(do this before the rehearsal)*
+
+All four of its tables (`channel_manager_config`, `channel_room_type_mapping`,
+`channel_rate_plan_mapping`, `channel_sync_log`) hold **zero rows**, so nothing is lost either
+way. Pick one:
+
+- **Uninstall it** from `hotel_pms_test` — cleanest, and it matches production, which does
+  **not** have it installed. Recommended given the Booking.com research superseded its design.
+- **Vendor the source** into `addons/` and commit it, if any of it is worth keeping.
+
+Doing neither means the v20 rehearsal in Phase 3 trips over it.
+
+> **Also worth knowing:** production and test have diverged. `hotel_pos_folio` **is**
+> installed on production (`14.225.192.16`, `hotel_db`, v19.0.1.1.0) — the project notes still
+> describe it as not yet deployed. `hotel_channel_manager` is installed on test but not on
+> production. Reconcile the two before upgrading; rehearsing against the wrong module set
+> proves nothing.
 
 ### Phase 2 — when the v20 source drops (~Oct 2026)
 
@@ -149,6 +168,14 @@ concession, not a production bug.
 ---
 
 ## What is *not* a risk
+
+Both re-anchored xpaths were verified against the running v19 system on 09 Aug 2026, not just
+assumed to install cleanly: the three agency fields render immediately after the Tags field in
+the combined `res.partner` form arch, and both `PartnerLine` anchors
+(`div.justify-content-between > div` in the mobile branch, `td.text-break` in the desktop
+branch) exist in `point_of_sale`'s v19 template, so the room badge still renders in both
+layouts. Re-run both checks after the upgrade — that is exactly what finding #2 predicts will
+break without saying so.
 
 Worth recording so nobody re-audits it: the real room inventory is `noupdate`-protected; the
 Python models use `@api.model_create_multi` consistently on all 5 `create()` overrides; there
