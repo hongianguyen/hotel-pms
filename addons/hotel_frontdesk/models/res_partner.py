@@ -34,16 +34,18 @@ class ResPartner(models.Model):
     def _compute_hotel_stats(self):
         Reservation = self.env['hotel.reservation']
         Folio = self.env['hotel.folio']
-        stays = Reservation.read_group(
+        # _read_group (not the deprecated read_group): groups come back as
+        # (recordset, *aggregates) tuples, not dicts.
+        stays = Reservation._read_group(
             [('guest_id', 'in', self.ids), ('state', '=', 'checked_out')],
-            ['guest_id'], ['guest_id'],
+            ['guest_id'], ['__count'],
         )
-        stay_map = {g['guest_id'][0]: g['guest_id_count'] for g in stays}
-        spent = Folio.read_group(
+        stay_map = {guest.id: count for guest, count in stays}
+        spent = Folio._read_group(
             [('guest_id', 'in', self.ids)],
-            ['guest_id', 'total_amount'], ['guest_id'],
+            ['guest_id'], ['total_amount:sum'],
         )
-        spent_map = {g['guest_id'][0]: g['total_amount'] for g in spent}
+        spent_map = {guest.id: total for guest, total in spent}
         for partner in self:
             partner.hotel_total_stays = stay_map.get(partner.id, 0)
             partner.hotel_total_spent = spent_map.get(partner.id, 0.0)

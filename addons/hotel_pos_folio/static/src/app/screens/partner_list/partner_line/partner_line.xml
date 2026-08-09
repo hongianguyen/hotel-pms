@@ -3,16 +3,22 @@
 
     <!-- Show the room the guest occupies next to their name, so the cashier can
          match the ticket to the right folio. Two xpaths because PartnerLine has
-         a separate mobile and desktop branch. -->
+         a separate mobile and desktop branch.
+
+         UPGRADE WARNING: both anchors match on Bootstrap utility classes inside
+         a core POS template. A restyle of PartnerLine drops the match SILENTLY —
+         no error, the room badge just disappears. Re-verify both xpaths against
+         point_of_sale's PartnerLine template on every major version bump.
+         See UPGRADE_READINESS.md, finding #2. -->
     <t t-name="hotel_pos_folio.PartnerLine" t-inherit="point_of_sale.PartnerLine" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('justify-content-between')]/div" position="inside">
             <span t-if="props.partner.hotel_room_number" class="badge text-bg-primary mt-1">
-                Room <t t-esc="props.partner.hotel_room_number"/>
+                Room <t t-out="props.partner.hotel_room_number"/>
             </span>
         </xpath>
         <xpath expr="//td[hasclass('text-break')]" position="inside">
             <span t-if="props.partner.hotel_room_number" class="badge text-bg-primary mt-1">
-                Room <t t-esc="props.partner.hotel_room_number"/>
+                Room <t t-out="props.partner.hotel_room_number"/>
             </span>
         </xpath>
     </t>

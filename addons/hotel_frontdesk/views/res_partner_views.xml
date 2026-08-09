@@ -9,7 +9,7 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='category_id'][1]" position="after">
+            <xpath expr="//field[@name='category_id']" position="after">
                 <field name="is_hotel_agency" invisible="not is_company"/>
                 <field name="hotel_agency_type" invisible="not is_hotel_agency"/>
                 <field name="hotel_credit_term" invisible="not is_hotel_agency"/>

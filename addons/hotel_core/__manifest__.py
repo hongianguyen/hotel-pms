@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Hotel Core',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Hotel Management',
     'summary': 'Core hotel management: rooms, room types, rate plans',
     'description': """
