@@ -137,7 +137,8 @@ class HotelBookingGroup(models.Model):
                     'hotel.booking.group') or 'New'
         groups = super().create(vals_list)
         # Every group booking owns a master folio from the start.
-        # sudo: reception lacks folio create rights; see action_check_in.
+        # sudo: folio creation here is an internal side-effect of creating the
+        # group, with values derived from the group itself.
         for group in groups:
             if not group.master_folio_id:
                 group.master_folio_id = self.env['hotel.folio'].sudo().create({

@@ -272,6 +272,103 @@ class TestSplitFolio(TransactionCase):
         self.assertEqual(company_folio.invoice_id.invoice_payment_term_id, term,
                          'agency credit terms must carry onto the invoice')
 
+    def test_deposit_reduces_invoice_residual(self):
+        """A deposit taken before check-out must reconcile against the invoice."""
+        res = self._make_reservation()
+        res.action_confirm()
+        res.action_check_in()
+        folio = res.folio_id
+
+        self._register_payment(folio, 800000.0)
+        res.action_check_out()
+        folio.invalidate_recordset()
+
+        invoice = folio.invoice_id
+        self.assertTrue(invoice, 'folio was not invoiced at check-out')
+        self.assertEqual(invoice.amount_total, 2000000.0)
+        self.assertEqual(
+            invoice.amount_residual, 1200000.0,
+            'the deposit did not reconcile against the invoice — residual '
+            'should be the total less the deposit')
+
+    def test_canceled_payment_does_not_count_as_paid(self):
+        res = self._make_reservation()
+        res.action_confirm()
+        res.action_check_in()
+        folio = res.folio_id
+
+        self._register_payment(folio, 2000000.0)
+        self.assertEqual(folio.payment_state, 'paid')
+
+        folio.payment_ids.action_cancel()
+        folio.invalidate_recordset()
+        self.assertEqual(folio.amount_paid, 0.0,
+                         'a canceled payment still counted toward amount_paid')
+        self.assertEqual(folio.payment_state, 'open')
+
+    def test_reception_can_run_the_whole_desk_flow(self):
+        """Reception has no accounting rights but drives every folio step."""
+        reception = self.env['res.users'].create({
+            'name': 'ZZ Reception',
+            'login': 'zz_reception_split_folio',
+            'group_ids': [(6, 0, [
+                self.env.ref('hotel_core.group_hotel_reception').id,
+                self.env.ref('base.group_user').id,
+            ])],
+        })
+        res = self._make_reservation(agency_id=self.agency.id).with_user(reception)
+        res.action_confirm()
+        res.action_check_in()
+
+        guest_folio = res.folio_id
+        self.env['hotel.add.charge.wizard'].with_user(reception).create({
+            'folio_id': guest_folio.id,
+            'name': 'Laundry',
+            'charge_type': 'service',
+            'quantity': 1.0,
+            'amount': 120000.0,
+        }).action_add_charge()
+
+        self.env['hotel.folio.payment.wizard'].with_user(reception).create({
+            'folio_id': guest_folio.id,
+            'amount': 120000.0,
+        }).action_register_payment()
+
+        # Reading the folio's payment figures must not raise for reception.
+        guest_folio.invalidate_recordset()
+        self.assertEqual(guest_folio.with_user(reception).amount_paid, 120000.0)
+
+        res.action_check_out()
+        self.assertTrue(guest_folio.invoice_id)
+
+    def test_non_agency_group_still_shares_one_folio(self):
+        """Plain group bookings keep the pre-existing single-folio behaviour."""
+        group = self.env['hotel.booking.group'].create({
+            'guest_id': self.guest.id,
+            'checkin_date': self.today,
+            'checkout_date': self.today + timedelta(days=2),
+        })
+        master = group.master_folio_id
+        self.assertEqual(master.folio_type, 'guest')
+
+        res_a = self._make_reservation(group_id=group.id)
+        res_b = self._make_reservation(
+            group_id=group.id, room_id=self.room2.id, guest_id=self.guest2.id)
+        (res_a | res_b).action_confirm()
+        (res_a | res_b).action_check_in()
+
+        self.assertEqual(res_a.folio_id, master)
+        self.assertEqual(res_b.folio_id, master)
+        self.assertFalse(master.linked_folio_id)
+        self.assertEqual(master.total_amount, 4000000.0)
+
+        res_a.action_check_out()
+        self.assertFalse(master.invoice_id,
+                         'invoiced while a room was still in house')
+        res_b.action_check_out()
+        self.assertTrue(master.invoice_id)
+        self.assertEqual(master.invoice_id.partner_id, self.guest)
+
     def test_group_company_folio_waits_for_last_departure(self):
         """The shared company folio invoices only once every room has left."""
         group = self.env['hotel.booking.group'].create({

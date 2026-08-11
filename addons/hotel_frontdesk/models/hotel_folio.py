@@ -105,6 +105,11 @@ class HotelFolio(models.Model):
         related='company_id.currency_id', readonly=True,
     )
 
+    # Payment states in which the hotel actually holds the money. Posting a
+    # payment lands it in 'in_process'; it only reaches 'paid' once matched,
+    # so counting 'paid' alone would ignore every deposit taken at the desk.
+    _SETTLED_PAYMENT_STATES = ('in_process', 'paid')
+
     @api.depends('reservation_ids', 'group_id')
     def _compute_is_group(self):
         for folio in self:
@@ -138,7 +143,7 @@ class HotelFolio(models.Model):
         for folio in self:
             paid = sum(
                 folio.payment_ids.filtered(
-                    lambda p: p.state not in ('draft', 'cancelled')
+                    lambda p: p.state in self._SETTLED_PAYMENT_STATES
                 ).mapped('amount')
             )
             folio.amount_paid = paid
@@ -296,16 +301,18 @@ class HotelFolio(models.Model):
         invoice shows only what is genuinely still due.
         """
         self.ensure_one()
-        payments = self.payment_ids.filtered(lambda p: p.state == 'paid')
-        if not payments:
-            return
         # sudo: same rationale as invoice creation above — reception drives
         # check-out but holds no accounting rights, and the scope is this
         # folio's own invoice and payments.
+        payments = self.sudo().payment_ids.filtered(
+            lambda p: p.state in self._SETTLED_PAYMENT_STATES
+        )
+        if not payments:
+            return
         invoice = invoice.sudo()
         if invoice.state == 'draft':
             invoice.action_post()
-        lines = (invoice.line_ids + payments.sudo().mapped('move_id.line_ids')).filtered(
+        lines = (invoice.line_ids + payments.mapped('move_id.line_ids')).filtered(
             lambda l: l.account_id.account_type == 'asset_receivable'
             and not l.reconciled
         )

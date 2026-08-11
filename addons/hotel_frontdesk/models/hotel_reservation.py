@@ -599,9 +599,9 @@ class HotelReservation(models.Model):
             # no room that can still charge it is in house — for a group's
             # company folio that means the last departure, not the first.
             for folio in (rec.folio_id | rec.folio_id.linked_folio_id):
-                if not folio or folio.payment_state != 'open':
-                    continue
-                if not folio.line_ids:
+                # Guard on the invoice, not the payment state: a folio the
+                # guest already settled at the desk still needs its invoice.
+                if not folio or folio.invoice_id or not folio.line_ids:
                     continue
                 still_in = folio._pending_reservations() - rec
                 if not still_in:

@@ -132,9 +132,14 @@ class HotelNightAudit(models.Model):
     @api.model
     def _flag_unpaid_folios(self, audit_date):
         """Count folios up to audit_date that are still open (no invoice)."""
+        # A folio with no charges is not "unpaid" — there is nothing to
+        # settle. Corporate stays routinely leave an empty guest folio
+        # behind (room routed to the company, no incidentals), and without
+        # this those would be reported every night forever.
         unpaid = self.env['hotel.folio'].search([
             ('payment_state', '=', 'open'),
             ('checkin_date', '<=', audit_date),
+            ('total_amount', '>', 0),
         ])
         if unpaid:
             _logger.warning(
