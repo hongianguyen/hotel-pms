@@ -7,9 +7,12 @@
             <form string="Add Charge">
                 <group>
                     <field name="folio_id" invisible="1"/>
+                    <field name="linked_folio_id" invisible="1"/>
                     <field name="service_id"/>
                     <field name="name"/>
                     <field name="charge_type"/>
+                    <field name="post_to_folio_id" invisible="not linked_folio_id"
+                           required="linked_folio_id != False"/>
                     <field name="quantity"/>
                     <field name="amount" widget="monetary"/>
                 </group>

@@ -12,6 +12,20 @@ class HotelFolio(models.Model):
     _rec_name = 'name'
 
     name = fields.Char('Folio #', readonly=True, copy=False, default='New')
+    folio_type = fields.Selection([
+        ('guest', 'Guest Folio'),
+        ('company', 'Company Folio (City Ledger)'),
+    ], string='Folio Type', default='guest', required=True, index=True,
+        help='Guest folio: charges the staying guest settles on departure '
+             '(guest ledger).\n'
+             'Company folio: charges routed to a travel agency or corporate '
+             'account, invoiced to that company and — with credit terms — '
+             'carried in the city ledger until it is paid.')
+    linked_folio_id = fields.Many2one(
+        'hotel.folio', string='Linked Folio', copy=False, ondelete='set null',
+        help='The counterpart folio for this stay: the company folio of a '
+             'guest folio, or vice versa.',
+    )
     reservation_id = fields.Many2one(
         'hotel.reservation', string='Primary Reservation',
         ondelete='set null',
@@ -61,22 +75,43 @@ class HotelFolio(models.Model):
         'Total Amount', compute='_compute_total', store=True, digits=(16, 2),
     )
 
+    payment_ids = fields.One2many(
+        'account.payment', 'hotel_folio_id', string='Payments',
+        help='Deposits and settlements recorded against this folio.',
+    )
+    amount_paid = fields.Float(
+        'Paid', compute='_compute_amount_paid', store=True, digits=(16, 2),
+        help='Total of posted payments recorded on this folio.',
+    )
+    balance = fields.Float(
+        'Balance Due', compute='_compute_amount_paid', store=True,
+        digits=(16, 2), help='Charges less payments still outstanding.',
+    )
+
     invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
     payment_state = fields.Selection([
         ('open', 'Open'),
         ('invoiced', 'Invoiced'),
         ('paid', 'Paid'),
-    ], string='Payment Status', default='open', tracking=True)
+    ], string='Payment Status', compute='_compute_payment_state', store=True,
+        default='open', tracking=True)
 
     company_id = fields.Many2one(
         'res.company', string='Company',
         default=lambda self: self.env.company,
     )
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency',
+        related='company_id.currency_id', readonly=True,
+    )
 
-    @api.depends('reservation_ids')
+    @api.depends('reservation_ids', 'group_id')
     def _compute_is_group(self):
         for folio in self:
-            folio.is_group = len(folio.reservation_ids) > 1
+            # A company folio carries no reservation_ids of its own (the
+            # children point their folio_id at their guest folios), so fall
+            # back to the group link.
+            folio.is_group = len(folio.reservation_ids) > 1 or bool(folio.group_id)
 
     @api.depends('reservation_ids.checkin_date', 'reservation_ids.checkout_date',
                  'reservation_id.checkin_date', 'reservation_id.checkout_date')
@@ -98,12 +133,66 @@ class HotelFolio(models.Model):
         for folio in self:
             folio.total_amount = sum(folio.line_ids.mapped('subtotal'))
 
+    @api.depends('payment_ids.state', 'payment_ids.amount', 'total_amount')
+    def _compute_amount_paid(self):
+        for folio in self:
+            paid = sum(
+                folio.payment_ids.filtered(
+                    lambda p: p.state not in ('draft', 'cancelled')
+                ).mapped('amount')
+            )
+            folio.amount_paid = paid
+            folio.balance = folio.total_amount - paid
+
+    @api.depends('balance', 'total_amount', 'amount_paid', 'invoice_id')
+    def _compute_payment_state(self):
+        for folio in self:
+            currency = folio.currency_id or self.env.company.currency_id
+            settled = (
+                folio.amount_paid
+                and currency.compare_amounts(folio.balance, 0) <= 0
+            )
+            if settled:
+                folio.payment_state = 'paid'
+            elif folio.invoice_id:
+                folio.payment_state = 'invoiced'
+            else:
+                folio.payment_state = 'open'
+
+    # ── Folio pair (guest ledger / city ledger) ──────────────────────────
+
+    def _guest_folios(self):
+        """Guest folios routed to this company folio."""
+        return self.search([('linked_folio_id', 'in', self.ids),
+                            ('folio_type', '=', 'guest')])
+
+    def _pending_reservations(self):
+        """Reservations still checked in that can still charge this folio.
+
+        Covers both directions of the pair: a guest folio has its own
+        reservation, while a company folio collects routed charges from every
+        guest folio linked to it (a group's rooms, typically).
+        """
+        self.ensure_one()
+        folios = self | self.linked_folio_id | self._guest_folios()
+        return self.env['hotel.reservation'].sudo().search([
+            ('folio_id', 'in', folios.ids),
+            ('state', '=', 'checked_in'),
+        ])
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('hotel.folio') or 'New'
-        return super().create(vals_list)
+        folios = super().create(vals_list)
+        # Keep the pair symmetric when one side is created pointing at the
+        # other, so either folio can find its counterpart.
+        for folio in folios:
+            counterpart = folio.linked_folio_id
+            if counterpart and counterpart.linked_folio_id != folio:
+                counterpart.linked_folio_id = folio.id
+        return folios
 
     def _generate_room_charges(self, reservation=None):
         """Generate one folio line per night of room charges.
@@ -195,11 +284,73 @@ class HotelFolio(models.Model):
                 move_vals['invoice_payment_term_id'] = term.id
         invoice = self.env['account.move'].sudo().create(move_vals)
 
-        self.write({
-            'invoice_id': invoice.id,
-            'payment_state': 'invoiced',
-        })
+        self.write({'invoice_id': invoice.id})
+        self._reconcile_folio_payments(invoice)
         return invoice
+
+    def _reconcile_folio_payments(self, invoice):
+        """Match deposits already taken on this folio against its invoice.
+
+        Payments recorded before check-out sit as outstanding receipts; once
+        the invoice exists they are reconciled against it so the folio's
+        invoice shows only what is genuinely still due.
+        """
+        self.ensure_one()
+        payments = self.payment_ids.filtered(lambda p: p.state == 'paid')
+        if not payments:
+            return
+        # sudo: same rationale as invoice creation above — reception drives
+        # check-out but holds no accounting rights, and the scope is this
+        # folio's own invoice and payments.
+        invoice = invoice.sudo()
+        if invoice.state == 'draft':
+            invoice.action_post()
+        lines = (invoice.line_ids + payments.sudo().mapped('move_id.line_ids')).filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable'
+            and not l.reconciled
+        )
+        if len(lines) > 1:
+            lines.reconcile()
+
+    def action_register_payment(self):
+        """Open the folio payment wizard (deposit or settlement)."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Register Payment'),
+            'res_model': 'hotel.folio.payment.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_folio_id': self.id,
+                'default_amount': max(self.balance, 0.0),
+            },
+        }
+
+    def action_view_payments(self):
+        """List the payments recorded on this folio."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Folio Payments'),
+            'res_model': 'account.payment',
+            'view_mode': 'list,form',
+            'domain': [('hotel_folio_id', '=', self.id)],
+            'context': {'create': False},
+        }
+
+    def action_view_linked_folio(self):
+        """Jump to the counterpart folio of this stay."""
+        self.ensure_one()
+        if not self.linked_folio_id:
+            raise UserError(_('This folio has no linked folio.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hotel.folio',
+            'res_id': self.linked_folio_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     def action_view_invoice(self):
         """Open the related invoice."""

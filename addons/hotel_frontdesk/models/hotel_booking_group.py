@@ -144,6 +144,10 @@ class HotelBookingGroup(models.Model):
                     'guest_id': group.guest_id.id,
                     'group_id': group.id,
                     'agency_id': group.agency_id.id,
+                    # With an agency on the booking the master folio is the
+                    # company folio; each room then opens its own guest folio
+                    # for incidentals at check-in.
+                    'folio_type': 'company' if group.agency_id else 'guest',
                 })
         return groups
 
@@ -167,7 +171,10 @@ class HotelBookingGroup(models.Model):
             # child bookings mirror it while still amendable.
             for group in self:
                 if 'agency_id' in vals and group.master_folio_id:
-                    group.master_folio_id.sudo().agency_id = group.agency_id
+                    group.master_folio_id.sudo().write({
+                        'agency_id': group.agency_id.id,
+                        'folio_type': 'company' if group.agency_id else 'guest',
+                    })
                 amendable = group.reservation_ids.filtered(
                     lambda r: r.state in ('draft', 'confirmed'))
                 if amendable:

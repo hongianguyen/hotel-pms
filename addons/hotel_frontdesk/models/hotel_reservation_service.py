@@ -73,10 +73,12 @@ class HotelReservationService(models.Model):
     def _post_to_folio(self):
         """Charge unposted lines to their reservation's folio."""
         for line in self:
-            folio = line.reservation_id.folio_id
-            if line.folio_line_id or not folio:
+            if line.folio_line_id or not line.reservation_id.folio_id:
                 continue
             charge_type = 'fnb' if line.service_id.category == 'fnb' else 'service'
+            # Routing instructions decide whether the company or the guest
+            # picks this up; incidentals stay with the guest by default.
+            folio = line.reservation_id._folio_for_charge_type(charge_type)
             name = line.service_id.name
             if line.combo_id:
                 name = _('%(service)s — Combo %(combo)s',

@@ -8,9 +8,12 @@ class HotelReservationEmailWizard(models.TransientModel):
     _description = 'Send Reservation Confirmation Email'
 
     reservation_id = fields.Many2one('hotel.reservation', required=True, readonly=True)
-    email_to = fields.Char(_('To'), required=True)
-    subject = fields.Char(_('Subject'), required=True)
-    body_html = fields.Html(_('Body'), required=True, sanitize=False)
+    # Field labels must be plain strings: Odoo translates them itself, and
+    # calling _() at class-definition time runs before any environment exists,
+    # which breaks module import under the test runner.
+    email_to = fields.Char('To', required=True)
+    subject = fields.Char('Subject', required=True)
+    body_html = fields.Html('Body', required=True, sanitize=False)
 
     @api.model
     def default_get(self, fields_list):

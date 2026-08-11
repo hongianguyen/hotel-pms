@@ -410,6 +410,118 @@ class HotelReservation(models.Model):
             self.guest_id.email,
         )
 
+    # ── Folios & routing instructions ────────────────────────────────────
+
+    # Charge types the company takes when routing is "Room & Tax only".
+    _COMPANY_ROUTED_TYPES = ('room',)
+
+    def _effective_agency(self):
+        """Agency billing this stay, falling back to the group's.
+
+        A room inside a corporate group booking is a corporate booking even
+        when the child record was created without its own agency_id.
+        """
+        self.ensure_one()
+        return self.agency_id or self.group_id.agency_id
+
+    def _routing(self):
+        """Effective routing instruction for this reservation."""
+        self.ensure_one()
+        agency = self._effective_agency()
+        if not agency:
+            return 'none'
+        return agency.hotel_routing or 'room'
+
+    def _ensure_folios(self):
+        """Open the folios this reservation needs, idempotently.
+
+        Direct bookings keep a single guest folio. Agency/corporate bookings
+        get the SOP pair: a guest folio for incidentals the guest settles on
+        departure, and a company folio (city ledger) for the charges routed
+        to the sending company.
+        """
+        self.ensure_one()
+        Folio = self.env['hotel.folio'].sudo()
+        routing = self._routing()
+        current = self.folio_id
+        group_master = self.group_id.master_folio_id
+
+        # Find this reservation's guest folio. folio_id may still point at a
+        # group master (shared by every room), so fall back to a lookup by
+        # reservation rather than trusting it blindly.
+        if current and current.folio_type == 'guest':
+            guest_folio = current
+        else:
+            guest_folio = Folio.search([
+                ('reservation_id', '=', self.id),
+                ('folio_type', '=', 'guest'),
+            ], limit=1)
+
+        # Find the company folio: a group's master folio doubles as it, and a
+        # single booking's is already linked from the guest folio. Locating it
+        # before creating is what keeps this method idempotent.
+        company_folio = Folio.browse()
+        if routing != 'none':
+            if group_master:
+                if group_master.folio_type != 'company':
+                    group_master.write({'folio_type': 'company'})
+                company_folio = group_master
+            elif guest_folio.linked_folio_id.folio_type == 'company':
+                company_folio = guest_folio.linked_folio_id
+            elif current.folio_type == 'company':
+                company_folio = current
+
+        if not guest_folio:
+            guest_folio = Folio.create({
+                'reservation_id': self.id,
+                'guest_id': self.guest_id.id,
+                'folio_type': 'guest',
+            })
+
+        if routing != 'none' and not company_folio:
+            company_folio = Folio.create({
+                'reservation_id': self.id,
+                'guest_id': self.guest_id.id,
+                'agency_id': self._effective_agency().id,
+                'folio_type': 'company',
+            })
+
+        if company_folio:
+            # The guest folio bills the guest even on a corporate booking:
+            # the agency only pays what routing sends to the company folio.
+            guest_folio.write({'linked_folio_id': company_folio.id})
+            if not company_folio.linked_folio_id:
+                company_folio.write({'linked_folio_id': guest_folio.id})
+            agency = self._effective_agency()
+            if company_folio.agency_id != agency:
+                company_folio.write({'agency_id': agency.id})
+
+        if self.folio_id != guest_folio:
+            self.folio_id = guest_folio.id
+        return guest_folio, company_folio
+
+    def _folio_for_charge_type(self, charge_type):
+        """Folio a charge of this type belongs on, per routing instructions.
+
+        Single resolver for every charge producer — room charges, booked
+        services, POS postings and manual charges — so routing cannot drift
+        between them.
+        """
+        self.ensure_one()
+        guest_folio = self.folio_id
+        company_folio = guest_folio.linked_folio_id.filtered(
+            lambda f: f.folio_type == 'company'
+        )
+        if not company_folio:
+            return guest_folio
+
+        routing = self._routing()
+        if routing == 'all':
+            return company_folio
+        if routing == 'room' and charge_type in self._COMPANY_ROUTED_TYPES:
+            return company_folio
+        return guest_folio
+
     def action_check_in(self):
         """Confirmed → Checked In. Create folio (or reuse group folio), set room occupied."""
         for rec in self:
@@ -435,21 +547,10 @@ class HotelReservation(models.Model):
                     % (rec.room_id.name, rec.room_id.status)
                 )
 
-            if rec.folio_id:
-                # Group booking: folio already exists — just add room charges
-                rec.folio_id._generate_room_charges(rec)
-            else:
-                # Single booking: create a new folio.
-                # sudo: reception has folio read/write but not create; folio
-                # creation is an internal side-effect of check-in, values are
-                # fully derived from this reservation.
-                folio = self.env['hotel.folio'].sudo().create({
-                    'reservation_id': rec.id,
-                    'guest_id': rec.guest_id.id,
-                    'agency_id': rec.agency_id.id,
-                })
-                folio._generate_room_charges(rec)
-                rec.folio_id = folio.id
+            # Open (or reuse) this reservation's folios, then post the room
+            # charges to whichever folio routing sends them to.
+            rec._ensure_folios()
+            rec._folio_for_charge_type('room')._generate_room_charges(rec)
 
             # Services booked with the reservation (incl. combo components)
             # hit the folio at check-in. Sync first so pre-upgrade combo
@@ -487,20 +588,24 @@ class HotelReservation(models.Model):
                         'account_id': rec.room_id.room_type_id.revenue_account_id.id or False,
                     }))
                     current += timedelta(days=1)
-                rec.folio_id.write({'line_ids': lines})
+                # Late-checkout nights are room revenue: same routing.
+                rec._folio_for_charge_type('room').sudo().write({'line_ids': lines})
 
             rec.write({'state': 'checked_out'})
             rec.room_id.write({'last_used_at': fields.Datetime.now()})
             rec.room_id.action_set_dirty()
 
-            # For group folios: only invoice when the last room checks out
-            other_still_in = self.env['hotel.reservation'].search([
-                ('folio_id', '=', rec.folio_id.id),
-                ('id', '!=', rec.id),
-                ('state', '=', 'checked_in'),
-            ], limit=1)
-            if not other_still_in and rec.folio_id.payment_state == 'open':
-                rec.folio_id.action_create_invoice()
+            # Settle both sides of the pair. Each folio is invoiced only once
+            # no room that can still charge it is in house — for a group's
+            # company folio that means the last departure, not the first.
+            for folio in (rec.folio_id | rec.folio_id.linked_folio_id):
+                if not folio or folio.payment_state != 'open':
+                    continue
+                if not folio.line_ids:
+                    continue
+                still_in = folio._pending_reservations() - rec
+                if not still_in:
+                    folio.action_create_invoice()
 
     def action_cancel(self):
         """Cancel reservation. Free room if it was confirmed."""

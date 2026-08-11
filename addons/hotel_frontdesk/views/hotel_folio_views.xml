@@ -11,13 +11,18 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
+                <field name="folio_type" widget="badge"
+                       decoration-info="folio_type == 'company'"/>
                 <field name="reservation_id"/>
                 <field name="guest_id"/>
                 <field name="bill_to_id" optional="show"/>
                 <field name="room_id"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
+                <field name="currency_id" column_invisible="1"/>
                 <field name="total_amount" widget="monetary" sum="Total"/>
+                <field name="amount_paid" widget="monetary" sum="Paid" optional="show"/>
+                <field name="balance" widget="monetary" sum="Balance" optional="show"/>
                 <field name="payment_state" widget="badge"
                        decoration-info="payment_state == 'open'"
                        decoration-warning="payment_state == 'invoiced'"
@@ -43,9 +48,28 @@
                             type="action" string="Add Charge" class="btn-secondary"
                             context="{'default_folio_id': id}"
                             invisible="payment_state == 'paid'"/>
+                    <button name="action_register_payment" type="object"
+                            string="Register Payment" class="btn-primary"
+                            invisible="payment_state == 'paid'"/>
                     <field name="payment_state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_linked_folio" type="object"
+                                class="oe_stat_button" icon="fa-exchange"
+                                invisible="not linked_folio_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Linked</span>
+                                <span class="o_stat_text">Folio</span>
+                            </div>
+                        </button>
+                        <button name="action_view_payments" type="object"
+                                class="oe_stat_button" icon="fa-money"
+                                invisible="not payment_ids">
+                            <field name="amount_paid" widget="statinfo"
+                                   string="Paid"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name"/>
@@ -53,7 +77,10 @@
                     </div>
                     <group>
                         <group string="Reservation Info">
+                            <field name="folio_type"/>
                             <field name="reservation_id"/>
+                            <field name="linked_folio_id" readonly="1"
+                                   invisible="not linked_folio_id"/>
                             <field name="group_id" invisible="not group_id"/>
                             <field name="guest_id"/>
                             <field name="room_id"/>
@@ -62,9 +89,13 @@
                             <field name="bill_to_id"/>
                         </group>
                         <group string="Dates &amp; Totals">
+                            <field name="currency_id" invisible="1"/>
                             <field name="checkin_date"/>
                             <field name="checkout_date"/>
                             <field name="total_amount" widget="monetary"/>
+                            <field name="amount_paid" widget="monetary"/>
+                            <field name="balance" widget="monetary"
+                                   class="oe_subtotal_footer_separator"/>
                         </group>
                     </group>
                     <notebook>
@@ -78,6 +109,18 @@
                                     <field name="amount" widget="monetary"/>
                                     <field name="subtotal" widget="monetary" sum="Total"/>
                                     <field name="account_id" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Payments" name="payments">
+                            <field name="payment_ids" readonly="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="partner_id"/>
+                                    <field name="journal_id"/>
+                                    <field name="memo" string="Memo"/>
+                                    <field name="amount" widget="monetary" sum="Total"/>
+                                    <field name="state" widget="badge"/>
                                 </list>
                             </field>
                         </page>
@@ -124,10 +167,18 @@
                 <field name="reservation_id"/>
                 <filter string="Agency / Corporate" name="agency"
                         domain="[('agency_id', '!=', False)]"/>
+                <filter string="Guest Ledger" name="guest_ledger"
+                        domain="[('folio_type', '=', 'guest')]"/>
+                <filter string="City Ledger" name="city_ledger"
+                        domain="[('folio_type', '=', 'company')]"/>
+                <separator/>
+                <filter string="Balance Outstanding" name="balance_due"
+                        domain="[('balance', '&gt;', 0)]"/>
                 <filter string="Open" name="open" domain="[('payment_state', '=', 'open')]"/>
                 <filter string="Invoiced" name="invoiced" domain="[('payment_state', '=', 'invoiced')]"/>
                 <filter string="Paid" name="paid" domain="[('payment_state', '=', 'paid')]"/>
                 <group>
+                    <filter string="Folio Type" name="group_type" context="{'group_by': 'folio_type'}"/>
                     <filter string="Guest" name="group_guest" context="{'group_by': 'guest_id'}"/>
                     <filter string="Agency / Company" name="group_agency" context="{'group_by': 'agency_id'}"/>
                     <filter string="Payment Status" name="group_payment" context="{'group_by': 'payment_state'}"/>
@@ -146,7 +197,13 @@
             <p class="o_view_nocontent_smiling_face">
                 No folios yet
             </p>
-            <p>Folios are created automatically when a guest checks in.</p>
+            <p>
+                Folios open automatically at check-in. Agency and corporate
+                bookings open two: a guest folio for incidentals and a
+                company folio for the charges routed to the company.
+                You can also open a folio here by hand — for a walk-in
+                deposit, or a function account with no room attached.
+            </p>
         </field>
     </record>
 </odoo>

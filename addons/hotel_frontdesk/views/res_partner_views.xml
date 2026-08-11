@@ -13,6 +13,7 @@
                 <field name="is_hotel_agency" invisible="not is_company"/>
                 <field name="hotel_agency_type" invisible="not is_hotel_agency"/>
                 <field name="hotel_credit_term" invisible="not is_hotel_agency"/>
+                <field name="hotel_routing" invisible="not is_hotel_agency"/>
             </xpath>
         </field>
     </record>
@@ -26,6 +27,7 @@
                 <field name="name"/>
                 <field name="hotel_agency_type"/>
                 <field name="hotel_credit_term"/>
+                <field name="hotel_routing" optional="show"/>
                 <field name="phone"/>
                 <field name="email"/>
                 <field name="city" optional="show"/>

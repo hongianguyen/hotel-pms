@@ -8,6 +8,20 @@ class HotelAddChargeWizard(models.TransientModel):
     _description = 'Add Charge to Folio'
 
     folio_id = fields.Many2one('hotel.folio', string='Folio', required=True)
+    linked_folio_id = fields.Many2one(
+        'hotel.folio', related='folio_id.linked_folio_id', readonly=True,
+    )
+    # Not required at DB level: the NOT NULL constraint fires before the
+    # compute has run on create. The view marks it required instead, and
+    # action_add_charge falls back to the folio it was opened from.
+    post_to_folio_id = fields.Many2one(
+        'hotel.folio', string='Post To',
+        compute='_compute_post_to_folio_id', store=True, readonly=False,
+        domain="['|', ('id', '=', folio_id), ('id', '=', linked_folio_id)]",
+        help='Folio this charge lands on. Defaults to the routing '
+             'instructions for the booking; override to move a single charge '
+             'between the guest and company folio.',
+    )
     name = fields.Char('Description', required=True)
     charge_type = fields.Selection([
         ('fnb', 'Food & Beverage'),
@@ -20,6 +34,17 @@ class HotelAddChargeWizard(models.TransientModel):
         'hotel.service', string='Service',
         help='Select a predefined service to auto-fill',
     )
+
+    @api.depends('folio_id', 'charge_type')
+    def _compute_post_to_folio_id(self):
+        for wizard in self:
+            folio = wizard.folio_id
+            reservation = folio.reservation_id
+            if reservation and folio.linked_folio_id:
+                wizard.post_to_folio_id = reservation._folio_for_charge_type(
+                    wizard.charge_type)
+            else:
+                wizard.post_to_folio_id = folio
 
     @api.onchange('service_id')
     def _onchange_service_id(self):
@@ -42,7 +67,7 @@ class HotelAddChargeWizard(models.TransientModel):
             account = self.service_id.account_id.id
 
         self.env['hotel.folio.line'].create({
-            'folio_id': self.folio_id.id,
+            'folio_id': (self.post_to_folio_id or self.folio_id).id,
             'name': self.name,
             'charge_type': self.charge_type,
             'quantity': self.quantity,

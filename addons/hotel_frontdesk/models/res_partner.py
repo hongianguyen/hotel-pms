@@ -21,6 +21,19 @@ class ResPartner(models.Model):
              'payment terms set on this partner. Without credit terms, '
              'prepayment is required before check-in.',
     )
+    hotel_routing = fields.Selection([
+        ('room', 'Room & Tax only'),
+        ('all', 'All charges'),
+        ('none', 'Nothing — guest settles everything'),
+    ], string='Routing Instructions', default='room', required=True,
+        help='Standing routing instructions for this account: which charges '
+             'move to the company folio (city ledger) instead of the guest '
+             'folio.\n'
+             '- Room & Tax only: the company pays accommodation, the guest '
+             'settles incidentals (F&B, tours) on departure.\n'
+             '- All charges: everything routes to the company folio.\n'
+             '- Nothing: no company folio is opened; the guest settles the '
+             'whole bill.')
 
     hotel_total_stays = fields.Integer(
         'Total Stays', compute='_compute_hotel_stats',
