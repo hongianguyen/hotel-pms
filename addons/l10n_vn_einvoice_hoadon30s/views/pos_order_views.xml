@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_pos_form_einvoice" model="ir.ui.view">
+        <field name="name">pos.order.form.hoadon30s</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_issue_einvoice" type="object"
+                        string="Issue E-Invoice" class="btn-secondary"
+                        invisible="einvoice_id_attr or state not in ('paid', 'done', 'invoiced')"
+                        groups="point_of_sale.group_pos_user"/>
+                <button name="action_sync_einvoice" type="object"
+                        string="Sync E-Invoice"
+                        invisible="not einvoice_id_attr"
+                        groups="point_of_sale.group_pos_user"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="VN E-Invoice" name="vn_einvoice">
+                    <group>
+                        <group string="E-Invoice">
+                            <field name="einvoice_status"/>
+                            <field name="einvoice_serial"/>
+                            <field name="einvoice_no"/>
+                            <field name="einvoice_code_cqt"/>
+                        </group>
+                        <group string="Reference">
+                            <field name="einvoice_lookup_code"/>
+                            <field name="einvoice_id_attr"/>
+                            <field name="einvoice_error"
+                                   invisible="not einvoice_error"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_order_tree_einvoice" model="ir.ui.view">
+        <field name="name">pos.order.list.hoadon30s</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="einvoice_status" optional="show" widget="badge"
+                       decoration-success="einvoice_status == 'coded'"
+                       decoration-info="einvoice_status in ('signed', 'sent')"
+                       decoration-danger="einvoice_status in ('error', 'rejected')"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

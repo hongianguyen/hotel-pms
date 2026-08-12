@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.hoadon30s</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Vietnam E-Invoice (hoadon30s.vn)" name="hoadon30s_einvoice">
+                    <setting string="Connection" help="OAuth2 credentials from your hoadon30s.vn API registration">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="hoadon30s_base_url" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_base_url" class="col-lg-8"/>
+                            </div>
+                            <div class="row">
+                                <label for="hoadon30s_client_id" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_client_id" class="col-lg-8"/>
+                            </div>
+                            <div class="row">
+                                <label for="hoadon30s_client_secret" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_client_secret" class="col-lg-8" password="True"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Invoice Forms" help="Serial (ký hiệu) of each active invoice form">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="hoadon30s_serial_vat" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_serial_vat" class="col-lg-8" placeholder="1C26TPA"/>
+                            </div>
+                            <div class="row">
+                                <label for="hoadon30s_serial_mtt" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_serial_mtt" class="col-lg-8" placeholder="1C26MEE"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Sign Automatically" help="Sign and send to the tax authority at creation time">
+                        <field name="hoadon30s_auto_sign"/>
+                    </setting>
+                    <setting string="Auto-Issue from POS" help="Issue a cash-register e-invoice on every paid POS order">
+                        <field name="hoadon30s_pos_auto_issue"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

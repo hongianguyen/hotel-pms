@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cron_sync_einvoice_status" model="ir.cron">
+        <field name="name">VN E-Invoice: sync tax authority status</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_sync_einvoices()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <record id="cron_fetch_einvoices" model="ir.cron">
+        <field name="name">VN E-Invoice: fetch issued invoices &amp; build partners</field>
+        <field name="model_id" ref="model_hoadon30s_einvoice"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_fetch_einvoices()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_einvoice" model="ir.ui.view">
+        <field name="name">account.move.form.hoadon30s</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_issue_einvoice" type="object"
+                        string="Issue E-Invoice" class="btn-secondary"
+                        invisible="move_type != 'out_invoice' or state != 'posted' or einvoice_id_attr"
+                        groups="account.group_account_invoice"/>
+                <button name="action_sync_einvoice" type="object"
+                        string="Sync E-Invoice"
+                        invisible="not einvoice_id_attr"
+                        groups="account.group_account_invoice"/>
+                <button name="action_cancel_einvoice" type="object"
+                        string="Cancel E-Invoice"
+                        invisible="not einvoice_id_attr or einvoice_status in ('cancelled', 'replaced')"
+                        confirm="This cancels the VAT e-invoice at the tax authority side. Continue?"
+                        groups="account.group_account_manager"/>
+            </xpath>
+            <xpath expr="//page[@id='other_tab']" position="before">
+                <page string="VN E-Invoice" name="vn_einvoice"
+                      invisible="move_type != 'out_invoice'">
+                    <group>
+                        <group string="E-Invoice">
+                            <field name="einvoice_status"/>
+                            <field name="einvoice_serial"/>
+                            <field name="einvoice_no"/>
+                            <field name="einvoice_code_cqt"/>
+                        </group>
+                        <group string="Reference">
+                            <field name="einvoice_lookup_code"/>
+                            <field name="einvoice_id_attr"/>
+                            <field name="einvoice_error"
+                                   invisible="not einvoice_error"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_out_invoice_tree_einvoice" model="ir.ui.view">
+        <field name="name">account.move.list.hoadon30s</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="einvoice_status" optional="show" widget="badge"
+                       decoration-success="einvoice_status == 'coded'"
+                       decoration-info="einvoice_status in ('signed', 'sent')"
+                       decoration-danger="einvoice_status in ('error', 'rejected')"/>
+                <field name="einvoice_no" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
