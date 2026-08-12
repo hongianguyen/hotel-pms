@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="param_autocreate_vendor" model="ir.config_parameter">
+        <field name="key">l10n_vn_invoice_import.autocreate_vendor</field>
+        <field name="value">True</field>
+    </record>
+</odoo>
