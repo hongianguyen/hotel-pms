@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_input" model="ir.ui.view">
+        <field name="name">res.config.settings.form.hoadon30s.input</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Vietnam Input Invoices (hoadon30s.vn)" name="hoadon30s_input_invoice">
+                    <setting string="Connection" help="Credentials for the invoice-sync service. These are separate from the e-invoice issuance credentials.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="hoadon30s_sync_base_url" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_sync_base_url" class="col-lg-8"/>
+                            </div>
+                            <div class="row">
+                                <label for="hoadon30s_sync_client_id" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_sync_client_id" class="col-lg-8"/>
+                            </div>
+                            <div class="row">
+                                <label for="hoadon30s_sync_client_secret" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_sync_client_secret" class="col-lg-8" password="True"/>
+                            </div>
+                        </div>
+                        <div class="mt8">
+                            <button name="action_hoadon30s_sync_check_quota" type="object"
+                                    string="Check Download Quota" class="btn-link"
+                                    icon="fa-tachometer"/>
+                        </div>
+                    </setting>
+                    <setting string="Tax Portal Account" help="Link the company's hoadondientu.gdt.gov.vn login once. It must be linked again whenever that password changes.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="hoadon30s_sync_gdt_username" class="col-lg-4 o_light_label"/>
+                                <field name="hoadon30s_sync_gdt_username" class="col-lg-8" readonly="1"/>
+                            </div>
+                        </div>
+                        <div class="mt8">
+                            <button name="action_hoadon30s_sync_connect" type="object"
+                                    string="Connect Tax Portal" class="btn-link"
+                                    icon="fa-link"/>
+                        </div>
+                    </setting>
+                    <setting string="Download Automatically" help="Let the daily scheduled action download new input invoices. The provider bills per invoice downloaded.">
+                        <field name="hoadon30s_sync_cron_enabled"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_einvoice_fetch_wizard_form" model="ir.ui.view">
+        <field name="name">hoadon30s.purchase.einvoice.fetch.wizard.form</field>
+        <field name="model">hoadon30s.purchase.einvoice.fetch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Download Input Invoices">
+                <div class="alert alert-warning" role="alert">
+                    The provider charges for every invoice downloaded. Pick the
+                    narrowest period you need — at most one month per download.
+                </div>
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="include_mtt"/>
+                        <field name="want_pdf"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_fetch" type="object" string="Download"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purchase_einvoice_fetch" model="ir.actions.act_window">
+        <field name="name">Download Input Invoices</field>
+        <field name="res_model">hoadon30s.purchase.einvoice.fetch.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_purchase_einvoice_fetch"
+              name="Download Input Invoices"
+              parent="account.menu_finance_payables"
+              action="action_purchase_einvoice_fetch"
+              sequence="95"/>
+</odoo>

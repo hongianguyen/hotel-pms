@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Off by default: the provider bills per invoice downloaded, so this
+         only runs once "Download Automatically" is enabled in Settings. -->
+    <record id="cron_fetch_purchase_einvoices" model="ir.cron">
+        <field name="name">VN Input Invoices: download from tax portal</field>
+        <field name="model_id" ref="model_hoadon30s_purchase_einvoice"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_fetch_purchase_einvoices()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hoadon30s_purchase_einvoice_user,hoadon30s.purchase.einvoice.user,model_hoadon30s_purchase_einvoice,account.group_account_invoice,1,1,1,0
+access_hoadon30s_purchase_einvoice_manager,hoadon30s.purchase.einvoice.manager,model_hoadon30s_purchase_einvoice,account.group_account_manager,1,1,1,1
+access_hoadon30s_fetch_wizard,hoadon30s.purchase.einvoice.fetch.wizard,model_hoadon30s_purchase_einvoice_fetch_wizard,account.group_account_invoice,1,1,1,1
+access_hoadon30s_gdt_connect_wizard,hoadon30s.gdt.connect.wizard,model_hoadon30s_gdt_connect_wizard,account.group_account_manager,1,1,1,1
