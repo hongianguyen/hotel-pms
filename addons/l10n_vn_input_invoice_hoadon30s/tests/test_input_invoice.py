@@ -153,6 +153,21 @@ class TestInputInvoiceParser(TransactionCase):
         self.assertEqual(parsed['total_tax'], 290000.0)
         self.assertEqual(parsed['total_amount'], 3390000.0)
 
+    def test_parses_discount_under_either_tag(self):
+        """Real TT78 2.1.0 payloads write TTCKTMai, the spec says TgTCKTMai.
+
+        A live invoice downloaded on 13 Aug 2026 used TTCKTMai, which the
+        spec-derived tag map missed — the discount silently read as 0.
+        Both spellings must work.
+        """
+        for tag in ('TTCKTMai', 'TgTCKTMai'):
+            xml = INVOICE_XML.replace(
+                '<TgTCThue>', '<%s>150000</%s><TgTCThue>' % (tag, tag))
+            parsed = gdt_xml.parse_invoice_xml(
+                base64.b64encode(xml.encode()).decode())
+            self.assertEqual(parsed['total_discount'], 150000.0,
+                             'discount not read from <%s>' % tag)
+
     def test_parses_namespaced_and_enveloped_xml(self):
         """A TDiep envelope with namespaces must parse the same way."""
         wrapped = (

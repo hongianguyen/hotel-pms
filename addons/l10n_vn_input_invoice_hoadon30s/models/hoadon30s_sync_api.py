@@ -46,7 +46,7 @@ class Hoadon30sSyncApi(models.AbstractModel):
     @api.model
     def _get_base_url(self):
         return self._get_param(
-            'base_url', 'https://cphoadonuat.hoadon30s.vn').rstrip('/')
+            'base_url', 'https://cpanel.hoadon30s.vn').rstrip('/')
 
     @api.model
     def _is_configured(self):

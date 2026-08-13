@@ -8,10 +8,11 @@ class ResConfigSettings(models.TransientModel):
 
     hoadon30s_sync_base_url = fields.Char(
         'Input Invoice Server', config_parameter='hoadon30s.sync.base_url',
-        default='https://cphoadonuat.hoadon30s.vn',
-        help='hoadon30s.vn invoice-sync server. '
-             'UAT: https://cphoadonuat.hoadon30s.vn — '
-             'Production: https://cpanel.hoadon30s.vn')
+        default='https://cpanel.hoadon30s.vn',
+        help='hoadon30s.vn invoice-sync server. Unlike the e-invoice '
+             'issuance service, this one has a single host for both testing '
+             'and production: https://cpanel.hoadon30s.vn. The issuance UAT '
+             'host does not serve invoice-sync and answers invalid_client.')
     hoadon30s_sync_client_id = fields.Char(
         'Sync Client ID', config_parameter='hoadon30s.sync.client_id',
         help='Credentials for the input-invoice service. These are separate '

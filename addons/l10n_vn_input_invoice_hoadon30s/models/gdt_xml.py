@@ -63,7 +63,10 @@ TAGS = {
     'total_untaxed': 'TgTCThue',
     'total_tax': 'TgTThue',
     'total_amount': 'TgTTTBSo',
-    'total_discount': 'TgTCKTMai',
+    # Trade-discount total. Real TT78 2.1.0 payloads write TTCKTMai; the
+    # spec's TgTCKTMai is accepted too — both are tried, in that order.
+    'total_discount': 'TTCKTMai',
+    'total_discount_alt': 'TgTCKTMai',
     # Tax authority code
     'code_cqt': 'MCCQT',
 }
@@ -226,5 +229,7 @@ def parse_invoice_xml(xml_b64):
         'total_untaxed': _to_float(_text(totals, TAGS['total_untaxed'])),
         'total_tax': _to_float(_text(totals, TAGS['total_tax'])),
         'total_amount': _to_float(_text(totals, TAGS['total_amount'])),
-        'total_discount': _to_float(_text(totals, TAGS['total_discount'])),
+        'total_discount': _to_float(
+            _text(totals, TAGS['total_discount'])
+            or _text(totals, TAGS['total_discount_alt'])),
     }
