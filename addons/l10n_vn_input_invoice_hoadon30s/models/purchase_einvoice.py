@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import hashlib
 import json
 import logging
 
@@ -247,13 +248,7 @@ class Hoadon30sPurchaseEinvoice(models.Model):
         purchase invoices the company has actually received. Counting is the
         caller's job — this is reached from several paths.
         """
-        seller_tax_code = str(inv.get('sellerTaxCode') or '')
-        number = str(inv.get('invoiceNumber') or '')
-        if not seller_tax_code or not number:
-            _logger.warning(
-                'Skipping an unidentifiable input invoice from the provider: '
-                '%s', json.dumps(inv, ensure_ascii=False)[:500])
-            return self.browse()
+        seller_tax_code, number = self._identify(inv, xml_b64)
         vals = {
             'form_no': str(inv.get('category') or ''),
             'serial': inv.get('serial') or '',
@@ -282,6 +277,40 @@ class Hoadon30sPurchaseEinvoice(models.Model):
             'is_mtt': mtt,
         })
         return self.create([vals])
+
+    @api.model
+    def _identify(self, inv, xml_b64=False):
+        """Work out a (seller tax code, number) pair for an invoice we could
+        not parse.
+
+        Rows in ``invoicesError[]`` carry these outright. Rows in
+        ``invoices[]`` do not — the documented schema there is only
+        xml/json/pdf — so fall back to the provider's JSON rendition and,
+        failing that, to a digest of the XML itself. An invoice has already
+        been paid for by the time we see it, so it must always be storable,
+        even when nothing about it can be read.
+        """
+        seller_tax_code = str(inv.get('sellerTaxCode') or '').strip()
+        number = str(inv.get('invoiceNumber') or '').strip()
+        raw = inv.get('json')
+        if isinstance(raw, dict):
+            # Field names as the GDT portal itself returns them.
+            seller_tax_code = seller_tax_code or str(
+                raw.get('nbmst') or raw.get('sellerTaxCode') or '').strip()
+            number = number or str(
+                raw.get('shdon') or raw.get('invoiceNumber') or '').strip()
+        if not seller_tax_code:
+            seller_tax_code = 'UNKNOWN'
+        if not number and xml_b64:
+            digest = hashlib.sha256(
+                xml_b64.encode() if isinstance(xml_b64, str) else xml_b64
+            ).hexdigest()[:32]
+            number = 'XML-%s' % digest
+        elif not number:
+            number = 'UNIDENTIFIED-%s' % hashlib.sha256(
+                json.dumps(inv, ensure_ascii=False, sort_keys=True).encode()
+            ).hexdigest()[:32]
+        return seller_tax_code, number
 
     @api.model
     def _find_existing(self, seller_tax_code, form_no, serial, number, mtt):
@@ -550,12 +579,23 @@ class Hoadon30sPurchaseEinvoice(models.Model):
                 fields.Date.to_date(watermark), days=3)
         else:
             date_from = fields.Date.subtract(today, days=7)
-        date_from = max(date_from, fields.Date.subtract(today, days=30))
+        # One download covers at most a month. If the cron has been off for
+        # longer, cover the oldest outstanding month rather than jumping to
+        # today — otherwise the gap in between would be skipped for good.
+        earliest = fields.Date.subtract(today, days=30)
+        if date_from < earliest:
+            date_to = fields.Date.add(date_from, days=30)
+            _logger.warning(
+                'hoadon30s input invoices are %s days behind; catching up '
+                'one month at a time (%s → %s). The next run continues from '
+                'there.', (today - date_from).days, date_from, date_to)
+        else:
+            date_to = today
         try:
-            summary = self.fetch_purchase_invoices(date_from, today)
+            summary = self.fetch_purchase_invoices(date_from, date_to)
             icp.set_param('hoadon30s.sync.last_fetch_date',
-                          fields.Date.to_string(today))
+                          fields.Date.to_string(date_to))
             _logger.info('hoadon30s input-invoice fetch %s → %s: %s',
-                         date_from, today, summary)
+                         date_from, date_to, summary)
         except Exception:
             _logger.exception('hoadon30s input-invoice fetch failed')

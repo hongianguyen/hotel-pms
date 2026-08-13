@@ -257,14 +257,47 @@ class TestInputInvoiceDownload(TransactionCase):
         self.assertIn('XML', record.error_message)
 
     def test_unparseable_xml_is_kept_as_error(self):
+        """A row in invoices[] carries only xml/json/pdf — no identifiers.
+
+        It must still be stored, with its XML, rather than logged and lost:
+        the download has already been paid for.
+        """
         bad = base64.b64encode(b'<HDon><nope>').decode()
-        summary = self._fetch([make_page(
-            invoices=[{'xml': bad, 'sellerTaxCode': '0400777666',
-                       'invoiceNumber': 9, 'serial': 'C26TCC',
-                       'category': 1}], total=1)])
+        summary = self._fetch([make_page(invoices=[{'xml': bad}], total=1)])
         self.assertEqual(summary['parse_errors'], 1)
-        record = self.Registry.search([('number', '=', '9')])
-        self.assertEqual(record.state, 'parse_error')
+        record = self.Registry.search([('state', '=', 'parse_error')])
+        self.assertEqual(len(record), 1)
+        self.assertTrue(record.number.startswith('XML-'))
+        self.assertEqual(record.seller_tax_code, 'UNKNOWN')
+        # The XML is kept so the invoice can be sorted out by hand.
+        self.assertTrue(record.xml_file)
+
+    def test_unparseable_xml_falls_back_to_provider_json(self):
+        """When the provider's JSON is present, identify the row from it."""
+        bad = base64.b64encode(b'<HDon><nope>').decode()
+        self._fetch([make_page(invoices=[{
+            'xml': bad,
+            'json': {'nbmst': '0400777666', 'shdon': 9},
+        }], total=1)])
+        record = self.Registry.search([('state', '=', 'parse_error')])
+        self.assertEqual(record.seller_tax_code, '0400777666')
+        self.assertEqual(record.number, '9')
+
+    def test_unparseable_rows_do_not_collide(self):
+        """Two different unreadable invoices must not overwrite each other."""
+        self._fetch([make_page(invoices=[
+            {'xml': base64.b64encode(b'<HDon><one>').decode()},
+            {'xml': base64.b64encode(b'<HDon><two>').decode()},
+        ], total=2)])
+        self.assertEqual(
+            self.Registry.search_count([('state', '=', 'parse_error')]), 2)
+
+    def test_invoice_without_xml_is_kept(self):
+        summary = self._fetch([make_page(invoices=[{'json': {
+            'nbmst': '0400555444', 'shdon': 42}}], total=1)])
+        self.assertEqual(summary['no_xml'], 1)
+        record = self.Registry.search([('number', '=', '42')])
+        self.assertEqual(record.state, 'no_xml')
 
     def test_pagination_follows_cursor(self):
         second_xml = INVOICE_XML.replace(
