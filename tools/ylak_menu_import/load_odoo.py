@@ -39,6 +39,10 @@ with open(PATH, encoding="utf-8") as fh:
 ING_CATEG = "Nguyên liệu bếp"
 DISH_CATEG = "Món ăn nhà hàng"
 
+# Owner confirmed 16 Aug 2026: menu prices are VAT-INCLUSIVE at 8%.
+VAT_NAME = "VAT 8%"
+VAT_RATE = 8.0
+
 log = []
 
 
@@ -110,6 +114,61 @@ def get_product_categ(name):
 
 ing_categ = get_product_categ(ING_CATEG)
 dish_categ = get_product_categ(DISH_CATEG)
+
+
+# ---------------------------------------------------------------------------
+# 2b. VAT. The deck prices are printed menu prices, so the tax must be
+# PRICE-INCLUDED: 385,000 stays 385,000 on the ticket, split 356,481 base +
+# 28,519 VAT. Odoo 19 drives this with price_include_override; the plain
+# price_include field is computed from it and is read-only.
+# ---------------------------------------------------------------------------
+def get_vat_tax():
+    tax = env["account.tax"].search([
+        ("name", "=", VAT_NAME), ("type_tax_use", "=", "sale"),
+    ], limit=1)
+    if tax:
+        if not tax.price_include:
+            tax.price_include_override = "tax_included"
+            note(f"tax {VAT_NAME}: forced price_include_override=tax_included")
+        return tax
+
+    # Mirror the repartition/account setup of an existing sale tax so the tax
+    # posts to the same tax-payable account as the rest of the chart.
+    src = env["account.tax"].search([("type_tax_use", "=", "sale")], limit=1)
+    if not src:
+        raise RuntimeError("no existing sale tax to copy the account setup from")
+    grp = env["account.tax.group"].search([("name", "=", VAT_NAME)], limit=1)
+    if not grp:
+        grp = env["account.tax.group"].create({
+            "name": VAT_NAME, "country_id": src.country_id.id,
+        })
+    acct = src.invoice_repartition_line_ids.filtered(
+        lambda r: r.repartition_type == "tax").account_id
+    rep = [
+        (0, 0, {"repartition_type": "base", "factor_percent": 100.0}),
+        (0, 0, {"repartition_type": "tax", "factor_percent": 100.0,
+                "account_id": acct.id}),
+    ]
+    tax = env["account.tax"].create({
+        "name": VAT_NAME,
+        "amount": VAT_RATE,
+        "amount_type": "percent",
+        "type_tax_use": "sale",
+        "price_include_override": "tax_included",
+        "tax_group_id": grp.id,
+        "country_id": src.country_id.id,
+        "invoice_repartition_line_ids": rep,
+        "refund_repartition_line_ids": [
+            (0, 0, {"repartition_type": "base", "factor_percent": 100.0}),
+            (0, 0, {"repartition_type": "tax", "factor_percent": 100.0,
+                    "account_id": acct.id}),
+        ],
+    })
+    note(f"tax created: {VAT_NAME} (price-included)")
+    return tax
+
+
+vat = get_vat_tax()
 
 pos_categ_by_name = {}
 for section in sorted({d.get("menu_section") or "Khác" for d in DATA["dishes"]}):
@@ -184,13 +243,9 @@ for dish in DATA["dishes"]:
         "list_price": price or 0.0,
         "sale_ok": True,
         "purchase_ok": False,
-        # No tax, deliberately. The deck prices are printed menu prices, i.e.
-        # VAT-INCLUSIVE, but the only sale tax on this database is a generic
-        # 15% with price_include=False, which would add 15% on top of every
-        # menu price. Leaving taxes off keeps the POS total equal to the
-        # printed price. Set a price-included VN VAT tax here once the owner
-        # confirms the rate (8% or 10%), then re-run.
-        "taxes_id": [(5, 0, 0)],
+        # Replace whatever the company default put here (a generic 15%
+        # tax-EXCLUDED on this database) with the price-included 8% VAT.
+        "taxes_id": [(6, 0, [vat.id])],
         "pos_categ_ids": [(6, 0, [pos_categ_by_name[section].id])],
     }
     rec = env["product.template"].search([("name", "=", name)], limit=1)
