@@ -177,10 +177,20 @@ for dish in DATA["dishes"]:
         "is_storable": True,
         "uom_id": uom.id,
         "categ_id": dish_categ.id,
-        "available_in_pos": True,
+        # A dish with no confirmed price must not be sellable - otherwise a
+        # cashier can ring it up for 0 VND. These switch themselves on as soon
+        # as the owner supplies a price and this script is re-run.
+        "available_in_pos": bool(price),
         "list_price": price or 0.0,
         "sale_ok": True,
         "purchase_ok": False,
+        # No tax, deliberately. The deck prices are printed menu prices, i.e.
+        # VAT-INCLUSIVE, but the only sale tax on this database is a generic
+        # 15% with price_include=False, which would add 15% on top of every
+        # menu price. Leaving taxes off keeps the POS total equal to the
+        # printed price. Set a price-included VN VAT tax here once the owner
+        # confirms the rate (8% or 10%), then re-run.
+        "taxes_id": [(5, 0, 0)],
         "pos_categ_ids": [(6, 0, [pos_categ_by_name[section].id])],
     }
     rec = env["product.template"].search([("name", "=", name)], limit=1)
