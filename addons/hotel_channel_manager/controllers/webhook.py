@@ -12,7 +12,7 @@ class ChannelWebhookController(http.Controller):
 
     @http.route(
         '/channel/webhook/booking/<string:provider_code>',
-        type='json',
+        type='jsonrpc',
         auth='none',
         methods=['POST'],
         csrf=False,
@@ -42,7 +42,7 @@ class ChannelWebhookController(http.Controller):
 
     @http.route(
         '/channel/webhook/cancellation/<string:provider_code>',
-        type='json',
+        type='jsonrpc',
         auth='none',
         methods=['POST'],
         csrf=False,
