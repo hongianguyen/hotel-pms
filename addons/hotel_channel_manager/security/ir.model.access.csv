@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_channel_config_admin,channel.manager.config admin,model_channel_manager_config,hotel_core.group_hotel_admin,1,1,1,1
+access_channel_config_reception,channel.manager.config reception,model_channel_manager_config,hotel_core.group_hotel_reception,1,0,0,0
+access_channel_room_mapping_admin,channel.room.type.mapping admin,model_channel_room_type_mapping,hotel_core.group_hotel_admin,1,1,1,1
+access_channel_room_mapping_reception,channel.room.type.mapping reception,model_channel_room_type_mapping,hotel_core.group_hotel_reception,1,0,0,0
+access_channel_rate_mapping_admin,channel.rate.plan.mapping admin,model_channel_rate_plan_mapping,hotel_core.group_hotel_admin,1,1,1,1
+access_channel_rate_mapping_reception,channel.rate.plan.mapping reception,model_channel_rate_plan_mapping,hotel_core.group_hotel_reception,1,0,0,0
+access_channel_sync_log_admin,channel.sync.log admin,model_channel_sync_log,hotel_core.group_hotel_admin,1,1,1,1
+access_channel_sync_log_reception,channel.sync.log reception,model_channel_sync_log,hotel_core.group_hotel_reception,1,0,0,0
+access_channel_force_sync_wizard_admin,channel.force.sync.wizard admin,model_channel_force_sync_wizard,hotel_core.group_hotel_admin,1,1,1,1

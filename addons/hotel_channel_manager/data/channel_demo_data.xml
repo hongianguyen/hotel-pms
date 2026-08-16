@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Booking sources for OTA channels -->
+    <record id="booking_source_booking_com" model="hotel.booking.source">
+        <field name="name">Booking.com</field>
+    </record>
+
+    <record id="booking_source_agoda" model="hotel.booking.source">
+        <field name="name">Agoda</field>
+    </record>
+
+</odoo>

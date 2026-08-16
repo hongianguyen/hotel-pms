@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="channel_force_sync_wizard_form" model="ir.ui.view">
+        <field name="name">channel.force.sync.wizard.form</field>
+        <field name="model">channel.force.sync.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Force Full Sync">
+                <group>
+                    <field name="config_id" readonly="1"/>
+                    <field name="sync_availability"/>
+                    <field name="sync_rates"/>
+                    <field name="sync_restrictions"/>
+                </group>
+                <footer>
+                    <button name="action_force_sync"
+                            string="Start Sync"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

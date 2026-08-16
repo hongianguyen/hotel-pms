@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Top-level menu under Hotel Management -->
+    <menuitem id="menu_channel_manager_root"
+              name="Channel Manager"
+              parent="hotel_core.menu_hotel_root"
+              sequence="50"
+              groups="hotel_core.group_hotel_admin"/>
+
+    <menuitem id="menu_channel_config"
+              name="Channels"
+              parent="menu_channel_manager_root"
+              action="action_channel_manager_config"
+              sequence="10"/>
+
+    <menuitem id="menu_channel_sync_log"
+              name="Sync Logs"
+              parent="menu_channel_manager_root"
+              action="action_channel_sync_log"
+              sequence="20"/>
+
+    <!-- Mappings submenu -->
+    <menuitem id="menu_channel_mappings"
+              name="Mappings"
+              parent="menu_channel_manager_root"
+              sequence="30"/>
+
+    <menuitem id="menu_channel_room_mapping"
+              name="Room Type Mappings"
+              parent="menu_channel_mappings"
+              action="action_channel_room_type_mapping"
+              sequence="10"/>
+
+    <menuitem id="menu_channel_rate_mapping"
+              name="Rate Plan Mappings"
+              parent="menu_channel_mappings"
+              action="action_channel_rate_plan_mapping"
+              sequence="20"/>
+
+</odoo>

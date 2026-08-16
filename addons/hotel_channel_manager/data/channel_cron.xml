@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Cron: Process pending outbound sync queue (every 5 min) -->
+    <record id="cron_channel_sync_queue" model="ir.cron">
+        <field name="name">Channel Manager: Process Sync Queue</field>
+        <field name="model_id" ref="model_channel_sync_log"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_process_sync_queue()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">False</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <!-- Cron: Full reconciliation sync (every 6 hours) -->
+    <record id="cron_channel_full_sync" model="ir.cron">
+        <field name="name">Channel Manager: Full Reconciliation Sync</field>
+        <field name="model_id" ref="model_channel_sync_log"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_full_sync()</field>
+        <field name="interval_number">6</field>
+        <field name="interval_type">hours</field>
+        <field name="active">False</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <!-- Cron: Retry failed syncs with exponential backoff (every 15 min) -->
+    <record id="cron_channel_retry_failed" model="ir.cron">
+        <field name="name">Channel Manager: Retry Failed Syncs</field>
+        <field name="model_id" ref="model_channel_sync_log"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_retry_failed()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">False</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Channel Config: Form View -->
+    <record id="channel_manager_config_form" model="ir.ui.view">
+        <field name="name">channel.manager.config.form</field>
+        <field name="model">channel.manager.config</field>
+        <field name="arch" type="xml">
+            <form string="Channel Configuration">
+                <header>
+                    <button name="action_test_connection"
+                            string="Test Connection"
+                            type="object"
+                            class="btn-primary"
+                            groups="hotel_core.group_hotel_admin"/>
+                    <button name="action_full_sync"
+                            string="Full Sync Now"
+                            type="object"
+                            class="btn-secondary"
+                            groups="hotel_core.group_hotel_admin"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(hotel_channel_manager.action_channel_sync_log)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-exchange">
+                            <field name="sync_log_ids" widget="statinfo" string="Sync Logs"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Channel Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="General">
+                            <field name="provider_code"/>
+                            <field name="active" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="booking_source_id"/>
+                            <field name="last_sync_date"/>
+                        </group>
+                        <group string="API Credentials" groups="hotel_core.group_hotel_admin">
+                            <field name="api_url" placeholder="https://..."/>
+                            <field name="api_key" password="True"/>
+                            <field name="api_secret" password="True"/>
+                            <field name="property_id"/>
+                            <field name="webhook_secret" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Sync Settings">
+                        <group>
+                            <field name="sync_availability"/>
+                            <field name="sync_rates"/>
+                            <field name="sync_restrictions"/>
+                        </group>
+                        <group>
+                            <field name="auto_confirm_bookings"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Room Type Mappings" name="room_mappings">
+                            <field name="room_mapping_ids">
+                                <list editable="bottom">
+                                    <field name="room_type_id"/>
+                                    <field name="channel_room_type_id"/>
+                                    <field name="channel_room_type_name"/>
+                                    <field name="max_allotment"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Rate Plan Mappings" name="rate_mappings">
+                            <field name="rate_mapping_ids">
+                                <list editable="bottom">
+                                    <field name="rate_plan_id"/>
+                                    <field name="channel_rate_plan_id"/>
+                                    <field name="channel_rate_plan_name"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Channel Config: List View -->
+    <record id="channel_manager_config_list" model="ir.ui.view">
+        <field name="name">channel.manager.config.list</field>
+        <field name="model">channel.manager.config</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="provider_code"/>
+                <field name="property_id"/>
+                <field name="sync_availability"/>
+                <field name="sync_rates"/>
+                <field name="auto_confirm_bookings"/>
+                <field name="last_sync_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Channel Config: Action -->
+    <record id="action_channel_manager_config" model="ir.actions.act_window">
+        <field name="name">Channels</field>
+        <field name="res_model">channel.manager.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new OTA channel
+            </p>
+            <p>
+                Configure connections to Booking.com, Agoda, and other OTA channels.
+            </p>
+        </field>
+    </record>
+
+</odoo>

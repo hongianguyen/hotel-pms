@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Room Type Mapping: List View -->
+    <record id="channel_room_type_mapping_list" model="ir.ui.view">
+        <field name="name">channel.room.type.mapping.list</field>
+        <field name="model">channel.room.type.mapping</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="config_id"/>
+                <field name="room_type_id"/>
+                <field name="channel_room_type_id"/>
+                <field name="channel_room_type_name"/>
+                <field name="max_allotment"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Room Type Mapping: Action -->
+    <record id="action_channel_room_type_mapping" model="ir.actions.act_window">
+        <field name="name">Room Type Mappings</field>
+        <field name="res_model">channel.room.type.mapping</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Rate Plan Mapping: List View -->
+    <record id="channel_rate_plan_mapping_list" model="ir.ui.view">
+        <field name="name">channel.rate.plan.mapping.list</field>
+        <field name="model">channel.rate.plan.mapping</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="config_id"/>
+                <field name="rate_plan_id"/>
+                <field name="channel_rate_plan_id"/>
+                <field name="channel_rate_plan_name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Rate Plan Mapping: Action -->
+    <record id="action_channel_rate_plan_mapping" model="ir.actions.act_window">
+        <field name="name">Rate Plan Mappings</field>
+        <field name="res_model">channel.rate.plan.mapping</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Sync Log: Form View -->
+    <record id="channel_sync_log_form" model="ir.ui.view">
+        <field name="name">channel.sync.log.form</field>
+        <field name="model">channel.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Sync Log Entry" create="0">
+                <header>
+                    <button name="action_retry_now"
+                            string="Retry Now"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('error', 'retrying')"
+                            groups="hotel_core.group_hotel_admin"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="config_id"/>
+                            <field name="provider_code"/>
+                            <field name="direction"/>
+                            <field name="sync_type"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="reservation_id"/>
+                            <field name="room_type_id"/>
+                            <field name="retry_count"/>
+                            <field name="max_retries"/>
+                            <field name="next_retry"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Request" name="request">
+                            <field name="request_payload"/>
+                        </page>
+                        <page string="Response" name="response">
+                            <field name="response_payload"/>
+                        </page>
+                        <page string="Error" name="error"
+                              invisible="not error_message">
+                            <field name="error_message"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sync Log: List View -->
+    <record id="channel_sync_log_list" model="ir.ui.view">
+        <field name="name">channel.sync.log.list</field>
+        <field name="model">channel.sync.log</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="state == 'error'"
+                  decoration-warning="state == 'retrying'"
+                  decoration-success="state == 'success'"
+                  decoration-muted="state == 'pending'">
+                <field name="create_date" string="Date"/>
+                <field name="config_id"/>
+                <field name="direction"/>
+                <field name="sync_type"/>
+                <field name="state"/>
+                <field name="reservation_id" optional="show"/>
+                <field name="room_type_id" optional="show"/>
+                <field name="retry_count"/>
+                <field name="error_message" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Sync Log: Search View -->
+    <record id="channel_sync_log_search" model="ir.ui.view">
+        <field name="name">channel.sync.log.search</field>
+        <field name="model">channel.sync.log</field>
+        <field name="arch" type="xml">
+            <search string="Sync Logs">
+                <field name="config_id"/>
+                <field name="reservation_id"/>
+                <field name="error_message"/>
+                <filter name="filter_errors" string="Errors"
+                        domain="[('state', '=', 'error')]"/>
+                <filter name="filter_pending" string="Pending"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter name="filter_retrying" string="Retrying"
+                        domain="[('state', '=', 'retrying')]"/>
+                <filter name="filter_today" string="Today"
+                        domain="[('create_date', '&gt;=', (context_today()).strftime('%%Y-%%m-%%d'))]"/>
+                <separator/>
+                <filter name="filter_inbound" string="Inbound"
+                        domain="[('direction', '=', 'inbound')]"/>
+                <filter name="filter_outbound" string="Outbound"
+                        domain="[('direction', '=', 'outbound')]"/>
+                <separator/>
+                <group>
+                    <filter name="group_channel" string="Channel"
+                            context="{'group_by': 'config_id'}"/>
+                    <filter name="group_state" string="State"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Type"
+                            context="{'group_by': 'sync_type'}"/>
+                    <filter name="group_direction" string="Direction"
+                            context="{'group_by': 'direction'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Sync Log: Action -->
+    <record id="action_channel_sync_log" model="ir.actions.act_window">
+        <field name="name">Sync Logs</field>
+        <field name="res_model">channel.sync.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="channel_sync_log_search"/>
+        <field name="context">{'search_default_filter_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No sync logs yet
+            </p>
+            <p>
+                Sync logs will appear here when availability, rates, or bookings are synced with OTA channels.
+            </p>
+        </field>
+    </record>
+
+</odoo>
