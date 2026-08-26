@@ -49,6 +49,15 @@
                     <button name="action_check_out" type="object"
                             string="Check Out" class="btn-primary"
                             invisible="state != 'checked_in'"/>
+                    <button name="action_force_check_out" type="object"
+                            string="Check Out Anyway" class="btn-secondary"
+                            groups="hotel_core.group_hotel_admin"
+                            invisible="state != 'checked_in'"
+                            confirm="This checks the guest out with money still owed on the folio. The outstanding amount stays on the folio and is recorded in its log. Continue?"/>
+                    <button name="action_print_folio" type="object"
+                            string="Print Folio" class="btn-secondary"
+                            icon="fa-print"
+                            invisible="state not in ('checked_in', 'checked_out')"/>
                     <button name="action_cancel" type="object"
                             string="Cancel" class="btn-secondary"
                             invisible="state in ('checked_out', 'cancelled')"

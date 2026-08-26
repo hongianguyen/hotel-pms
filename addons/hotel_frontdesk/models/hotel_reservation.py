@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api, tools, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import timedelta
 
@@ -561,6 +561,132 @@ class HotelReservation(models.Model):
             rec.state = 'checked_in'
             rec.room_id.action_set_occupied()
 
+    def _late_checkout_line_vals(self):
+        """Folio line values for each night stayed past the checkout date.
+
+        Returned rather than written so the caller can quote the amount to
+        reception before deciding whether the departure may go ahead.
+        """
+        self.ensure_one()
+        today = fields.Date.context_today(self)
+        if (today - self.checkout_date).days <= 0:
+            return []
+        vals = []
+        current = self.checkout_date
+        room_name = self.room_id.name or 'Room'
+        while current < today:
+            vals.append({
+                'name': _('Late checkout — Room %s — %s') % (
+                    room_name, current.strftime('%d/%m/%Y')),
+                'charge_type': 'room',
+                'quantity': 1,
+                'amount': self.nightly_rate,
+                'date': current,
+                'account_id': self.room_id.room_type_id.revenue_account_id.id or False,
+            })
+            current += timedelta(days=1)
+        return vals
+
+    def _folios_settling_on_departure(self):
+        """Folios of this stay that this departure closes out.
+
+        Both sides of the guest/company pair are in scope, but a folio is
+        only judged once no other room that can still charge it is in house:
+        on a group, the master folio is settled by the last departure, not
+        the first.
+        """
+        self.ensure_one()
+        folios = self.env['hotel.folio']
+        for folio in (self.folio_id | self.folio_id.linked_folio_id):
+            if not folio:
+                continue
+            if folio._pending_reservations() - self:
+                continue
+            folios |= folio
+        return folios
+
+    def _check_folio_balanced(self, extra_folio=None, extra_charges=0.0):
+        """Block the departure while the guest still owes money.
+
+        ``extra_folio`` / ``extra_charges`` describe a charge check-out is
+        about to raise (late check-out nights), so it is counted as due even
+        though it is not on the folio yet.
+
+        A Hotel Administrator can override with the Check Out Anyway button,
+        which sets ``force_unbalanced_checkout``; the override is recorded on
+        the folio's chatter.
+        """
+        self.ensure_one()
+        if self.env.context.get('force_unbalanced_checkout'):
+            return
+        blocking = []
+        for folio in self._folios_settling_on_departure():
+            extra = extra_charges if folio == extra_folio else 0.0
+            due = folio.amount_due_at_checkout(extra)
+            currency = folio.currency_id or self.env.company.currency_id
+            if currency.compare_amounts(due, 0) > 0:
+                blocking.append((folio, due, currency))
+        if not blocking:
+            return
+        details = '\n'.join(
+            '  • %s: %s' % (folio.name, self._format_money(due, currency))
+            for folio, due, currency in blocking
+        )
+        raise UserError(_(
+            'Cannot check out %(reservation)s — the folio is not balanced.\n\n'
+            'Still to collect:\n%(details)s\n\n'
+            'Take the payment on the folio with Register Payment, then check '
+            'out. If the balance is genuinely to be carried (a company '
+            'account on credit terms, or a disputed charge), a Hotel '
+            'Administrator can use Check Out Anyway.'
+        ) % {
+            'reservation': self.reservation_number,
+            'details': details,
+        })
+
+    @api.model
+    def _format_money(self, amount, currency):
+        """Amount rendered in the folio's currency for user-facing messages."""
+        return tools.format_amount(self.env, amount, currency)
+
+    def action_print_folio(self):
+        """Print this stay's folio(s) for the guest to check and sign."""
+        folios = self.mapped('folio_id') | self.mapped('folio_id.linked_folio_id')
+        if not folios:
+            raise UserError(_(
+                'No folio to print yet — a folio opens when the guest '
+                'checks in.'
+            ))
+        return folios.action_print_folio()
+
+    def action_force_check_out(self):
+        """Check out despite an unbalanced folio (Hotel Administrator only).
+
+        The escape hatch for balances the desk cannot clear — a legacy folio
+        imported without its payments, a write-off, a company account being
+        moved to the city ledger by hand. Always leaves a trace.
+        """
+        for rec in self:
+            if not rec.env.su and not rec.env.user.has_group(
+                    'hotel_core.group_hotel_admin'):
+                raise UserError(_(
+                    'Only a Hotel Administrator can check out a reservation '
+                    'whose folio is not balanced.'
+                ))
+            for folio in rec._folios_settling_on_departure():
+                currency = folio.currency_id or rec.env.company.currency_id
+                due = folio.amount_due_at_checkout()
+                if currency.compare_amounts(due, 0) <= 0:
+                    continue
+                folio.message_post(body=_(
+                    'Check-out forced by %(user)s with %(amount)s still '
+                    'outstanding on this folio.'
+                ) % {
+                    'user': rec.env.user.name,
+                    'amount': rec._format_money(due, currency),
+                })
+        return self.with_context(force_unbalanced_checkout=True).action_check_out()
+
     def action_check_out(self):
         """Checked In → Checked Out. Generate invoice (only when last room checks out), room → dirty."""
         for rec in self:
@@ -571,25 +697,23 @@ class HotelReservation(models.Model):
 
             # Late checkout: auto-charge each night past the scheduled
             # checkout date at the reservation's nightly rate (spec §16).
-            today = fields.Date.context_today(rec)
-            extra = today - rec.checkout_date
-            if extra.days > 0:
-                lines = []
-                current = rec.checkout_date
-                room_name = rec.room_id.name or 'Room'
-                while current < today:
-                    lines.append((0, 0, {
-                        'name': _('Late checkout — Room %s — %s') % (
-                            room_name, current.strftime('%d/%m/%Y')),
-                        'charge_type': 'room',
-                        'quantity': 1,
-                        'amount': rec.nightly_rate,
-                        'date': current,
-                        'account_id': rec.room_id.room_type_id.revenue_account_id.id or False,
-                    }))
-                    current += timedelta(days=1)
-                # Late-checkout nights are room revenue: same routing.
-                rec._folio_for_charge_type('room').sudo().write({'line_ids': lines})
+            # Late-checkout nights are room revenue: same routing.
+            late_vals = rec._late_checkout_line_vals()
+            late_folio = (rec._folio_for_charge_type('room') if late_vals
+                          else self.env['hotel.folio'])
+
+            # Departure is barred while money is still owed. The late-checkout
+            # nights are quoted as part of that amount but only written once
+            # the folio clears, so a blocked check-out leaves no phantom
+            # charge behind and the figure reception is told to collect is the
+            # figure the folio will show.
+            rec._check_folio_balanced(late_folio, sum(
+                v['quantity'] * v['amount'] for v in late_vals))
+
+            if late_vals:
+                late_folio.sudo().write({
+                    'line_ids': [(0, 0, v) for v in late_vals],
+                })
 
             rec.write({'state': 'checked_out'})
             rec.room_id.write({'last_used_at': fields.Datetime.now()})

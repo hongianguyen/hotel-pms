@@ -51,6 +51,9 @@
                     <button name="action_register_payment" type="object"
                             string="Register Payment" class="btn-primary"
                             invisible="payment_state == 'paid'"/>
+                    <button name="action_print_folio" type="object"
+                            string="Print Folio" class="btn-secondary"
+                            icon="fa-print"/>
                     <field name="payment_state" widget="statusbar"/>
                 </header>
                 <sheet>

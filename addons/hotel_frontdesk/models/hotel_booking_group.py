@@ -256,6 +256,14 @@ class HotelBookingGroup(models.Model):
                 raise UserError(_('No checked-in bookings to check out.'))
             todo.action_check_out()
 
+    def action_force_check_out(self):
+        """Check the whole group out despite unbalanced folios (admin only)."""
+        for group in self:
+            todo = group.reservation_ids.filtered(lambda r: r.state == 'checked_in')
+            if not todo:
+                raise UserError(_('No checked-in bookings to check out.'))
+            todo.action_force_check_out()
+
     def action_cancel(self):
         for group in self:
             in_house = group.reservation_ids.filtered(lambda r: r.state == 'checked_in')

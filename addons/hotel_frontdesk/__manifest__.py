@@ -30,6 +30,7 @@ Core PMS operations:
         'views/hotel_folio_views.xml',
         'views/res_partner_views.xml',
         'views/hotel_frontdesk_menu.xml',
+        'report/hotel_folio_report.xml',
     ],
     'installable': True,
     'application': False,

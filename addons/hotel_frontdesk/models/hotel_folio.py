@@ -171,6 +171,46 @@ class HotelFolio(models.Model):
         return self.search([('linked_folio_id', 'in', self.ids),
                             ('folio_type', '=', 'guest')])
 
+    def settled_payments(self):
+        """Payments the hotel actually holds — what the printed folio shows."""
+        self.ensure_one()
+        return self.payment_ids.filtered(
+            lambda p: p.state in self._SETTLED_PAYMENT_STATES
+        )
+
+    def action_print_folio(self):
+        """Print the folio for the guest to check and sign at departure."""
+        return self.env.ref(
+            'hotel_frontdesk.action_report_hotel_folio'
+        ).report_action(self)
+
+    def is_credit_ledger(self):
+        """True when this folio is not expected to be settled at departure.
+
+        A company folio held on the agency's payment terms is carried in the
+        city ledger and collected later against its invoice, so its balance
+        must not block the guest's departure. Every other folio — including
+        an agency folio without credit terms, which prepays — is a
+        departure-time settlement.
+        """
+        self.ensure_one()
+        return self.folio_type == 'company' and bool(self.agency_credit_term)
+
+    def amount_due_at_checkout(self, extra_charges=0.0):
+        """Amount the guest still has to settle before they may depart.
+
+        ``extra_charges`` covers charges that check-out is about to raise but
+        has not written yet (late check-out nights), so the figure quoted to
+        reception is the full amount to collect rather than the stale folio
+        balance. A credit-ledger folio is never due at the desk, and an
+        overpaid folio returns a negative amount (a refund the hotel owes)
+        rather than blocking departure.
+        """
+        self.ensure_one()
+        if self.is_credit_ledger():
+            return 0.0
+        return self.balance + extra_charges
+
     def _pending_reservations(self):
         """Reservations still checked in that can still charge this folio.
 

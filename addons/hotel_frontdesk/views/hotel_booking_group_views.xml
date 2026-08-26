@@ -45,6 +45,11 @@
                     <button name="action_check_out" type="object"
                             string="Check Out" class="btn-primary"
                             invisible="state != 'checked_in'"/>
+                    <button name="action_force_check_out" type="object"
+                            string="Check Out Anyway" class="btn-secondary"
+                            groups="hotel_core.group_hotel_admin"
+                            invisible="state != 'checked_in'"
+                            confirm="This checks the group out with money still owed on its folios. The outstanding amounts stay on the folios and are recorded in their logs. Continue?"/>
                     <button name="action_cancel" type="object"
                             string="Cancel" class="btn-secondary"
                             invisible="state in ('checked_in', 'checked_out', 'cancelled')"

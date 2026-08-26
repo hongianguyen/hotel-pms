@@ -251,6 +251,9 @@ class TestSplitFolio(TransactionCase):
             'amount': 200000.0,
         }).action_add_charge()
 
+        # The bar tab is the guest's to settle at the desk; the routed room
+        # charges ride the company folio's credit terms.
+        self._register_payment(guest_folio, 200000.0)
         res.action_check_out()
 
         self.assertTrue(company_folio.invoice_id, 'company folio not invoiced')
@@ -280,7 +283,9 @@ class TestSplitFolio(TransactionCase):
         folio = res.folio_id
 
         self._register_payment(folio, 800000.0)
-        res.action_check_out()
+        # Only a deposit was taken, so an ordinary check-out is barred; the
+        # point here is the residual, so force the departure through.
+        res.action_force_check_out()
         folio.invalidate_recordset()
 
         invoice = folio.invoice_id
@@ -365,6 +370,7 @@ class TestSplitFolio(TransactionCase):
         res_a.action_check_out()
         self.assertFalse(master.invoice_id,
                          'invoiced while a room was still in house')
+        self._register_payment(master, 4000000.0)
         res_b.action_check_out()
         self.assertTrue(master.invoice_id)
         self.assertEqual(master.invoice_id.partner_id, self.guest)

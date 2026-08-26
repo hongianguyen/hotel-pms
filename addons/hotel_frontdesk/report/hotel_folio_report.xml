@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════
+         GUEST FOLIO — printable bill the guest signs at departure
+         ════════════════════════════════════════════════════════════════ -->
+
+    <template id="report_hotel_folio_document">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="o.with_context(lang=o.guest_id.lang or o.env.lang)"/>
+            <t t-set="currency" t-value="doc.currency_id or doc.company_id.currency_id"/>
+            <div class="page">
+
+                <h3 class="mb-3">
+                    <strong>
+                        <t t-if="doc.folio_type == 'company'">Company Folio</t>
+                        <t t-else="">Guest Folio</t>
+                        <span t-field="doc.name">F0001</span>
+                    </strong>
+                </h3>
+
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <strong>Guest</strong><br/>
+                        <span t-field="doc.guest_id"
+                              t-options="{'widget': 'contact', 'fields': ['name', 'address', 'phone', 'email'], 'no_marker': True}"/>
+                        <div t-if="doc.bill_to_id and doc.bill_to_id != doc.guest_id" class="mt-2">
+                            <strong>Billed to</strong><br/>
+                            <span t-field="doc.bill_to_id"/>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <table class="table table-sm table-borderless">
+                            <tr t-if="doc.room_id">
+                                <td class="ps-0"><strong>Room</strong></td>
+                                <td class="text-end pe-0"><span t-field="doc.room_id.name"/></td>
+                            </tr>
+                            <tr t-if="doc.checkin_date">
+                                <td class="ps-0"><strong>Arrival</strong></td>
+                                <td class="text-end pe-0"><span t-field="doc.checkin_date"/></td>
+                            </tr>
+                            <tr t-if="doc.checkout_date">
+                                <td class="ps-0"><strong>Departure</strong></td>
+                                <td class="text-end pe-0"><span t-field="doc.checkout_date"/></td>
+                            </tr>
+                            <tr t-if="doc.reservation_id">
+                                <td class="ps-0"><strong>Reservation</strong></td>
+                                <td class="text-end pe-0">
+                                    <span t-field="doc.reservation_id.reservation_number"/>
+                                </td>
+                            </tr>
+                            <tr t-if="doc.group_id">
+                                <td class="ps-0"><strong>Group</strong></td>
+                                <td class="text-end pe-0"><span t-field="doc.group_id.name"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ── Charges ─────────────────────────────────────────── -->
+                <table class="table table-sm o_main_table" name="folio_charges">
+                    <thead>
+                        <tr>
+                            <th name="th_date">Date</th>
+                            <th name="th_desc">Description</th>
+                            <th name="th_type" class="text-center">Type</th>
+                            <th name="th_qty" class="text-end">Qty</th>
+                            <th name="th_price" class="text-end">Unit Price</th>
+                            <th name="th_subtotal" class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="doc.line_ids.sorted(lambda l: (l.date, l.id))" t-as="line">
+                            <td><span t-field="line.date"/></td>
+                            <td><span t-field="line.name"/></td>
+                            <td class="text-center">
+                                <span t-field="line.charge_type"/>
+                            </td>
+                            <td class="text-end"><span t-field="line.quantity"/></td>
+                            <td class="text-end">
+                                <span t-field="line.amount"
+                                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                            <td class="text-end">
+                                <span t-field="line.subtotal"
+                                      t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                            </td>
+                        </tr>
+                        <tr t-if="not doc.line_ids">
+                            <td colspan="6" class="text-center text-muted">
+                                No charges on this folio.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- ── Totals ──────────────────────────────────────────── -->
+                <div class="clearfix">
+                    <div id="total" class="row justify-content-end">
+                        <div class="col-5">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Total Charges</strong></td>
+                                    <td class="text-end">
+                                        <span t-field="doc.total_amount"
+                                              t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Payments &amp; Deposits</td>
+                                    <td class="text-end">
+                                        <span t-esc="-doc.amount_paid"
+                                              t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                    </td>
+                                </tr>
+                                <tr class="border-black o_total">
+                                    <td>
+                                        <strong t-if="doc.balance &lt; 0">Refund Due to Guest</strong>
+                                        <strong t-else="">Balance Due</strong>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>
+                                            <span t-esc="abs(doc.balance)"
+                                                  t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Payments taken ──────────────────────────────────── -->
+                <t t-set="settled_payments" t-value="doc.settled_payments()"/>
+                <div t-if="settled_payments" class="mt-3">
+                    <strong>Payments received</strong>
+                    <table class="table table-sm" name="folio_payments">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th>Reference</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="settled_payments" t-as="pay">
+                                <td><span t-field="pay.date"/></td>
+                                <td><span t-field="pay.journal_id.name"/></td>
+                                <td><span t-field="pay.memo"/></td>
+                                <td class="text-end">
+                                    <span t-field="pay.amount"
+                                          t-options="{'widget': 'monetary', 'display_currency': currency}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- ── Guest declaration &amp; signature ───────────────── -->
+                <div class="mt-4" style="page-break-inside: avoid;">
+                    <p class="mb-4" style="font-size: 9px;">
+                        I confirm that the charges listed above are correct and
+                        that I have received the goods and services shown. I
+                        accept personal liability for the total amount should
+                        the person, company or travel agency indicated fail to
+                        pay any part of it.
+                    </p>
+                    <div class="row">
+                        <div class="col-6">
+                            <div style="border-bottom: 1px solid black; height: 45px;"/>
+                            <div style="font-size: 9px;">Guest signature</div>
+                        </div>
+                        <div class="col-3">
+                            <div style="border-bottom: 1px solid black; height: 45px;"/>
+                            <div style="font-size: 9px;">Cashier</div>
+                        </div>
+                        <div class="col-3">
+                            <div style="border-bottom: 1px solid black; height: 45px;">
+                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            </div>
+                            <div style="font-size: 9px;">Date</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <template id="report_hotel_folio">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="hotel_frontdesk.report_hotel_folio_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_hotel_folio" model="ir.actions.report">
+        <field name="name">Guest Folio</field>
+        <field name="model">hotel.folio</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hotel_frontdesk.report_hotel_folio</field>
+        <field name="report_file">hotel_frontdesk.report_hotel_folio</field>
+        <field name="print_report_name">'Folio - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_hotel_folio"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
