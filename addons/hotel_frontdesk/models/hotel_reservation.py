@@ -666,26 +666,38 @@ class HotelReservation(models.Model):
         imported without its payments, a write-off, a company account being
         moved to the city ledger by hand. Always leaves a trace.
         """
+        if not self.env.su and not self.env.user.has_group(
+                'hotel_core.group_hotel_admin'):
+            raise UserError(_(
+                'Only a Hotel Administrator can check out a reservation '
+                'whose folio is not balanced.'
+            ))
+        # Which folios this departure closes has to be read before the state
+        # changes, but the amount is read after: check-out may still raise a
+        # late-checkout charge, and the trace has to record the debt actually
+        # left behind rather than the one showing beforehand.
+        folios_by_res = {
+            rec.id: rec._folios_settling_on_departure() for rec in self
+        }
+        res = self.with_context(
+            force_unbalanced_checkout=True).action_check_out()
+
         for rec in self:
-            if not rec.env.su and not rec.env.user.has_group(
-                    'hotel_core.group_hotel_admin'):
-                raise UserError(_(
-                    'Only a Hotel Administrator can check out a reservation '
-                    'whose folio is not balanced.'
-                ))
-            for folio in rec._folios_settling_on_departure():
-                currency = folio.currency_id or rec.env.company.currency_id
+            for folio in folios_by_res[rec.id]:
+                folio.invalidate_recordset(['balance'])
+                currency = folio.currency_id or self.env.company.currency_id
                 due = folio.amount_due_at_checkout()
                 if currency.compare_amounts(due, 0) <= 0:
                     continue
                 folio.message_post(body=_(
-                    'Check-out forced by %(user)s with %(amount)s still '
-                    'outstanding on this folio.'
+                    'Check-out of %(reservation)s forced by %(user)s with '
+                    '%(amount)s still outstanding on this folio.'
                 ) % {
-                    'user': rec.env.user.name,
-                    'amount': rec._format_money(due, currency),
+                    'reservation': rec.reservation_number,
+                    'user': self.env.user.name,
+                    'amount': self._format_money(due, currency),
                 })
-        return self.with_context(force_unbalanced_checkout=True).action_check_out()
+        return res
 
     def action_check_out(self):
         """Checked In → Checked Out. Generate invoice (only when last room checks out), room → dirty."""

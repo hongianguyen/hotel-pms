@@ -264,6 +264,25 @@ class TestCheckoutBalance(TransactionCase):
         self.assertGreater(len(folio.message_ids), before,
                            'a forced check-out must leave a trace on the folio')
 
+    def test_forced_log_records_the_debt_actually_left_behind(self):
+        """Late-checkout nights raised by the departure must be in the trace."""
+        res = self._check_in(
+            checkin_date=self.today - timedelta(days=3),
+            checkout_date=self.today - timedelta(days=1),
+        )
+        folio = res.folio_id
+        self._register_payment(folio, folio.balance)
+
+        res.with_user(self.hotel_admin).action_force_check_out()
+        folio.invalidate_recordset()
+
+        self.assertEqual(folio.balance, 1000000.0,
+                         'the late-checkout night is still owed')
+        logged = folio.message_ids[0].body.replace('\N{NO-BREAK SPACE}', ' ')
+        self.assertIn('1,000,000', logged,
+                      'the trace must show the late-checkout night, not the '
+                      'zero balance that showed before departure')
+
     def test_reception_cannot_force(self):
         res = self._check_in().with_user(self.reception)
         with self.assertRaises(UserError):
