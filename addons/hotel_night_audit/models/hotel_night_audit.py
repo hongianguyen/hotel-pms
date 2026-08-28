@@ -189,9 +189,11 @@ class HotelNightAudit(models.Model):
         payment_card = 0
         payment_bank = 0
 
+        # Odoo 19 payment states: draft / in_process / paid / canceled /
+        # rejected — there is no 'posted'. Same set hotel_folio uses.
         payments = self.env['account.payment'].search([
             ('date', '=', audit_date),
-            ('state', '=', 'posted'),
+            ('state', 'in', ('in_process', 'paid')),
         ])
         for payment in payments:
             journal = payment.journal_id

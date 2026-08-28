@@ -31,6 +31,9 @@
             <field name="model_id" ref="hotel_frontdesk.model_hotel_reservation"/>
             <field name="subject">See you tomorrow! Reservation {{ object.reservation_number }}</field>
             <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+            <!-- use_default_to must be off: it would ignore email_to and look
+                 for a partner_id/email field, which our model does not have -->
+            <field name="use_default_to" eval="False"/>
             <field name="email_to">{{ object.guest_id.email }}</field>
             <field name="body_html" type="html">
 <div style="margin: 0px; padding: 0px;">
