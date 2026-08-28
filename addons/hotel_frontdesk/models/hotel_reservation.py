@@ -360,6 +360,22 @@ class HotelReservation(models.Model):
 
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
+        # Lock the rooms being booked before looking for overlaps.
+        #
+        # Without this the check is a read followed by a write with no
+        # serialisation: two confirmations for the same room and dates can
+        # both run the search, both find nothing, and both commit — the
+        # constraint is pure Python, so PostgreSQL never arbitrates. Taking
+        # a row lock on hotel_room makes the second transaction wait for the
+        # first to commit, so its search then sees the winning booking.
+        rooms = self.filtered(
+            lambda r: r.room_id and r.state in ('confirmed', 'checked_in')
+        ).room_id
+        if rooms:
+            self.env.cr.execute(
+                'SELECT id FROM hotel_room WHERE id IN %s ORDER BY id FOR UPDATE',
+                (tuple(rooms.ids),))
+
         for rec in self:
             if rec.room_id and rec.state in ('confirmed', 'checked_in'):
                 overlap = self.search([
@@ -375,6 +391,38 @@ class HotelReservation(models.Model):
                         % (rec.room_id.name, overlap.checkin_date,
                            overlap.checkout_date, overlap.reservation_number)
                     )
+
+    @api.constrains('rate_plan_id', 'checkin_date', 'checkout_date', 'state')
+    def _check_rate_plan_restrictions(self):
+        """Honour the rate plan's stop-sell and minimum-stay rules.
+
+        Both fields existed on hotel.rate.plan but nothing ever enforced
+        them: stop_sell only made get_rate_for_date() return False, which
+        silently fell back to the room type's base rate instead of refusing
+        the booking, and min_stay was read nowhere at all.
+
+        Only pre-arrival bookings are judged. A guest already in house was
+        sold under the terms that applied then, and stopping a plan later
+        must not retro-invalidate their stay or block an amendment.
+        """
+        for rec in self:
+            plan = rec.rate_plan_id
+            if not plan or rec.state not in ('draft', 'confirmed'):
+                continue
+            if plan.stop_sell:
+                raise ValidationError(_(
+                    'Rate plan "%(plan)s" is on stop sell and cannot be used '
+                    'for reservation %(number)s. Pick another rate plan.',
+                    plan=plan.name, number=rec.reservation_number or _('new'),
+                ))
+            if plan.min_stay and rec.nights and rec.nights < plan.min_stay:
+                raise ValidationError(_(
+                    'Rate plan "%(plan)s" requires a minimum stay of '
+                    '%(min)s night(s); reservation %(number)s is %(nights)s.',
+                    plan=plan.name, min=plan.min_stay,
+                    number=rec.reservation_number or _('new'),
+                    nights=rec.nights,
+                ))
 
     # ── CRUD ──────────────────────────────────────────────────────────────
 
@@ -605,15 +653,27 @@ class HotelReservation(models.Model):
         vals = []
         current = self.checkout_date
         room_name = self.room_id.name or 'Room'
+        # Price and post a late night exactly like a booked one
+        # (hotel.folio._generate_room_charges): the rate plan wins over the
+        # flat nightly rate, and an ROH/combo booking's revenue belongs to
+        # the type that was SOLD, not the physical room it landed in.
+        account = (self.room_type_id.revenue_account_id
+                   or self.room_id.room_type_id.revenue_account_id)
         while current < today:
+            day_rate = self.nightly_rate
+            if self.rate_plan_id and not self.combo_id:
+                plan_rate = self.rate_plan_id.get_rate_for_date(current)
+                if plan_rate:
+                    day_rate = plan_rate
             vals.append({
                 'name': _('Late checkout — Room %s — %s') % (
                     room_name, current.strftime('%d/%m/%Y')),
                 'charge_type': 'room',
                 'quantity': 1,
-                'amount': self.nightly_rate,
+                'amount': day_rate,
                 'date': current,
-                'account_id': self.room_id.room_type_id.revenue_account_id.id or False,
+                'account_id': account.id or False,
+                'reservation_id': self.id,
             })
             current += timedelta(days=1)
         return vals
@@ -785,11 +845,13 @@ class HotelReservation(models.Model):
                     '(which settles the folio) instead of cancelling, '
                     'otherwise the folio charges would be left dangling.'
                 ) % rec.reservation_number)
-            old_state = rec.state
             rec.state = 'cancelled'
-            if old_state == 'confirmed' and rec.room_id:
-                if rec.room_id.status == 'occupied':
-                    rec.room_id.action_set_dirty()
+            # Deliberately no room-status change. Only action_check_in marks
+            # a room occupied, and a checked-in stay cannot reach this line
+            # (it is refused above). So an 'occupied' room here belongs to a
+            # DIFFERENT guest who is currently in house — the old code
+            # flipped their room to dirty and had housekeeping strip an
+            # occupied room.
 
     def action_reset_draft(self):
         """Reset cancelled / no-show back to draft."""

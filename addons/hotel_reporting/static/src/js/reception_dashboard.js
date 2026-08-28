@@ -4,6 +4,26 @@ import { registry } from "@web/core/registry";
 import { Component, onWillStart, onWillUnmount, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
+/**
+ * Dates on this board are hotel business dates, so they must be read in the
+ * hotel's own timezone — never UTC.
+ *
+ * `new Date().toISOString()` converts to UTC first: at 01:00 in UTC+7 that
+ * is still 18:00 the previous day, so the night shift (00:00–07:00) opened
+ * the board on yesterday. And `new Date("2026-08-29")` parses as UTC
+ * midnight, which is a different calendar day west of Greenwich.
+ */
+function localISODate(d) {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** Parse a YYYY-MM-DD business date as local midnight, not UTC midnight. */
+function parseISODate(s) {
+    const [y, m, d] = String(s).split("-").map(Number);
+    return new Date(y, m - 1, d);
+}
+
 export class ReceptionDashboard extends Component {
     static template = "hotel_reporting.ReceptionDashboard";
 
@@ -15,7 +35,7 @@ export class ReceptionDashboard extends Component {
             kpis: {},
             gantt: { rooms: [], reservations: [], dates: [] },
             loading: true,
-            ganttStartDate: new Date().toISOString().split('T')[0],
+            ganttStartDate: localISODate(new Date()),
         });
         this.dragResId = null;
 
@@ -49,16 +69,16 @@ export class ReceptionDashboard extends Component {
     }
 
     onPrevPeriod() {
-        const d = new Date(this.state.ganttStartDate);
+        const d = parseISODate(this.state.ganttStartDate);
         d.setDate(d.getDate() - 15);
-        this.state.ganttStartDate = d.toISOString().split('T')[0];
+        this.state.ganttStartDate = localISODate(d);
         this.loadData();
     }
 
     onNextPeriod() {
-        const d = new Date(this.state.ganttStartDate);
+        const d = parseISODate(this.state.ganttStartDate);
         d.setDate(d.getDate() + 15);
-        this.state.ganttStartDate = d.toISOString().split('T')[0];
+        this.state.ganttStartDate = localISODate(d);
         this.loadData();
     }
 
@@ -184,13 +204,13 @@ export class ReceptionDashboard extends Component {
 
         // Keep same number of nights, shift to dropped date
         const nights = Math.round(
-            (new Date(res.checkout_date) - new Date(res.checkin_date)) /
+            (parseISODate(res.checkout_date) - parseISODate(res.checkin_date)) /
             (1000 * 60 * 60 * 24)
         );
-        const newCheckin = new Date(dateStr);
-        const newCheckout = new Date(dateStr);
+        const newCheckin = parseISODate(dateStr);
+        const newCheckout = parseISODate(dateStr);
         newCheckout.setDate(newCheckout.getDate() + nights);
-        const fmt = (d) => d.toISOString().split("T")[0];
+        const fmt = localISODate;
 
         try {
             await this.orm.write("hotel.reservation", [resId], {
