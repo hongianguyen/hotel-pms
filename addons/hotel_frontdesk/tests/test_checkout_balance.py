@@ -83,6 +83,12 @@ class TestCheckoutBalance(TransactionCase):
     def _check_in(self, **overrides):
         res = self._make_reservation(**overrides)
         res.action_confirm()
+        # Agencies without credit terms must prepay before arrival, and
+        # create() now derives that rule for programmatic bookings too.
+        # These tests are about the check-OUT guard, so satisfy the
+        # arrival precondition and move on.
+        if res.payment_required and not res.prepaid:
+            res.prepaid = True
         res.action_check_in()
         return res
 
@@ -331,3 +337,111 @@ class TestCheckoutBalance(TransactionCase):
             sorted(action['context']['active_ids']),
             sorted((res.folio_id | res.folio_id.linked_folio_id).ids),
             'both sides of a split stay must print together')
+
+    # ── Audit fixes (29 Aug 2026) ────────────────────────────────────────
+
+    def test_extending_a_stay_in_house_reposts_room_charges(self):
+        """Amending dates after check-in must resync the folio."""
+        res = self._check_in()
+        folio = res.folio_id
+        self.assertEqual(folio.total_amount, 2000000.0, '2 nights at check-in')
+
+        res.checkout_date = self.today + timedelta(days=4)
+        folio.invalidate_recordset()
+
+        room_lines = folio.line_ids.filtered(lambda l: l.charge_type == 'room')
+        self.assertEqual(len(room_lines), 4, 'all four nights are charged')
+        self.assertEqual(folio.total_amount, 4000000.0)
+
+        # The guard must now see the real debt, not the stale total.
+        with self.assertRaises(UserError):
+            res.action_check_out()
+
+    def test_shortening_a_stay_in_house_removes_the_dropped_nights(self):
+        res = self._check_in()
+        folio = res.folio_id
+        res.checkout_date = self.today + timedelta(days=1)
+        folio.invalidate_recordset()
+        self.assertEqual(folio.total_amount, 1000000.0, 'one night only')
+
+    def test_amending_does_not_touch_another_reservations_charges(self):
+        """Group folios hold several reservations' lines — resync only ours."""
+        group = self.env['hotel.booking.group'].create({
+            'guest_id': self.guest.id,
+            'checkin_date': self.today,
+            'checkout_date': self.today + timedelta(days=2),
+        })
+        res_a = self._make_reservation(group_id=group.id)
+        res_b = self._make_reservation(group_id=group.id,
+                                       room_id=self.room2.id)
+        for r in (res_a, res_b):
+            r.action_confirm()
+            if r.payment_required and not r.prepaid:
+                r.prepaid = True
+            r.action_check_in()
+        master = group.master_folio_id
+        before_b = sum(
+            master.line_ids.filtered(lambda l: l.reservation_id == res_b)
+            .mapped('subtotal'))
+
+        res_a.checkout_date = self.today + timedelta(days=3)
+        master.invalidate_recordset()
+        after_b = sum(
+            master.line_ids.filtered(lambda l: l.reservation_id == res_b)
+            .mapped('subtotal'))
+        self.assertEqual(before_b, after_b, "the other stay must be untouched")
+
+    def test_negative_quantity_charge_is_refused(self):
+        """A negative quantity would lower the balance and beat the guard."""
+        res = self._check_in()
+        wizard = self.env['hotel.add.charge.wizard'].create({
+            'folio_id': res.folio_id.id,
+            'name': 'Bogus credit',
+            'charge_type': 'manual',
+            'quantity': -1.0,
+            'amount': 500000.0,
+        })
+        with self.assertRaises(UserError):
+            wizard.action_add_charge()
+
+    def test_charge_refused_once_the_folio_is_invoiced(self):
+        """Post-invoice charges could never be billed — refuse them."""
+        res = self._check_in()
+        folio = res.folio_id
+        self._register_payment(folio, folio.balance)
+        res.action_check_out()
+        self.assertTrue(folio.invoice_id, 'check-out raises the invoice')
+
+        wizard = self.env['hotel.add.charge.wizard'].create({
+            'folio_id': folio.id,
+            'name': 'Late minibar',
+            'charge_type': 'fnb',
+            'quantity': 1.0,
+            'amount': 100000.0,
+        })
+        with self.assertRaises(UserError):
+            wizard.action_add_charge()
+
+    def test_agency_prepayment_rule_applies_to_programmatic_bookings(self):
+        """The rule lived only in an onchange, so wizards/imports skipped it."""
+        res = self._make_reservation(agency_id=self.cash_agency.id)
+        self.assertTrue(
+            res.payment_required,
+            'a non-credit agency booking must require prepayment')
+        credit = self._make_reservation(agency_id=self.credit_agency.id)
+        self.assertFalse(
+            credit.payment_required,
+            'credit terms mean no prepayment is demanded')
+
+    def test_price_list_change_spares_in_house_guests(self):
+        """New prices apply to future bookings, not to a guest already in."""
+        booked = self._make_reservation(room_id=self.room2.id)
+        booked.action_confirm()
+        in_house = self._check_in()
+
+        self.room_type.base_rate = 9999999.0
+        (booked | in_house).invalidate_recordset()
+
+        self.assertEqual(
+            in_house.nightly_rate, 1000000.0,
+            'an in-house stay keeps the rate it was quoted')
