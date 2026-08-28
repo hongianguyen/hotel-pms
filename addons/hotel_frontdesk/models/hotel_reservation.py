@@ -158,11 +158,36 @@ class HotelReservation(models.Model):
             else:
                 rec.allowed_room_type_ids = rec.room_type_id
 
-    @api.depends('rate_plan_id', 'room_id', 'room_type_id',
-                 'room_type_id.is_roh', 'combo_id')
+    # Rates quoted once the guest has arrived (or left) are agreed prices,
+    # and their room charges are already posted to the folio — a later
+    # price-list edit must not rewrite them. Only these states track the
+    # current price list.
+    _RATE_FOLLOWS_PRICE_LIST = ('draft', 'confirmed')
+
+    @api.depends('rate_plan_id', 'rate_plan_id.base_rate',
+                 'room_id', 'room_id.base_rate',
+                 'room_type_id', 'room_type_id.is_roh',
+                 'room_type_id.base_rate',
+                 'combo_id', 'combo_id.nightly_rate',
+                 'state')
     def _compute_nightly_rate(self):
+        # Read the persisted rate directly: for records whose price is
+        # already locked in we re-assign what is on disk rather than
+        # recomputing (a stored compute must assign every record in self).
+        locked = self.filtered(
+            lambda r: r.state not in self._RATE_FOLLOWS_PRICE_LIST
+            and isinstance(r.id, int))
+        stored = {}
+        if locked:
+            self.env.cr.execute(
+                'SELECT id, nightly_rate FROM hotel_reservation WHERE id IN %s',
+                (tuple(locked.ids),))
+            stored = dict(self.env.cr.fetchall())
+
         for rec in self:
-            if rec.combo_id:
+            if rec.id in stored:
+                rec.nightly_rate = stored[rec.id] or 0.0
+            elif rec.combo_id:
                 rec.nightly_rate = rec.combo_id.nightly_rate
             elif rec.rate_plan_id and rec.rate_plan_id.base_rate:
                 rec.nightly_rate = rec.rate_plan_id.base_rate
@@ -364,6 +389,12 @@ class HotelReservation(models.Model):
                 group = self.env['hotel.booking.group'].browse(vals['group_id'])
                 if group.master_folio_id:
                     vals['folio_id'] = group.master_folio_id.id
+            # Prepayment rule for non-credit agencies. The form onchange sets
+            # this, but the group wizard and programmatic creates bypass
+            # onchanges — derive it here so no path skips the rule.
+            if vals.get('agency_id') and 'payment_required' not in vals:
+                agency = self.env['res.partner'].browse(vals['agency_id'])
+                vals['payment_required'] = not agency.hotel_credit_term
         records = super().create(vals_list)
         # Keep the folio's primary-reservation convention (room/dates display)
         for rec in records:
@@ -783,6 +814,12 @@ class HotelReservation(models.Model):
         'nightly_rate', 'rate_plan_id', 'guest_id',
     )
 
+    # Fields whose amendment changes what the folio's room charges should be.
+    _ROOM_CHARGE_FIELDS = (
+        'checkin_date', 'checkout_date', 'room_id', 'room_type_id',
+        'rate_plan_id', 'combo_id', 'nightly_rate',
+    )
+
     def write(self, vals):
         protected = set(vals) & set(self._PROTECTED_AFTER_CHECKOUT)
         if protected and not self.env.context.get('bypass_checkout_guard'):
@@ -793,10 +830,61 @@ class HotelReservation(models.Model):
                     'modified (fields: %s).'
                 ) % (', '.join(locked.mapped('reservation_number')),
                      ', '.join(sorted(protected))))
+        # Snapshot in-house reservations before the write: the resync needs
+        # the OLD room name to catch legacy lines with no reservation_id.
+        resync = self.browse()
+        old_rooms = {}
+        if set(vals) & set(self._ROOM_CHARGE_FIELDS):
+            resync = self.filtered(lambda r: r.state == 'checked_in')
+            old_rooms = {r.id: r.room_id.name for r in resync}
         res = super().write(vals)
         if 'combo_id' in vals:
             self._sync_combo_services()
+        for rec in resync:
+            rec._resync_room_charges(old_room_name=old_rooms.get(rec.id))
         return res
+
+    def _resync_room_charges(self, old_room_name=None):
+        """Regenerate the folio's room-charge lines after an amendment.
+
+        Dates, room or rate of a checked-in reservation changed: without
+        this, the folio keeps the charges posted at check-in and the
+        check-out balance guard clears departure on a stale total.
+
+        Runs with sudo, like every other folio side-effect reception
+        triggers from a record it may write to.
+        """
+        self.ensure_one()
+        folio = self._folio_for_charge_type('room').sudo()
+        if not folio:
+            return
+        if folio.invoice_id:
+            # An invoiced folio must not be rewritten silently — leave the
+            # lines and put a loud note in the chatter instead.
+            self.message_post(body=_(
+                'Reservation amended after its folio %s was invoiced: room '
+                'charges were NOT resynced. Adjust the invoice manually.'
+            ) % folio.name)
+            return
+        own_lines = folio.line_ids.filtered(
+            lambda l: l.charge_type == 'room' and (
+                l.reservation_id == self
+                # Legacy lines (posted before reservation_id existed):
+                or (not l.reservation_id and folio.reservation_id == self)
+                or (not l.reservation_id and not folio.reservation_id
+                    and old_room_name
+                    and l.name.startswith('Room %s — ' % old_room_name))
+            ))
+        own_lines.unlink()
+        folio._generate_room_charges(self)
+        self.message_post(body=_(
+            'Stay amended while checked in: room charges regenerated '
+            '(%(nights)s night(s), room %(room)s, %(ci)s → %(co)s).',
+            nights=(self.checkout_date - self.checkin_date).days,
+            room=self.room_id.name,
+            ci=self.checkin_date.strftime('%d/%m/%Y'),
+            co=self.checkout_date.strftime('%d/%m/%Y'),
+        ))
 
     # ── No-show cron (spec §6.1) ─────────────────────────────────────────
     @api.model

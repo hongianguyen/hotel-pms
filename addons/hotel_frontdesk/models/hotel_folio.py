@@ -274,6 +274,7 @@ class HotelFolio(models.Model):
                 'amount': day_rate,
                 'date': current,
                 'account_id': account.id or False,
+                'reservation_id': res.id,
             }))
             current += timedelta(days=1)
 
@@ -421,6 +422,13 @@ class HotelFolioLine(models.Model):
     folio_id = fields.Many2one(
         'hotel.folio', string='Folio', required=True, ondelete='cascade',
     )
+    reservation_id = fields.Many2one(
+        'hotel.reservation', string='Reservation', index=True,
+        ondelete='set null',
+        help='Reservation this charge was generated for. Room charges carry '
+             'it so amendments can resync exactly their own lines — group '
+             'folios hold lines from several reservations.',
+    )
     name = fields.Char('Description', required=True)
     date = fields.Date(
         'Charge Date', required=True, index=True,
@@ -443,6 +451,11 @@ class HotelFolioLine(models.Model):
         'account.account', string='Revenue Account',
         help='GL account for this charge line',
     )
+
+    _quantity_positive = models.Constraint(
+        'CHECK(quantity > 0)',
+        'Charge quantity must be positive — a negative quantity would lower '
+        'the folio balance and bypass the check-out balance guard.')
 
     @api.depends('quantity', 'amount')
     def _compute_subtotal(self):

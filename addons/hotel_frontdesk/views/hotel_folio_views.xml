@@ -47,7 +47,7 @@
                     <button name="%(hotel_frontdesk.action_hotel_add_charge_wizard)d"
                             type="action" string="Add Charge" class="btn-secondary"
                             context="{'default_folio_id': id}"
-                            invisible="payment_state == 'paid'"/>
+                            invisible="payment_state == 'paid' or invoice_id"/>
                     <button name="action_register_payment" type="object"
                             string="Register Payment" class="btn-primary"
                             invisible="payment_state == 'paid'"/>

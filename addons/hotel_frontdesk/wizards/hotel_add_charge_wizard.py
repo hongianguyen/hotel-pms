@@ -61,6 +61,23 @@ class HotelAddChargeWizard(models.TransientModel):
         self.ensure_one()
         if self.amount <= 0:
             raise UserError(_('Unit price must be positive.'))
+        if self.quantity <= 0:
+            raise UserError(_('Quantity must be positive.'))
+
+        target = self.post_to_folio_id or self.folio_id
+        if target.invoice_id:
+            # Nothing adds lines to an existing invoice, so a charge posted
+            # now could never be billed: it would sit on the folio as a
+            # permanent phantom balance and show up unpaid in every night
+            # audit. Refuse instead of silently losing the revenue.
+            raise UserError(_(
+                'Folio %(folio)s is already invoiced (%(invoice)s), so this '
+                'charge could never be billed.\n\n'
+                'Raise a separate invoice for this amount in Accounting, or '
+                'have an administrator reset the folio invoice first.',
+                folio=target.name,
+                invoice=target.invoice_id.name or _('draft'),
+            ))
 
         account = False
         if self.service_id and self.service_id.account_id:
