@@ -10,13 +10,11 @@
             <t t-set="currency" t-value="doc.currency_id or doc.company_id.currency_id"/>
             <div class="page">
 
-                <h3 class="mb-3">
-                    <strong>
-                        <t t-if="doc.folio_type == 'company'">Company Folio</t>
-                        <t t-else="">Guest Folio</t>
-                        <span t-field="doc.name">F0001</span>
-                    </strong>
-                </h3>
+                <h2>
+                    <t t-if="doc.folio_type == 'company'">Company Folio</t>
+                    <t t-else="">Guest Folio</t>
+                    <span t-field="doc.name">F0001</span>
+                </h2>
 
                 <div class="row mb-4">
                     <div class="col-6">
