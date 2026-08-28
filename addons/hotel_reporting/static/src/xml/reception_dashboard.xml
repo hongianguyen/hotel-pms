@@ -112,12 +112,18 @@
                                                 t-on-dragleave="(ev) => this.onDragLeave(ev)"
                                                 t-on-drop="(ev) => this.onDrop(ev, room.id, seg.date)">
                                                 <t t-if="seg.type === 'reservation'">
-                                                    <span t-att-class="'hd-bar state-' + seg.res.state"
-                                                          draggable="true"
+                                                    <span t-att-class="'hd-bar state-' + seg.res.state + ' color-' + (seg.res.color_key || 'other') + (seg.res.payment_issue ? ' has-payment-issue' : '') + (seg.overlaps.length ? ' has-conflict' : '')"
+                                                          t-att-draggable="isDraggable(seg.res) ? 'true' : 'false'"
                                                           t-on-dragstart="(ev) => this.onDragStart(ev, seg.res.id)"
                                                           t-on-click.stop="() => this.openReservation(seg.res.id)"
-                                                          t-att-title="seg.res.guest_name">
+                                                          t-att-title="barTitle(seg)">
                                                         <t t-out="seg.res.guest_name"/>
+                                                    </span>
+                                                    <span t-if="seg.overlaps.length"
+                                                          class="hd-conflict-badge"
+                                                          t-att-title="'Double-booked — also on this room:\n' + seg.overlap_title"
+                                                          t-on-click.stop="() => this.openReservation(seg.overlaps[0].id)">
+                                                        +<t t-out="seg.overlaps.length"/>
                                                     </span>
                                                 </t>
                                             </td>

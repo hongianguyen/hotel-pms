@@ -489,6 +489,39 @@ thead .hd-room-col {
 .hd-bar.state-checked_in  { background: var(--status-active); }
 .hd-bar.state-checked_out { background: var(--status-past); }
 
+/* Conflict / payment flags from get_gantt_data's color_key + payment_issue.
+   The backend has always sent these; the board now renders them. */
+.hd-bar.color-conflict {
+    background: var(--status-danger, #DC2626);
+    color: #fff;
+    box-shadow: inset 0 0 0 2px #7F1D1D;
+}
+.hd-bar.has-conflict {
+    box-shadow: inset 0 0 0 2px #7F1D1D;
+}
+.hd-bar.has-payment-issue::after {
+    content: "\20AB";               /* dong sign: unsettled balance */
+    margin-left: 4px;
+    font-weight: 800;
+    opacity: 0.85;
+}
+.hd-bar[draggable="false"] { cursor: pointer; }
+
+/* "+N" chip marking bookings hidden behind the bar on this cell. */
+.hd-conflict-badge {
+    display: inline-block;
+    margin-left: 3px;
+    padding: 0 4px;
+    border-radius: 6px;
+    background: #7F1D1D;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 14px;
+    cursor: pointer;
+    vertical-align: top;
+}
+
 /* The Room Status Board was removed from the reception screen (05 Aug
    2026): the calendar carries room state on its own, and the tiles cost
    the vertical space the board needs. Room records stay reachable from

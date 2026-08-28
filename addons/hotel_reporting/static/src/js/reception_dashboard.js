@@ -10,6 +10,7 @@ export class ReceptionDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
         this.state = useState({
             kpis: {},
             gantt: { rooms: [], reservations: [], dates: [] },
@@ -83,11 +84,17 @@ export class ReceptionDashboard extends Component {
         let i = 0;
         while (i < dates.length) {
             const d = dates[i];
-            const res = this.state.gantt.reservations.find(
+            // All bookings covering this cell, not just the first: the
+            // backend already sorts by priority (conflicts first), so [0]
+            // is the bar to show and the rest are double-bookings that
+            // must stay visible instead of being silently hidden.
+            const covering = this.state.gantt.reservations.filter(
                 (r) => r.room_id === roomId &&
                     r.checkin_date <= d.date &&
                     r.checkout_date > d.date
             );
+            const res = covering[0];
+            const overlaps = covering.slice(1);
             if (res) {
                 let colspan = 0;
                 while (i + colspan < dates.length) {
@@ -105,6 +112,12 @@ export class ReceptionDashboard extends Component {
                     is_past: d.is_past,
                     colspan: colspan,
                     res: res,
+                    overlaps: overlaps,
+                    overlap_title: overlaps.length
+                        ? overlaps.map(
+                            (r) => `${r.reservation_number} — ${r.guest_name}`
+                          ).join('\n')
+                        : '',
                 });
                 i += colspan;
             } else {
@@ -156,6 +169,19 @@ export class ReceptionDashboard extends Component {
         const res = this.state.gantt.reservations.find((r) => r.id === resId);
         if (!res) return;
 
+        // Only pre-arrival bookings can be moved by dragging. An in-house or
+        // departed stay has room charges already posted and its room flagged
+        // occupied; the server refuses the write, so do not pretend otherwise.
+        if (!this.isDraggable(res)) {
+            this.notification.add(
+                `${res.reservation_number} is ${res.state.replace("_", " ")} ` +
+                `and cannot be moved from the board. Open the reservation to ` +
+                `amend it.`,
+                { type: "warning" }
+            );
+            return;
+        }
+
         // Keep same number of nights, shift to dropped date
         const nights = Math.round(
             (new Date(res.checkout_date) - new Date(res.checkin_date)) /
@@ -174,8 +200,33 @@ export class ReceptionDashboard extends Component {
             });
             await this.loadData();
         } catch (e) {
-            console.error("Drag-drop update failed:", e);
+            // The server rejects overlaps and locked stays. Surface the
+            // reason and reload, otherwise staff believe the move happened.
+            const msg =
+                e?.data?.message || e?.message || "The move was rejected.";
+            this.notification.add(msg, {
+                type: "danger",
+                title: "Could not move reservation",
+            });
+            await this.loadData();
         }
+    }
+
+    /** Pre-arrival stays only: in-house/departed bookings are server-locked. */
+    isDraggable(res) {
+        return res.state === "draft" || res.state === "confirmed";
+    }
+
+    /** Bar tooltip: guest, plus any double-booking hidden behind this bar. */
+    barTitle(seg) {
+        let title = seg.res.guest_name;
+        if (seg.res.payment_issue) {
+            title += " — unpaid balance";
+        }
+        if (seg.overlaps.length) {
+            title += `\n⚠ Double-booked with:\n${seg.overlap_title}`;
+        }
+        return title;
     }
 
     formatCurrency(value) {
