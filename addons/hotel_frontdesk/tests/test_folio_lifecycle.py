@@ -250,13 +250,15 @@ class TestFolioLifecycle(TransactionCase):
 
     # ── Groups ───────────────────────────────────────────────────────────
 
-    def _make_group(self):
-        group = self.env['hotel.booking.group'].create({
+    def _make_group(self, **overrides):
+        vals = {
             'guest_id': self.guest.id,
             'checkin_date': self.today,
             'checkout_date': self.today + timedelta(days=2),
             'send_confirmation': False,
-        })
+        }
+        vals.update(overrides)
+        group = self.env['hotel.booking.group'].create(vals)
         for room in (self.room, self.room2):
             self._make_reservation(room_id=room.id, group_id=group.id)
         return group
@@ -304,3 +306,57 @@ class TestFolioLifecycle(TransactionCase):
         self.assertEqual(folios, group.master_folio_id,
                          'and its rooms must charge to it, not open '
                          'individual folios')
+
+    def test_one_rooms_deposit_does_not_check_in_the_whole_group(self):
+        """The master folio is shared, so the prepayment must be measured
+        against every room charging it — not against the room at the desk."""
+        group = self._make_group(
+            agency_id=self.cash_agency.id,
+            booker_id=self.guest.id,
+        )
+        group.action_confirm()
+        first, second = group.reservation_ids[0], group.reservation_ids[1]
+        self.assertTrue(first.payment_required)
+
+        # Exactly one room's worth of money on the shared master folio.
+        master = first.folio_id.linked_folio_id or first.folio_id
+        self._register_payment(master, first.total_amount)
+
+        first.action_check_in()
+        self.assertEqual(first.state, 'checked_in',
+                         'one room paid, one room may arrive')
+
+        with self.assertRaises(UserError):
+            second.action_check_in()
+        self.assertEqual(second.state, 'confirmed',
+                         'the second room is not paid for and must stay out')
+
+    def test_group_fully_prepaid_checks_every_room_in(self):
+        group = self._make_group(
+            agency_id=self.cash_agency.id,
+            booker_id=self.guest.id,
+        )
+        group.action_confirm()
+        first = group.reservation_ids[0]
+        master = first.folio_id.linked_folio_id or first.folio_id
+        self._register_payment(
+            master, sum(group.reservation_ids.mapped('total_amount')))
+
+        group.action_check_in()
+
+        self.assertEqual(set(group.reservation_ids.mapped('state')),
+                         {'checked_in'})
+
+    def test_group_room_inherits_the_prepayment_rule_from_the_group(self):
+        """A room added to a corporate group bills through the group's
+        agency, so it must prepay on the group's terms too."""
+        cash = self._make_group(
+            agency_id=self.cash_agency.id, booker_id=self.guest.id)
+        credit = self._make_group(
+            agency_id=self.credit_agency.id, booker_id=self.guest.id)
+
+        self.assertTrue(all(cash.reservation_ids.mapped('payment_required')),
+                        'no credit terms → the rooms prepay')
+        self.assertFalse(any(credit.reservation_ids.mapped('payment_required')),
+                         'credit terms → the rooms arrive and the company is '
+                         'invoiced on account')

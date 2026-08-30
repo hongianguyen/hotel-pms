@@ -442,10 +442,19 @@ class HotelReservation(models.Model):
                     vals['folio_id'] = group.master_folio_id.id
             # Prepayment rule for non-credit agencies. The form onchange sets
             # this, but the group wizard and programmatic creates bypass
-            # onchanges — derive it here so no path skips the rule.
-            if vals.get('agency_id') and 'payment_required' not in vals:
-                agency = self.env['res.partner'].browse(vals['agency_id'])
-                vals['payment_required'] = not agency.hotel_credit_term
+            # onchanges — derive it here so no path skips the rule. A room
+            # added straight to a corporate group carries no agency of its
+            # own, and already bills through the group's (see
+            # _effective_agency); the prepayment rule has to follow the same
+            # agency or those rooms would silently escape it.
+            if 'payment_required' not in vals:
+                agency_id = vals.get('agency_id')
+                if not agency_id and vals.get('group_id'):
+                    agency_id = self.env['hotel.booking.group'].browse(
+                        vals['group_id']).agency_id.id
+                if agency_id:
+                    agency = self.env['res.partner'].browse(agency_id)
+                    vals['payment_required'] = not agency.hotel_credit_term
         records = super().create(vals_list)
         # Keep the folio's primary-reservation convention (room/dates display)
         for rec in records:
@@ -622,6 +631,22 @@ class HotelReservation(models.Model):
         for before the guest arrives, and at confirmation time the folio
         carries no charges yet, so any positive balance test would pass on a
         token deposit.
+
+        Money is counted across every folio of the stay, because on a group
+        it does not sit in one place: the rooms of a corporate group share
+        the master company folio but each opens its own guest folio beside
+        it, so a single room's folio says nothing about what the group has
+        paid.
+
+        What that money has to cover is the rooms that have actually used
+        it — the ones already in house or departed, plus the one at the desk
+        now. A lump sum on a shared folio cannot be attributed to a
+        particular room, so the rule is simply that a group cannot check in
+        more rooms than it has paid for: they arrive one by one for as far as
+        the money reaches, and the first room that runs past it is stopped.
+        Requiring the whole group's total up front would instead bar every
+        room over a part payment, and check-in has no manager override to
+        escape with.
         """
         self.ensure_one()
         if self.prepaid:
@@ -629,9 +654,18 @@ class HotelReservation(models.Model):
         folios = self.folio_id | self.folio_id.linked_folio_id
         if not folios:
             return False
+        # Same reach as hotel.folio._pending_reservations: a company folio
+        # collects from every guest folio routed to it.
+        for folio in folios:
+            folios |= folio._guest_folios()
         currency = folios[0].currency_id or self.env.company.currency_id
         paid = sum(folios.mapped('amount_paid'))
-        return currency.compare_amounts(paid, self.total_amount) >= 0
+        arrived = self.env['hotel.reservation'].sudo().search([
+            ('folio_id', 'in', folios.ids),
+            ('state', 'in', ('checked_in', 'checked_out')),
+        ]) | self
+        due = sum(arrived.mapped('total_amount'))
+        return currency.compare_amounts(paid, due) >= 0
 
     def action_check_in(self):
         """Confirmed → Checked In. Post the room charges, set room occupied.
@@ -885,16 +919,16 @@ class HotelReservation(models.Model):
         reservation still pointing at it — a group's master folio outlives
         the cancellation of one of its rooms.
         """
-        Folio = self.env['hotel.folio'].sudo()
         for rec in self:
             for folio in (rec.folio_id | rec.folio_id.linked_folio_id):
                 if not folio or folio.line_ids or folio.payment_ids:
                     continue
                 if folio.invoice_id or folio.group_id:
                     continue
-                others = Folio.browse(folio.id).reservation_ids.filtered(
-                    lambda r: r.state != 'cancelled') - rec
-                if others:
+                # rec is already cancelled by the time this runs, so the
+                # state filter alone excludes it.
+                if folio.reservation_ids.filtered(
+                        lambda r: r.state != 'cancelled'):
                     continue
                 folio.unlink()
 
