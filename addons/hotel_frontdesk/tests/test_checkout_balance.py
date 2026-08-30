@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -445,3 +445,87 @@ class TestCheckoutBalance(TransactionCase):
         self.assertEqual(
             in_house.nightly_rate, 1000000.0,
             'an in-house stay keeps the rate it was quoted')
+
+    # ── Audit remainder (29 Aug 2026) ────────────────────────────────────
+
+    def test_cancelling_a_booking_leaves_another_guests_room_alone(self):
+        """A confirmed booking never owns the room — only check-in does."""
+        in_house = self._check_in()
+        self.assertEqual(self.room.status, 'occupied')
+
+        # A later booking on the same room, confirmed but not arrived.
+        later = self._make_reservation(
+            checkin_date=self.today + timedelta(days=10),
+            checkout_date=self.today + timedelta(days=12),
+        )
+        later.action_confirm()
+        later.action_cancel()
+
+        self.room.invalidate_recordset()
+        self.assertEqual(
+            self.room.status, 'occupied',
+            'cancelling a future booking must not strip the room from the '
+            'guest currently in it')
+        self.assertEqual(in_house.state, 'checked_in')
+
+    def test_late_checkout_uses_the_rate_plan_not_the_flat_rate(self):
+        plan = self.env['hotel.rate.plan'].create({
+            'name': 'ZZ Late Plan',
+            'base_rate': 750000.0,
+        })
+        res = self._make_reservation(
+            checkin_date=self.today - timedelta(days=3),
+            checkout_date=self.today - timedelta(days=1),
+            rate_plan_id=plan.id,
+        )
+        res.action_confirm()
+        res.action_check_in()
+
+        vals = res._late_checkout_line_vals()
+        self.assertEqual(len(vals), 1, 'one night past departure')
+        self.assertEqual(
+            vals[0]['amount'], 750000.0,
+            'the late night must be priced by the rate plan, not the flat '
+            'nightly rate')
+        self.assertEqual(vals[0]['reservation_id'], res.id)
+
+    def test_stop_sell_rate_plan_is_refused(self):
+        plan = self.env['hotel.rate.plan'].create({
+            'name': 'ZZ Stopped Plan',
+            'base_rate': 500000.0,
+            'stop_sell': True,
+        })
+        with self.assertRaises(ValidationError):
+            self._make_reservation(rate_plan_id=plan.id)
+
+    def test_minimum_stay_is_enforced(self):
+        plan = self.env['hotel.rate.plan'].create({
+            'name': 'ZZ Three Night Plan',
+            'base_rate': 500000.0,
+            'min_stay': 3,
+        })
+        with self.assertRaises(ValidationError):
+            self._make_reservation(
+                rate_plan_id=plan.id,
+                checkout_date=self.today + timedelta(days=2),  # 2 nights
+            )
+        # Three nights is acceptable on the same plan.
+        ok = self._make_reservation(
+            rate_plan_id=plan.id,
+            room_id=self.room2.id,
+            checkout_date=self.today + timedelta(days=3),
+        )
+        self.assertEqual(ok.nights, 3)
+
+    def test_in_house_stay_survives_a_plan_being_stopped(self):
+        """Stopping a plan must not retro-invalidate a guest already in."""
+        plan = self.env['hotel.rate.plan'].create({
+            'name': 'ZZ Later Stopped',
+            'base_rate': 500000.0,
+        })
+        res = self._make_reservation(rate_plan_id=plan.id)
+        res.action_confirm()
+        res.action_check_in()
+        plan.stop_sell = True
+        res.checkout_date = self.today + timedelta(days=3)  # amend in house
+        self.assertEqual(res.state, 'checked_in')

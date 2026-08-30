@@ -103,7 +103,10 @@ class HotelReservation(models.Model):
     )
     prepaid = fields.Boolean(
         'Prepayment Received', tracking=True,
-        help='Tick when the required prepayment has been received.',
+        help='Tick when the required prepayment has been received outside '
+             'the system (bank transfer, OTA collection). A payment '
+             'registered on the folio that covers the stay satisfies the '
+             'rule on its own, without this flag.',
     )
     send_confirmation = fields.Boolean('Send Confirmation Email', default=True)
     notes = fields.Text('Notes')
@@ -360,6 +363,22 @@ class HotelReservation(models.Model):
 
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
+        # Lock the rooms being booked before looking for overlaps.
+        #
+        # Without this the check is a read followed by a write with no
+        # serialisation: two confirmations for the same room and dates can
+        # both run the search, both find nothing, and both commit — the
+        # constraint is pure Python, so PostgreSQL never arbitrates. Taking
+        # a row lock on hotel_room makes the second transaction wait for the
+        # first to commit, so its search then sees the winning booking.
+        rooms = self.filtered(
+            lambda r: r.room_id and r.state in ('confirmed', 'checked_in')
+        ).room_id
+        if rooms:
+            self.env.cr.execute(
+                'SELECT id FROM hotel_room WHERE id IN %s ORDER BY id FOR UPDATE',
+                (tuple(rooms.ids),))
+
         for rec in self:
             if rec.room_id and rec.state in ('confirmed', 'checked_in'):
                 overlap = self.search([
@@ -376,6 +395,38 @@ class HotelReservation(models.Model):
                            overlap.checkout_date, overlap.reservation_number)
                     )
 
+    @api.constrains('rate_plan_id', 'checkin_date', 'checkout_date', 'state')
+    def _check_rate_plan_restrictions(self):
+        """Honour the rate plan's stop-sell and minimum-stay rules.
+
+        Both fields existed on hotel.rate.plan but nothing ever enforced
+        them: stop_sell only made get_rate_for_date() return False, which
+        silently fell back to the room type's base rate instead of refusing
+        the booking, and min_stay was read nowhere at all.
+
+        Only pre-arrival bookings are judged. A guest already in house was
+        sold under the terms that applied then, and stopping a plan later
+        must not retro-invalidate their stay or block an amendment.
+        """
+        for rec in self:
+            plan = rec.rate_plan_id
+            if not plan or rec.state not in ('draft', 'confirmed'):
+                continue
+            if plan.stop_sell:
+                raise ValidationError(_(
+                    'Rate plan "%(plan)s" is on stop sell and cannot be used '
+                    'for reservation %(number)s. Pick another rate plan.',
+                    plan=plan.name, number=rec.reservation_number or _('new'),
+                ))
+            if plan.min_stay and rec.nights and rec.nights < plan.min_stay:
+                raise ValidationError(_(
+                    'Rate plan "%(plan)s" requires a minimum stay of '
+                    '%(min)s night(s); reservation %(number)s is %(nights)s.',
+                    plan=plan.name, min=plan.min_stay,
+                    number=rec.reservation_number or _('new'),
+                    nights=rec.nights,
+                ))
+
     # ── CRUD ──────────────────────────────────────────────────────────────
 
     @api.model_create_multi
@@ -391,10 +442,19 @@ class HotelReservation(models.Model):
                     vals['folio_id'] = group.master_folio_id.id
             # Prepayment rule for non-credit agencies. The form onchange sets
             # this, but the group wizard and programmatic creates bypass
-            # onchanges — derive it here so no path skips the rule.
-            if vals.get('agency_id') and 'payment_required' not in vals:
-                agency = self.env['res.partner'].browse(vals['agency_id'])
-                vals['payment_required'] = not agency.hotel_credit_term
+            # onchanges — derive it here so no path skips the rule. A room
+            # added straight to a corporate group carries no agency of its
+            # own, and already bills through the group's (see
+            # _effective_agency); the prepayment rule has to follow the same
+            # agency or those rooms would silently escape it.
+            if 'payment_required' not in vals:
+                agency_id = vals.get('agency_id')
+                if not agency_id and vals.get('group_id'):
+                    agency_id = self.env['hotel.booking.group'].browse(
+                        vals['group_id']).agency_id.id
+                if agency_id:
+                    agency = self.env['res.partner'].browse(agency_id)
+                    vals['payment_required'] = not agency.hotel_credit_term
         records = super().create(vals_list)
         # Keep the folio's primary-reservation convention (room/dates display)
         for rec in records:
@@ -407,13 +467,21 @@ class HotelReservation(models.Model):
     # ── Workflow Buttons ─────────────────────────────────────────────────
 
     def action_confirm(self):
-        """Draft → Confirmed. Send confirmation email."""
+        """Draft → Confirmed. Open the folio and send the confirmation email.
+
+        The folio opens here rather than at check-in so money taken before
+        arrival — a deposit, an OTA prepayment, a corporate advance — has an
+        account to land on. Only the container is created: room charges are
+        still raised at check-in, so a confirmed booking's folio carries
+        nothing but the payments actually received.
+        """
         for rec in self:
             if rec.state != 'draft':
                 raise UserError(_('Only draft reservations can be confirmed.'))
             if not rec.room_id:
                 raise UserError(_('Please assign a room before confirming.'))
             rec.state = 'confirmed'
+            rec._ensure_folios()
             # Group confirm sends one group-level email instead
             if rec.send_confirmation and not self.env.context.get('skip_confirmation_email'):
                 template, recipient = rec._get_confirmation_template()
@@ -553,8 +621,60 @@ class HotelReservation(models.Model):
             return company_folio
         return guest_folio
 
+    def _prepayment_received(self):
+        """True when the prepayment rule for this booking is satisfied.
+
+        Either reception ticked ``prepaid`` (money that arrived outside the
+        system — bank transfer, OTA collection), or the folios of this stay
+        already hold payments covering the whole booking. A part payment is
+        deliberately not enough: ``payment_required`` means the stay is paid
+        for before the guest arrives, and at confirmation time the folio
+        carries no charges yet, so any positive balance test would pass on a
+        token deposit.
+
+        Money is counted across every folio of the stay, because on a group
+        it does not sit in one place: the rooms of a corporate group share
+        the master company folio but each opens its own guest folio beside
+        it, so a single room's folio says nothing about what the group has
+        paid.
+
+        What that money has to cover is the rooms that have actually used
+        it — the ones already in house or departed, plus the one at the desk
+        now. A lump sum on a shared folio cannot be attributed to a
+        particular room, so the rule is simply that a group cannot check in
+        more rooms than it has paid for: they arrive one by one for as far as
+        the money reaches, and the first room that runs past it is stopped.
+        Requiring the whole group's total up front would instead bar every
+        room over a part payment, and check-in has no manager override to
+        escape with.
+        """
+        self.ensure_one()
+        if self.prepaid:
+            return True
+        folios = self.folio_id | self.folio_id.linked_folio_id
+        if not folios:
+            return False
+        # Same reach as hotel.folio._pending_reservations: a company folio
+        # collects from every guest folio routed to it.
+        for folio in folios:
+            folios |= folio._guest_folios()
+        currency = folios[0].currency_id or self.env.company.currency_id
+        paid = sum(folios.mapped('amount_paid'))
+        arrived = self.env['hotel.reservation'].sudo().search([
+            ('folio_id', 'in', folios.ids),
+            ('state', 'in', ('checked_in', 'checked_out')),
+        ]) | self
+        due = sum(arrived.mapped('total_amount'))
+        return currency.compare_amounts(paid, due) >= 0
+
     def action_check_in(self):
-        """Confirmed → Checked In. Create folio (or reuse group folio), set room occupied."""
+        """Confirmed → Checked In. Post the room charges, set room occupied.
+
+        The folio itself opened at confirmation; ``_ensure_folios`` is called
+        again here because it is idempotent and bookings confirmed before
+        that change (or imported straight into ``confirmed``) still arrive
+        without one.
+        """
         for rec in self:
             if rec.state != 'confirmed':
                 raise UserError(_('Only confirmed reservations can be checked in.'))
@@ -565,10 +685,11 @@ class HotelReservation(models.Model):
                     number=rec.reservation_number,
                     date=rec.checkin_date.strftime('%d/%m/%Y'),
                 ))
-            if rec.payment_required and not rec.prepaid:
+            if rec.payment_required and not rec._prepayment_received():
                 raise UserError(_(
                     'Reservation %s requires prepayment before check-in. '
-                    'Mark "Prepayment Received" once payment arrives.'
+                    'Register the payment on the folio, or tick "Prepayment '
+                    'Received" if the money arrived outside the system.'
                 ) % rec.reservation_number)
             if rec.room_id.status == 'maintenance':
                 raise UserError(_('Room %s is under maintenance.') % rec.room_id.name)
@@ -605,15 +726,27 @@ class HotelReservation(models.Model):
         vals = []
         current = self.checkout_date
         room_name = self.room_id.name or 'Room'
+        # Price and post a late night exactly like a booked one
+        # (hotel.folio._generate_room_charges): the rate plan wins over the
+        # flat nightly rate, and an ROH/combo booking's revenue belongs to
+        # the type that was SOLD, not the physical room it landed in.
+        account = (self.room_type_id.revenue_account_id
+                   or self.room_id.room_type_id.revenue_account_id)
         while current < today:
+            day_rate = self.nightly_rate
+            if self.rate_plan_id and not self.combo_id:
+                plan_rate = self.rate_plan_id.get_rate_for_date(current)
+                if plan_rate:
+                    day_rate = plan_rate
             vals.append({
                 'name': _('Late checkout — Room %s — %s') % (
                     room_name, current.strftime('%d/%m/%Y')),
                 'charge_type': 'room',
                 'quantity': 1,
-                'amount': self.nightly_rate,
+                'amount': day_rate,
                 'date': current,
-                'account_id': self.room_id.room_type_id.revenue_account_id.id or False,
+                'account_id': account.id or False,
+                'reservation_id': self.id,
             })
             current += timedelta(days=1)
         return vals
@@ -685,8 +818,8 @@ class HotelReservation(models.Model):
         folios = self.mapped('folio_id') | self.mapped('folio_id.linked_folio_id')
         if not folios:
             raise UserError(_(
-                'No folio to print yet — a folio opens when the guest '
-                'checks in.'
+                'No folio to print yet — a folio opens when the booking is '
+                'confirmed.'
             ))
         return folios.action_print_folio()
 
@@ -774,6 +907,41 @@ class HotelReservation(models.Model):
                 if not still_in:
                     folio.action_create_invoice()
 
+    def _cleanup_empty_folios(self):
+        """Drop folios a cancelled booking leaves behind with nothing on them.
+
+        Opening the folio at confirmation means a booking that never happens
+        would otherwise leave an empty folio sitting at ``open`` forever,
+        padding the folio list and any city-ledger view. Only a folio that
+        carries no trace of business is removed: no charges, no payments
+        (``account.payment.hotel_folio_id`` is ``ondelete='set null'``, so a
+        payment would be silently orphaned), no invoice, and no other live
+        reservation still pointing at it — a group's master folio outlives
+        the cancellation of one of its rooms.
+        """
+        # sudo throughout: reception cancels bookings but holds neither
+        # unlink rights on hotel.folio nor read rights on account.payment.
+        # The scope is a folio with no charges, no payments and no invoice,
+        # so this frees nothing that could be missed.
+        for rec in self:
+            for folio in (rec.folio_id | rec.folio_id.linked_folio_id).sudo():
+                if not folio or folio.line_ids or folio.payment_ids:
+                    continue
+                if folio.invoice_id or folio.group_id:
+                    continue
+                # rec is already cancelled by the time this runs, so the
+                # state filter alone excludes it.
+                if folio.reservation_ids.filtered(
+                        lambda r: r.state != 'cancelled'):
+                    continue
+                folio.unlink()
+            # A group's master folio is skipped above (it is shared), so the
+            # last room to be cancelled has to close it. Cancelling the rooms
+            # one by one from the reservation form is how a group usually
+            # falls apart — the group-level Cancel button is not the only
+            # path there.
+            rec.group_id._cleanup_empty_master_folio()
+
     def action_cancel(self):
         """Cancel reservation. Free room if it was confirmed."""
         for rec in self:
@@ -785,11 +953,16 @@ class HotelReservation(models.Model):
                     '(which settles the folio) instead of cancelling, '
                     'otherwise the folio charges would be left dangling.'
                 ) % rec.reservation_number)
-            old_state = rec.state
             rec.state = 'cancelled'
-            if old_state == 'confirmed' and rec.room_id:
-                if rec.room_id.status == 'occupied':
-                    rec.room_id.action_set_dirty()
+            # Deliberately no room-status change. Only action_check_in marks
+            # a room occupied, and a checked-in stay cannot reach this line
+            # (it is refused above). So an 'occupied' room here belongs to a
+            # DIFFERENT guest who is currently in house — the old code
+            # flipped their room to dirty and had housekeeping strip an
+            # occupied room.
+
+            # A booking that never happened should leave no folio behind.
+            rec._cleanup_empty_folios()
 
     def action_reset_draft(self):
         """Reset cancelled / no-show back to draft."""
