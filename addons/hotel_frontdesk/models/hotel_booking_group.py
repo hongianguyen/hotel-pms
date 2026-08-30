@@ -137,9 +137,22 @@ class HotelBookingGroup(models.Model):
                     'hotel.booking.group') or 'New'
         groups = super().create(vals_list)
         # Every group booking owns a master folio from the start.
-        # sudo: folio creation here is an internal side-effect of creating the
-        # group, with values derived from the group itself.
-        for group in groups:
+        groups._ensure_master_folio()
+        return groups
+
+    def _ensure_master_folio(self):
+        """Open the group's master folio if it has none, idempotently.
+
+        Called from ``create`` and again from ``action_confirm`` because a
+        group whose rooms were all cancelled has its empty master folio
+        cleaned away; reviving the group has to rebuild it, or the rooms
+        would open individual folios and the group would lose its single
+        master account.
+
+        sudo: folio creation is an internal side-effect of the group, with
+        values derived from the group itself.
+        """
+        for group in self:
             if not group.master_folio_id:
                 group.master_folio_id = self.env['hotel.folio'].sudo().create({
                     'guest_id': group.guest_id.id,
@@ -150,7 +163,14 @@ class HotelBookingGroup(models.Model):
                     # for incidentals at check-in.
                     'folio_type': 'company' if group.agency_id else 'guest',
                 })
-        return groups
+            # Rooms that lost their folio with the old master charge to the
+            # new one. Only bookings that can still be amended: a departed
+            # room keeps the folio it was actually billed on.
+            orphans = group.reservation_ids.filtered(
+                lambda r: not r.folio_id and r.state in ('draft', 'confirmed'))
+            if orphans:
+                orphans.write({'folio_id': group.master_folio_id.id})
+        return True
 
     def write(self, vals):
         res = super().write(vals)
@@ -198,6 +218,9 @@ class HotelBookingGroup(models.Model):
             todo = group.reservation_ids.filtered(lambda r: r.state == 'draft')
             if not todo:
                 raise UserError(_('No draft bookings to confirm in this group.'))
+            # Before the rooms confirm: each one opens its folio on confirm
+            # and must find the master to charge to, not build its own.
+            group._ensure_master_folio()
             # One group-level confirmation email instead of one per room
             todo.with_context(skip_confirmation_email=True).action_confirm()
             if group.send_confirmation:
@@ -277,6 +300,26 @@ class HotelBookingGroup(models.Model):
             if not todo:
                 raise UserError(_('Nothing to cancel in this group.'))
             todo.action_cancel()
+            group._cleanup_empty_master_folio()
+
+    def _cleanup_empty_master_folio(self):
+        """Drop the master folio of a group that ended with no business.
+
+        Same rule as a single booking's folio (see
+        ``hotel.reservation._cleanup_empty_folios``): a group that was
+        cancelled before anything was ever charged or paid should not leave
+        an open folio in the ledger. ``_ensure_master_folio`` rebuilds it if
+        the group is ever revived.
+        """
+        for group in self:
+            folio = group.master_folio_id
+            if not folio or folio.line_ids or folio.payment_ids:
+                continue
+            if folio.invoice_id:
+                continue
+            if group.reservation_ids.filtered(lambda r: r.state != 'cancelled'):
+                continue
+            folio.sudo().unlink()
 
     def action_exit(self):
         """Leave the group booking screen: back to the Reception Dashboard
