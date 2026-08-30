@@ -311,7 +311,7 @@ class HotelBookingGroup(models.Model):
         an open folio in the ledger. ``_ensure_master_folio`` rebuilds it if
         the group is ever revived.
         """
-        for group in self:
+        for group in self.sudo():
             folio = group.master_folio_id
             if not folio or folio.line_ids or folio.payment_ids:
                 continue

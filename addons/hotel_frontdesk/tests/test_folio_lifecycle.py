@@ -33,6 +33,14 @@ class TestFolioLifecycle(TransactionCase):
             'status': 'available',
         })
         cls.guest = cls.env['res.partner'].create({'name': 'ZZ Lifecycle Guest'})
+        cls.reception = cls.env['res.users'].create({
+            'name': 'ZZ Lifecycle Reception',
+            'login': 'zz_reception_lifecycle',
+            'group_ids': [(6, 0, [
+                cls.env.ref('hotel_core.group_hotel_reception').id,
+                cls.env.ref('base.group_user').id,
+            ])],
+        })
         cls.credit_agency = cls.env['res.partner'].create({
             'name': 'ZZ Lifecycle Credit Corp',
             'is_company': True,
@@ -360,3 +368,29 @@ class TestFolioLifecycle(TransactionCase):
         self.assertFalse(any(credit.reservation_ids.mapped('payment_required')),
                          'credit terms → the rooms arrive and the company is '
                          'invoiced on account')
+
+    def test_reception_can_confirm_and_cancel_a_booking(self):
+        """Reception has no unlink right on hotel.folio and no read right on
+        account.payment, so the cleanup must not run in their name."""
+        res = self._make_reservation().with_user(self.reception)
+        res.action_confirm()
+        folio = res.folio_id
+        self.assertTrue(folio)
+
+        res.action_cancel()
+
+        self.assertEqual(res.state, 'cancelled')
+        self.assertFalse(folio.sudo().exists())
+
+    def test_cancelling_every_room_closes_the_master_folio(self):
+        """A group usually falls apart one room at a time from the
+        reservation form, not via the group Cancel button."""
+        group = self._make_group()
+        group.action_confirm()
+        master = group.master_folio_id
+
+        for reservation in group.reservation_ids:
+            reservation.action_cancel()
+
+        self.assertFalse(master.exists(),
+                         'the last room out closes the group account')

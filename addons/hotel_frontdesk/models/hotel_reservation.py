@@ -919,8 +919,12 @@ class HotelReservation(models.Model):
         reservation still pointing at it — a group's master folio outlives
         the cancellation of one of its rooms.
         """
+        # sudo throughout: reception cancels bookings but holds neither
+        # unlink rights on hotel.folio nor read rights on account.payment.
+        # The scope is a folio with no charges, no payments and no invoice,
+        # so this frees nothing that could be missed.
         for rec in self:
-            for folio in (rec.folio_id | rec.folio_id.linked_folio_id):
+            for folio in (rec.folio_id | rec.folio_id.linked_folio_id).sudo():
                 if not folio or folio.line_ids or folio.payment_ids:
                     continue
                 if folio.invoice_id or folio.group_id:
@@ -931,6 +935,12 @@ class HotelReservation(models.Model):
                         lambda r: r.state != 'cancelled'):
                     continue
                 folio.unlink()
+            # A group's master folio is skipped above (it is shared), so the
+            # last room to be cancelled has to close it. Cancelling the rooms
+            # one by one from the reservation form is how a group usually
+            # falls apart — the group-level Cancel button is not the only
+            # path there.
+            rec.group_id._cleanup_empty_master_folio()
 
     def action_cancel(self):
         """Cancel reservation. Free room if it was confirmed."""
