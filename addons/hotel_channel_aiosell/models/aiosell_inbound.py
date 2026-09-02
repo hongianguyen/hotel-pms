@@ -135,6 +135,7 @@ class AiosellConfig(models.Model):
         guest = self._find_or_create_guest(payload)
         source = self._resolve_source(payload.get('channel'))
         prepaid = not payload.get('pah', False)
+        agency = self._resolve_channel_agency(payload.get('channel'), prepaid)
         notes = self._booking_notes(payload)
 
         reservations = self.env['hotel.reservation']
@@ -143,7 +144,8 @@ class AiosellConfig(models.Model):
         unclaimed = existing.sorted('id')
         for room in rooms:
             vals = self._reservation_vals(
-                payload, room, checkin, checkout, guest, source, prepaid, notes)
+                payload, room, checkin, checkout, guest, source, prepaid,
+                notes, agency)
             if vals is None:
                 return self._refuse(
                     log, existing,
@@ -186,7 +188,7 @@ class AiosellConfig(models.Model):
         }
 
     def _reservation_vals(self, payload, room, checkin, checkout, guest,
-                          source, prepaid, notes):
+                          source, prepaid, notes, agency=None):
         """Field values for one room of an OTA booking, or None if unmappable."""
         self.ensure_one()
         mapping = self.room_mapping_ids.filtered(
@@ -208,7 +210,10 @@ class AiosellConfig(models.Model):
             # The channel already e-mailed the guest; a second confirmation
             # from the PMS to a masked OTA relay address helps nobody.
             'send_confirmation': self.send_guest_email,
-            'payment_required': prepaid,
+            'agency_id': agency.id if agency else False,
+            # A prepaid stay billed to the channel owes nothing at the desk,
+            # so it must not be gated on a prepayment the guest never makes.
+            'payment_required': prepaid and not agency,
             'prepaid': prepaid,
             'ota_nightly_rate': self._nightly_from_prices(room, checkin, checkout),
             'aiosell_config_id': self.id,
@@ -260,8 +265,13 @@ class AiosellConfig(models.Model):
                 ('checkout_date', '>', reservation.checkin_date),
             ]).mapped('room_id').ids
             free = free.filtered(lambda r: r.id not in taken)
-            if free:
-                reservation.room_id = free[0]
+            # get_available_rooms only excludes maintenance, so a room whose
+            # board status is still 'occupied' (a stale check-out, a guest who
+            # never left) can come back as free. Never walk an OTA guest into
+            # one of those.
+            ready = free.filtered(lambda r: r.status != 'occupied')
+            if ready:
+                reservation.room_id = ready[0]
 
         if not reservation.room_id:
             reservation.activity_schedule(
@@ -390,6 +400,40 @@ class AiosellConfig(models.Model):
             'zip': address.get('zipCode') or False,
             'country_id': country.id if country else False,
             'is_company': False,
+        })
+
+    def _resolve_channel_agency(self, channel, prepaid):
+        """The channel as a billable account, for stays it collected for.
+
+        A prepaid OTA booking is money the *channel* owes the hotel, not the
+        guest: the guest settles nothing on departure. Billing it to the guest
+        folio leaves a charge nobody will pay at the desk, and the check-out
+        balance guard then bars every prepaid OTA departure — with no manager
+        override available to reception.
+
+        Routing it to the channel as an agency on credit terms puts the room
+        charge on a company folio, which the guard treats as a city-ledger
+        balance and does not hold the guest for. The debt stays visible there
+        until the channel's remittance is reconciled against it.
+        """
+        self.ensure_one()
+        if not (prepaid and self.route_prepaid_to_channel and channel):
+            return None
+        Partner = self.env['res.partner']
+        agency = Partner.search([
+            ('name', '=ilike', channel), ('is_hotel_agency', '=', True),
+        ], limit=1)
+        if agency:
+            return agency
+        return Partner.create({
+            'name': channel,
+            'is_company': True,
+            'is_hotel_agency': True,
+            'hotel_credit_term': True,
+            'hotel_routing': 'room',
+            'comment': _('Created automatically for prepaid bookings arriving '
+                         'from %s through Aiosell. Room charges are carried '
+                         'here until the channel remits.') % channel,
         })
 
     def _resolve_source(self, channel):

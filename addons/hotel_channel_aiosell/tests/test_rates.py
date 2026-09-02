@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
+from unittest.mock import patch
+
 from odoo.tests import tagged
 
 from .common import AiosellCase
@@ -58,6 +60,20 @@ class TestRates(AiosellCase):
         self.assertEqual(
             self.config._build_rate_updates(
                 self.today, self.today + timedelta(days=1)), [])
+
+    def test_pushing_no_rates_at_all_is_flagged(self):
+        """Availability flowing while rates silently do not is worse than an
+        error: the OTAs keep selling at whatever price they last heard."""
+        self.map_rate.rate_plan_id = False
+        self.config.write({'sync_availability': False, 'sync_rates': True})
+        with patch.object(
+                type(self.config), '_call', return_value={'success': True}):
+            self.config._push_ari()
+        log = self.env['aiosell.sync.log'].search([
+            ('config_id', '=', self.config.id), ('state', '=', 'refused'),
+        ], limit=1)
+        self.assertTrue(log, 'The empty rate push must leave a trace.')
+        self.assertIn('no rate plan mapping', log.note)
 
     def test_restrictions_close_the_room_when_every_plan_is_closed(self):
         self.config.sync_restrictions = True

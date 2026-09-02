@@ -114,6 +114,14 @@ class AiosellConfig(models.Model):
         help='Off by default: the OTA already sent the guest a confirmation, '
              'and OTA e-mail addresses are usually masked relays.',
     )
+    route_prepaid_to_channel = fields.Boolean(
+        'Bill Prepaid Bookings to the Channel', default=True,
+        help='When the channel collected the money, bill the room to the '
+             'channel on credit terms instead of to the guest. Without this '
+             'the guest folio carries a charge nobody is going to pay at the '
+             'desk, and the check-out balance guard bars departure for every '
+             'prepaid OTA guest.',
+    )
     activity_user_id = fields.Many2one(
         'res.users', string='Responsible',
         help='Who gets the to-do when an OTA booking needs a human: no room '

@@ -156,6 +156,19 @@ not parse it.
   room at an agreed rate and the folio has to charge what the guest owes. It is
   the per-night average of the channel's `prices[]`, so the stay total matches
   the OTA statement even when nights are priced differently.
+* **A prepaid stay is billed to the channel, not the guest.** When `pah` is
+  false the channel already took the money, so the guest settles nothing on
+  departure. The booking is given the channel as an agency on credit terms,
+  which puts the room charge on a company folio; the check-out balance guard
+  reads that as a city-ledger balance and lets the guest leave, while the debt
+  stays visible until the channel's remittance is reconciled. Without this
+  every prepaid OTA guest is a departure reception cannot complete — and only
+  a Hotel Administrator can override the guard. Turn it off with *Bill Prepaid
+  Bookings to the Channel* if you would rather post the money yourself.
+* **A push that sends nothing is recorded, not shrugged off.** If rates are
+  switched on but no rate plan mapping resolves, availability would keep
+  flowing while the OTAs sold at the last price they heard. That case writes a
+  `refused` row in the Sync Log.
 * **Retry contract.** Unexpected failures answer HTTP 500 so Aiosell retries.
   Changes we *refuse* — a modify or cancel for a guest already checked in —
   answer 200 with `success: true`, log the line as `refused`, and raise an
@@ -176,6 +189,8 @@ not parse it.
   the channel multiplier are documented above but not wired to the UI.
 * No outbound push on reservation write: the cron batches every 15 minutes.
   Availability is therefore up to 15 minutes stale on the OTAs.
+* Aiosell's `amount.commission`, `tcs` and `tds` are recorded in the booking
+  notes but not posted to the ledger.
 
 ## Setting it up
 
@@ -185,7 +200,11 @@ not parse it.
 2. Hotel → Channel Manager → Aiosell Connection, fill those in.
 3. **Test Connection**, then **Import Mapping from Aiosell**.
 4. Pair anything the import left blank in the two mapping tabs. Unmapped codes
-   are never synced.
+   are never synced. The importer matches by name, and Aiosell's stock plan
+   names ("Room Only", "Breakfast") rarely match a property's own — expect the
+   rate tab to need pairing by hand even when the room tab looks complete.
+   Check too that no staff, owner or house room sits inside a mapped room
+   type, or it will be offered for sale.
 5. **Push Availability & Rates Now**, and check the Sync Log.
 6. Only then enable the cron *Aiosell: push availability and rates*
    (Settings → Technical → Scheduled Actions), and the log cleanup alongside it.

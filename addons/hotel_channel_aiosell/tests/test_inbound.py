@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from .common import AiosellCase
@@ -79,6 +80,46 @@ class TestInbound(AiosellCase):
     def test_prepaid_booking_is_marked_paid_to_the_channel(self):
         self._push()
         self.assertTrue(self._reservations().prepaid)
+
+    def test_prepaid_booking_is_billed_to_the_channel(self):
+        """The channel holds the guest's money, so the channel owes the hotel."""
+        self._push()
+        reservation = self._reservations()
+        agency = reservation.agency_id
+        self.assertTrue(agency, 'A prepaid stay must not be billed to the guest.')
+        self.assertEqual(agency.name, 'Booking.com')
+        self.assertTrue(agency.is_hotel_agency)
+        self.assertTrue(agency.hotel_credit_term)
+        self.assertFalse(
+            reservation.payment_required,
+            'The guest owes nothing at the desk, so check-in must not be gated.')
+
+    def test_prepaid_guest_can_actually_check_out(self):
+        """The whole point: without this every prepaid OTA guest is stuck.
+
+        Room charges land on the company folio, which the check-out guard
+        reads as a city-ledger balance rather than money owed at the desk.
+        """
+        self._push(checkin=str(self.today))
+        reservation = self._reservations()
+        reservation.action_check_in()
+        self.assertEqual(reservation.state, 'checked_in')
+        reservation.action_check_out()
+        self.assertEqual(reservation.state, 'checked_out')
+
+    def test_pay_at_hotel_guest_is_still_held_to_the_balance(self):
+        """The guard must keep working for money the desk really does collect."""
+        self._push(checkin=str(self.today), pah=True)
+        reservation = self._reservations()
+        self.assertFalse(reservation.agency_id)
+        reservation.action_check_in()
+        with self.assertRaises(UserError):
+            reservation.action_check_out()
+
+    def test_channel_billing_can_be_turned_off(self):
+        self.config.route_prepaid_to_channel = False
+        self._push()
+        self.assertFalse(self._reservations().agency_id)
 
     def test_pay_at_hotel_booking_is_not_marked_prepaid(self):
         self._push(pah=True)

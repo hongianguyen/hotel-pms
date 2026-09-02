@@ -61,10 +61,16 @@ class AiosellWebhook(http.Controller):
         ])
         # compare_digest on every candidate, no early exit, so a wrong
         # username and a wrong password cost the same.
+        # compare_digest rejects non-ASCII str outright, so compare bytes:
+        # a webhook password with a Vietnamese character would otherwise raise
+        # TypeError here, outside the handler's try/except, and Aiosell would
+        # retry a 500 forever.
+        user_b, password_b = user.encode(), password.encode()
         matched = False
         for config in configs:
-            if (hmac.compare_digest(user, config.inbound_user or '')
-                    and hmac.compare_digest(password, config.inbound_password or '')):
+            if (hmac.compare_digest(user_b, (config.inbound_user or '').encode())
+                    and hmac.compare_digest(
+                        password_b, (config.inbound_password or '').encode())):
                 matched = True
         return matched
 

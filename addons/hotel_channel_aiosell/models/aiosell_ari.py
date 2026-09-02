@@ -154,9 +154,11 @@ class AiosellConfig(models.Model):
         for day in _daterange(start, end):
             rooms = []
             for mapping in mappings:
-                counts = avail.get(mapping.room_type_id.id)
-                if counts is None:
-                    continue
+                # A mapped type with no sellable rooms must be pushed as 0,
+                # not omitted: these updates are upserts, so leaving the code
+                # out of the payload leaves Aiosell selling whatever it last
+                # heard, forever.
+                counts = avail.get(mapping.room_type_id.id) or {}
                 rooms.append({
                     'roomCode': mapping.room_code,
                     'available': counts.get(day, 0),
@@ -281,6 +283,17 @@ class AiosellConfig(models.Model):
         ]
 
     # ── Orchestration ───────────────────────────────────────────────────
+    def _warn_nothing_to_push(self, operation, message):
+        """Leave a visible trace when a push that was asked for sends nothing."""
+        self.ensure_one()
+        _logger.warning('Aiosell %s: %s', self.display_name, message)
+        self._write_sync_log({
+            'direction': 'outbound',
+            'operation': operation,
+            'state': 'refused',
+            'note': message[:500],
+        })
+
     def _push_ari(self):
         """Push everything this connection is configured to send."""
         self.ensure_one()
@@ -293,6 +306,17 @@ class AiosellConfig(models.Model):
             parts.append(_('%s availability block(s)') % len(updates))
         if self.sync_rates:
             updates = self._build_rate_updates(start, end)
+            if not updates:
+                # Silence here is dangerous: availability keeps flowing while
+                # the OTAs sell at whatever price they last heard. The usual
+                # cause is that "Import Mapping" could not match Aiosell's
+                # plan names to the local ones and nobody paired them up.
+                self._warn_nothing_to_push('rate_push', _(
+                    'Rates are switched on but no rate plan mapping produced '
+                    'a price, so nothing was sent and the channels are still '
+                    'selling at the last price they were given. Pair the '
+                    'Aiosell rate plan codes with PMS rate plans under '
+                    'Aiosell → Rate Plan Mapping.'))
             self.push_rates(updates)
             parts.append(_('%s rate block(s)') % len(updates))
         if self.sync_restrictions:

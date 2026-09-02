@@ -53,6 +53,7 @@
                             <field name="auto_assign_room"/>
                             <field name="auto_confirm_bookings"/>
                             <field name="send_guest_email"/>
+                            <field name="route_prepaid_to_channel"/>
                             <field name="activity_user_id"/>
                             <field name="source_id"/>
                         </group>
