@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_aiosell_config_form" model="ir.ui.view">
+        <field name="name">aiosell.config.form</field>
+        <field name="model">aiosell.config</field>
+        <field name="arch" type="xml">
+            <form string="Aiosell Connection">
+                <header>
+                    <button name="action_test_connection" type="object"
+                            string="Test Connection" class="btn-secondary"/>
+                    <button name="action_import_mapping" type="object"
+                            string="Import Mapping from Aiosell"
+                            class="btn-secondary"
+                            confirm="This reads the room and rate plan codes from Aiosell and fills in the mapping tables. Existing rows are refreshed, none are deleted. Continue?"/>
+                    <button name="action_push_now" type="object"
+                            string="Push Availability &amp; Rates Now"
+                            class="btn-primary"
+                            confirm="This sends live availability and rates to Aiosell, which forwards them to every connected OTA. Continue?"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Aiosell"/></h1>
+                    </div>
+                    <group>
+                        <group string="Property">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="hotel_code"/>
+                            <field name="pms_slug"/>
+                            <field name="base_url"/>
+                            <field name="property_currency"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Aiosell API Credentials">
+                            <field name="api_user"/>
+                            <field name="api_password" password="True"/>
+                            <field name="last_push_date"/>
+                            <field name="last_inbound_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Inbound Webhook">
+                            <div class="text-muted" colspan="2">
+                                Give Aiosell this URL together with the
+                                username and password below. They are the only
+                                thing standing between the internet and your
+                                reservation table, so make them long and random.
+                            </div>
+                            <field name="webhook_url"/>
+                            <field name="inbound_user"/>
+                            <field name="inbound_password" password="True"/>
+                        </group>
+                        <group string="Inbound Behaviour">
+                            <field name="auto_assign_room"/>
+                            <field name="auto_confirm_bookings"/>
+                            <field name="send_guest_email"/>
+                            <field name="activity_user_id"/>
+                            <field name="source_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="What to Push">
+                            <field name="sync_availability"/>
+                            <field name="sync_rates"/>
+                            <field name="sync_restrictions"/>
+                            <field name="restriction_channels"
+                                   invisible="not sync_restrictions"
+                                   required="sync_restrictions"/>
+                        </group>
+                        <group string="Push Settings">
+                            <field name="horizon_days"/>
+                            <field name="draft_holds_inventory"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Room Type Mapping" name="rooms">
+                            <div class="text-muted mb-2">
+                                Unmapped codes are never synced. Run-of-House
+                                types cannot be mapped: they overlap the
+                                physical types, so publishing them would sell
+                                the same room twice.
+                            </div>
+                            <field name="room_mapping_ids"
+                                   context="{'default_config_id': id}">
+                                <list editable="bottom"
+                                      decoration-warning="not room_type_id">
+                                    <field name="room_code"/>
+                                    <field name="remote_name" readonly="1"/>
+                                    <field name="remote_count" readonly="1"
+                                           string="Aiosell Rooms"/>
+                                    <field name="room_type_id"/>
+                                    <field name="local_count" string="PMS Rooms"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Rate Plan Mapping" name="rates">
+                            <div class="text-muted mb-2">
+                                Aiosell prices per room, plan and occupancy,
+                                so one PMS rate plan may appear here several
+                                times. Each mapped line is pushed at its room
+                                type's nightly rate for that plan.
+                            </div>
+                            <field name="rate_mapping_ids"
+                                   context="{'default_config_id': id}">
+                                <list editable="bottom"
+                                      decoration-warning="not rate_plan_id">
+                                    <field name="rateplan_code"/>
+                                    <field name="remote_name" readonly="1"/>
+                                    <field name="room_mapping_id"/>
+                                    <field name="occupancy" readonly="1"/>
+                                    <field name="rate_plan_id"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_aiosell_config_list" model="ir.ui.view">
+        <field name="name">aiosell.config.list</field>
+        <field name="model">aiosell.config</field>
+        <field name="arch" type="xml">
+            <list string="Aiosell Connections">
+                <field name="name"/>
+                <field name="hotel_code"/>
+                <field name="pms_slug"/>
+                <field name="sync_availability"/>
+                <field name="sync_rates"/>
+                <field name="last_push_date"/>
+                <field name="last_inbound_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_aiosell_config" model="ir.actions.act_window">
+        <field name="name">Aiosell Connection</field>
+        <field name="res_model">aiosell.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

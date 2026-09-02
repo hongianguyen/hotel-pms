@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_aiosell_room_mapping_list" model="ir.ui.view">
+        <field name="name">aiosell.room.mapping.list</field>
+        <field name="model">aiosell.room.mapping</field>
+        <field name="arch" type="xml">
+            <list string="Room Type Mapping" editable="bottom"
+                  decoration-warning="not room_type_id">
+                <field name="room_code"/>
+                <field name="remote_name" readonly="1"/>
+                <field name="remote_count" readonly="1" string="Aiosell Rooms"/>
+                <field name="room_type_id"/>
+                <field name="local_count" string="PMS Rooms"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_aiosell_rateplan_mapping_list" model="ir.ui.view">
+        <field name="name">aiosell.rateplan.mapping.list</field>
+        <field name="model">aiosell.rateplan.mapping</field>
+        <field name="arch" type="xml">
+            <list string="Rate Plan Mapping" editable="bottom"
+                  decoration-warning="not rate_plan_id">
+                <field name="rateplan_code"/>
+                <field name="remote_name" readonly="1"/>
+                <field name="room_mapping_id"/>
+                <field name="room_type_id" readonly="1"/>
+                <field name="occupancy" readonly="1"/>
+                <field name="rate_plan_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_reservation_form_aiosell" model="ir.ui.view">
+        <field name="name">hotel.reservation.form.aiosell</field>
+        <field name="model">hotel.reservation</field>
+        <field name="inherit_id" ref="hotel_frontdesk.view_hotel_reservation_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Channel" name="aiosell"
+                      invisible="not aiosell_booking_id">
+                    <group>
+                        <group>
+                            <field name="aiosell_channel"/>
+                            <field name="aiosell_booking_id"/>
+                            <field name="aiosell_cm_booking_id"/>
+                        </group>
+                        <group>
+                            <field name="aiosell_config_id"/>
+                            <field name="ota_nightly_rate"/>
+                            <button name="action_aiosell_mark_no_show"
+                                    type="object" string="Mark No-Show on Channel"
+                                    class="btn-secondary"
+                                    invisible="state != 'no_show'"
+                                    confirm="This tells the channel the guest never arrived, which is what lets the OTA bill them. Continue?"/>
+                        </group>
+                    </group>
+                    <field name="aiosell_payload" widget="text" readonly="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

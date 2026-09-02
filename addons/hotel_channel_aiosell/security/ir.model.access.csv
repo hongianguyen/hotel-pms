@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_aiosell_config_admin,aiosell.config admin,model_aiosell_config,hotel_core.group_hotel_admin,1,1,1,1
+access_aiosell_room_mapping_admin,aiosell.room.mapping admin,model_aiosell_room_mapping,hotel_core.group_hotel_admin,1,1,1,1
+access_aiosell_rateplan_mapping_admin,aiosell.rateplan.mapping admin,model_aiosell_rateplan_mapping,hotel_core.group_hotel_admin,1,1,1,1
+access_aiosell_sync_log_admin,aiosell.sync.log admin,model_aiosell_sync_log,hotel_core.group_hotel_admin,1,1,1,1
+access_aiosell_sync_log_reception,aiosell.sync.log reception,model_aiosell_sync_log,hotel_core.group_hotel_reception,1,0,0,0
+access_aiosell_config_reception,aiosell.config reception,model_aiosell_config,hotel_core.group_hotel_reception,1,0,0,0
+access_aiosell_room_mapping_reception,aiosell.room.mapping reception,model_aiosell_room_mapping,hotel_core.group_hotel_reception,1,0,0,0
+access_aiosell_rateplan_mapping_reception,aiosell.rateplan.mapping reception,model_aiosell_rateplan_mapping,hotel_core.group_hotel_reception,1,0,0,0

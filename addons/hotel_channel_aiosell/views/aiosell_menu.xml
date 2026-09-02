@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_aiosell_root" name="Channel Manager"
+              parent="hotel_core.menu_hotel_root" sequence="55"
+              groups="hotel_core.group_hotel_admin"/>
+    <menuitem id="menu_aiosell_config" name="Aiosell Connection"
+              parent="menu_aiosell_root" action="action_aiosell_config"
+              sequence="10"/>
+    <menuitem id="menu_aiosell_sync_log" name="Sync Log"
+              parent="menu_aiosell_root" action="action_aiosell_sync_log"
+              sequence="20"/>
+</odoo>

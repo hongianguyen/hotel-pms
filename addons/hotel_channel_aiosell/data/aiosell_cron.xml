@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Both crons ship INACTIVE on purpose. Installing this module must not
+      start pushing a live property's inventory to the OTAs; the connection
+      has to be credentialed, mapped and test-pushed by hand first, and only
+      then is the cron switched on.
+    -->
+    <record id="ir_cron_aiosell_push_ari" model="ir.cron">
+        <field name="name">Aiosell: push availability and rates</field>
+        <field name="model_id" ref="model_aiosell_config"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_push_ari()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="ir_cron_aiosell_gc_logs" model="ir.cron">
+        <field name="name">Aiosell: clean up sync logs</field>
+        <field name="model_id" ref="model_aiosell_sync_log"/>
+        <field name="state">code</field>
+        <field name="code">model._gc()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">weeks</field>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
