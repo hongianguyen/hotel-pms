@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Everything ships OFF. The module is installable on production without
+        opening anything: `enabled` is 0, there is no POS token and no allowed
+        origin, so all three routes answer 503 until someone deliberately
+        fills these in.
+    -->
+    <data noupdate="1">
+        <record id="param_enabled" model="ir.config_parameter">
+            <field name="key">lak_guest_order.enabled</field>
+            <field name="value">0</field>
+        </record>
+        <record id="param_pos_token" model="ir.config_parameter">
+            <field name="key">lak_guest_order.pos_access_token</field>
+            <field name="value"></field>
+        </record>
+        <record id="param_origins" model="ir.config_parameter">
+            <field name="key">lak_guest_order.allowed_origins</field>
+            <field name="value"></field>
+        </record>
+        <record id="param_manager_email" model="ir.config_parameter">
+            <field name="key">lak_guest_order.manager_email</field>
+            <field name="value"></field>
+        </record>
+        <record id="param_from_email" model="ir.config_parameter">
+            <field name="key">lak_guest_order.from_email</field>
+            <field name="value"></field>
+        </record>
+        <record id="param_telegram_token" model="ir.config_parameter">
+            <field name="key">lak_guest_order.telegram_bot_token</field>
+            <field name="value"></field>
+        </record>
+        <record id="param_telegram_chat" model="ir.config_parameter">
+            <field name="key">lak_guest_order.telegram_chat_id</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</odoo>

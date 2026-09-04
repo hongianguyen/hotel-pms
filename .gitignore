@@ -18,3 +18,6 @@ desktop.ini
 *.pyc
 filestore/
 sessions/
+guest_page/node_modules/
+.wrangler/
+guest_page/__pycache__/

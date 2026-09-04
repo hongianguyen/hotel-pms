@@ -1,0 +1,36 @@
+<div id="obar" data-show="false" role="region" aria-label="Your order">
+  <div class="in">
+    <div class="sum" id="osum"></div>
+    <button type="button" class="clr" id="oclear"></button>
+    <button type="button" id="obook"></button>
+  </div>
+</div>
+
+<dialog id="osheet" aria-labelledby="otitle">
+  <form method="dialog" class="pad" id="oform">
+    <h3 id="otitle"></h3>
+    <div class="sub" id="osubtitle"></div>
+
+    <div class="lines" id="olines"></div>
+    <div class="tot"><span id="ototlab"></span><span id="ototal"></span></div>
+
+    <label for="oroom" id="oroomlab"></label>
+    <select id="oroom" required></select>
+
+    <label for="oname" id="onamelab"></label>
+    <input id="oname" type="text" required autocomplete="name" maxlength="60">
+
+    <label for="otime" id="otimelab"></label>
+    <input id="otime" type="time" required>
+
+    <label for="onote" id="onotelab"></label>
+    <textarea id="onote" maxlength="200"></textarea>
+
+    <div id="omsg"></div>
+
+    <div class="acts">
+      <button type="button" class="no" id="ocancel"></button>
+      <button type="button" id="osend"></button>
+    </div>
+  </form>
+</dialog>

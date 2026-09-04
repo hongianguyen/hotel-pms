@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FBF8F2">
+<title>Lak Tented Camp — Guest Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Be+Vietnam+Pro:wght@300;400;500;600&family=Noto+Sans+Hebrew:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Palette taken from the LAK logo (#960001) and the tone of the main site:
+   warm paper, crimson, ink. Light by day, still legible at night. */
+:root{
+  --paper:#FBF8F2;
+  --paper-2:#F4EFE4;
+  --card:#FFFFFF;
+  --ink:#2A2320;
+  --ink-2:#6E635C;
+  --line:#E2D9C8;
+  --line-2:#CFC2AA;
+  --brand:#960001;
+  --brand-2:#B8322C;
+  --brand-ink:#6E0002;
+  --brass:#A9762A;
+  --reed:#5E7444;
+  --glow:var(--brand);
+  --display:"Fraunces",Georgia,serif;
+  --body:"Be Vietnam Pro",system-ui,sans-serif;
+  --mono:"DM Mono",ui-monospace,monospace;
+  --pad:22px;
+}
+body[data-phase="dawn"]{--glow:#C2662B;}
+body[data-phase="day"]{--glow:var(--brand);}
+body[data-phase="dusk"]{--glow:#A93B4E;}
+body[data-phase="night"]{--glow:var(--brand-ink);}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-weight:400;
+  font-size:16px;
+  line-height:1.55;
+  padding-bottom:96px;
+  overflow-x:hidden;
+}
+.wrap{max-width:560px;margin:0 auto;}
+:focus-visible{outline:2px solid var(--glow);outline-offset:3px;border-radius:2px;}
+
+
+/* ---------- menu ---------- */
+.mbar{display:flex;gap:7px;overflow-x:auto;padding:16px 0 4px;scrollbar-width:none;}
+.mbar::-webkit-scrollbar{display:none;}
+.mbar button{
+  flex:0 0 auto;border:1px solid var(--line-2);background:var(--card);color:var(--ink-2);
+  border-radius:100px;padding:7px 13px;cursor:pointer;
+  font-family:var(--body);font-size:13px;font-weight:400;white-space:nowrap;
+}
+.mbar button[aria-pressed="true"]{background:var(--brand);color:#fff;border-color:var(--brand);}
+.msearch{
+  width:100%;margin-top:10px;padding:11px 14px;border-radius:10px;
+  border:1px solid var(--line-2);background:var(--card);color:var(--ink);
+  font-family:var(--body);font-size:15px;
+}
+.msearch::placeholder{color:var(--ink-2);}
+.mdiet{padding-top:2px;}
+.mdiet button{border-style:dashed;font-size:12.5px;}
+.mdiet button[aria-pressed="true"]{
+  background:var(--reed);color:#fff;border-color:var(--reed);border-style:solid;
+}
+.mgroup{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brand);margin:22px 0 4px;
+}
+.mitem{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line);}
+.mitem .mtxt{flex:1;min-width:0;}
+.mitem .mvi{font-size:15px;color:var(--ink);font-weight:500;line-height:1.3;}
+.mitem .men{font-size:13.5px;color:var(--ink-2);line-height:1.35;margin-top:2px;}
+.mitem .mp{font-family:var(--mono);font-size:13px;color:var(--brand-ink);white-space:nowrap;}
+.mnone{color:var(--ink-2);font-size:14.5px;padding:18px 0;}
+.mnote{
+  font-family:var(--mono);font-size:11px;color:var(--ink-2);letter-spacing:.02em;
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--line);line-height:1.7;
+}
+.sets{display:grid;gap:10px;margin-top:6px;}
+.setcard{border:1px solid var(--line);border-radius:12px;padding:14px 15px;background:var(--card);}
+.setcard .sh{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
+.setcard .sn{font-family:var(--display);font-weight:500;font-size:17px;color:var(--brand-ink);}
+.setcard .sp{font-family:var(--mono);font-size:12.5px;color:var(--brand);white-space:nowrap;}
+.setcard .sd{color:var(--ink-2);font-size:13.5px;margin-top:7px;line-height:1.5;}
+.setcard .sv{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--reed);margin-top:8px;display:block;}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;gap:12px;
+  padding:10px var(--pad);
+  background:rgba(251,248,242,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.mark{font-family:var(--display);font-weight:500;font-size:15px;letter-spacing:.02em;flex:1;display:flex;align-items:center;gap:9px;}
+.mark svg{width:20px;height:25px;flex:0 0 auto;}
+.mark span{color:var(--glow);}
+
+.lockup{position:relative;display:flex;align-items:center;gap:16px;margin-bottom:26px;}
+.lockup svg{width:57px;height:71px;flex:0 0 auto;}
+.lockup .word{line-height:1;}
+.lockup .word .l1{
+  font-family:var(--display);font-weight:500;font-size:34px;letter-spacing:.14em;
+  display:block;color:var(--brand);
+}
+.lockup .word .l2{
+  font-family:var(--body);font-weight:600;font-size:14.5px;letter-spacing:.02em;
+  display:block;margin-top:3px;color:var(--brand);
+}
+.langs{display:flex;border:1px solid var(--line-2);border-radius:100px;overflow:hidden;background:var(--card);}
+.langs button{
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  background:none;border:0;color:var(--ink-2);padding:5px 10px;cursor:pointer;
+}
+.langs button[aria-pressed="true"]{background:var(--brand);color:#fff;}
+
+/* ---------- hero ---------- */
+.hero{padding:38px var(--pad) 26px;position:relative;}
+.hero::before{
+  content:"";position:absolute;inset:-40% -30% auto -30%;height:420px;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--glow) 9%,transparent),transparent);
+  pointer-events:none;transition:background 1.2s ease;
+}
+.greet{position:relative;display:flex;align-items:baseline;gap:11px;margin-bottom:14px;flex-wrap:wrap;}
+.greet .hello{
+  font-family:var(--display);font-weight:400;font-style:italic;
+  font-size:clamp(21px,6vw,25px);line-height:1.15;letter-spacing:-.01em;
+  color:var(--brand);
+}
+.greet .tongue{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brand);border:1px solid var(--brand);border-radius:100px;padding:2px 8px;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-2);position:relative;
+}
+.hero h1{
+  font-family:var(--display);font-weight:400;font-style:normal;
+  font-size:clamp(40px,13vw,58px);line-height:.96;letter-spacing:-.02em;
+  margin:14px 0 0;position:relative;
+}
+.hero h1{color:var(--brand-ink);}
+.hero h1 em{font-style:normal;color:var(--brand);font-weight:700;}
+.hero p{color:var(--ink-2);font-size:15px;margin-top:16px;max-width:34ch;position:relative;}
+
+/* ---------- now card ---------- */
+.now{
+  margin:22px var(--pad) 0;padding:16px 18px;
+  border:1px solid var(--line);border-radius:14px;
+  background:var(--card);
+  box-shadow:0 1px 2px rgba(42,35,32,.05);
+  position:relative;
+}
+.now .label{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--brand);display:flex;align-items:center;gap:8px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 0 var(--glow);animation:pulse 2.6s infinite;}
+@keyframes pulse{70%{box-shadow:0 0 0 9px transparent;}100%{box-shadow:0 0 0 0 transparent;}}
+.now h2{font-family:var(--display);font-weight:500;font-size:22px;line-height:1.2;margin:8px 0 4px;}
+.now .sub{color:var(--ink-2);font-size:14px;}
+.now .nextup{
+  margin-top:12px;padding-top:11px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:12px;color:var(--ink-2);letter-spacing:.02em;
+}
+.now .nextup b{color:var(--ink);font-weight:500;}
+.now .clock{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:12px;color:var(--ink-2);letter-spacing:.04em;}
+
+/* ---------- day strip ---------- */
+.strip{margin-top:20px;}
+.strip .rail{
+  display:flex;gap:10px;overflow-x:auto;padding:4px var(--pad) 16px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.strip .rail::-webkit-scrollbar{display:none;}
+.slot{
+  flex:0 0 auto;min-width:132px;scroll-snap-align:center;
+  border-top:2px solid var(--line);padding-top:10px;opacity:.42;transition:opacity .3s;
+}
+.slot .t{font-family:var(--mono);font-size:12px;color:var(--ink-2);}
+.slot .n{font-size:13.5px;line-height:1.3;margin-top:2px;}
+.slot.past{opacity:.22;}
+.slot.live{opacity:1;border-top-color:var(--glow);}
+.slot.live .t{color:var(--brand);}
+.slot.next{opacity:.72;}
+
+/* ---------- sections ---------- */
+section{padding:34px var(--pad) 6px;scroll-margin-top:60px;}
+.shead{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--brand);padding-bottom:12px;}
+.shead h2{font-family:var(--display);color:var(--brand-ink);font-weight:500;font-size:clamp(28px,8vw,36px);letter-spacing:-.02em;line-height:1;}
+.shead .vi{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-left:auto;}
+.lede{color:var(--ink-2);font-size:15px;margin:14px 0 4px;}
+
+.row{border-bottom:1px solid var(--line);}
+.row summary{
+  list-style:none;cursor:pointer;padding:15px 0;
+  display:flex;align-items:baseline;gap:14px;
+}
+.row summary::-webkit-details-marker{display:none;}
+.row summary .title{font-size:16px;font-weight:400;flex:1;}
+.row summary .meta{font-family:var(--mono);font-size:12px;color:var(--brand);white-space:nowrap;}
+.row summary .chev{color:var(--ink-2);font-size:13px;transition:transform .25s;}
+.row[open] summary .chev{transform:rotate(45deg);}
+.row .body{padding:0 0 18px;color:var(--ink-2);font-size:14.5px;}
+.row .body ul{list-style:none;margin-top:8px;}
+.row .body li{padding-left:16px;position:relative;margin-bottom:5px;}
+.row .body li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:1px;background:var(--brand);}
+.row .body strong{color:var(--ink);font-weight:600;}
+
+/* pledge block */
+.pledge{
+  margin-top:20px;border:1px solid var(--line);border-left:3px solid var(--reed);
+  border-radius:12px;padding:18px;background:var(--card);
+}
+.pledge .num{font-family:var(--mono);font-size:11px;color:var(--reed);letter-spacing:.14em;}
+.pledge h3{font-family:var(--display);color:var(--brand-ink);font-weight:500;font-size:20px;margin:6px 0 8px;line-height:1.25;}
+.pledge p{color:var(--ink-2);font-size:14.5px;}
+
+/* help */
+.help{padding:34px var(--pad) 40px;}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.tile{
+  border:1px solid var(--line);border-radius:12px;padding:14px;
+  text-decoration:none;color:var(--ink);display:block;background:var(--card);
+  box-shadow:0 1px 2px rgba(42,35,32,.04);
+}
+a.tile:active{background:var(--paper-2);}
+.tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);}
+.tile .v{font-size:15px;margin-top:5px;color:var(--brand-ink);font-weight:500;}
+.tile.wide{grid-column:1/-1;}
+.foot{margin-top:26px;color:var(--ink-2);font-size:12.5px;line-height:1.6;}
+.foot .rule{height:1px;background:var(--line);margin-bottom:16px;}
+
+/* bottom nav */
+.nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  display:flex;justify-content:space-around;
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(251,248,242,.94);backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+}
+.nav a{
+  text-decoration:none;color:var(--ink-2);text-align:center;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 10px;border-radius:8px;
+}
+.nav a.active{color:#fff;background:var(--brand);}
+
+
+/* ---------- Hebrew / right-to-left ---------- */
+html[lang="he"]{--body:"Noto Sans Hebrew","Be Vietnam Pro",system-ui,sans-serif;}
+html[lang="he"] body{font-weight:400;}
+html[lang="he"] .mitem .mvi{font-weight:600;}
+html[dir="rtl"] .hero p,
+html[dir="rtl"] .lede,
+html[dir="rtl"] .row .body,
+html[dir="rtl"] .pledge p,
+html[dir="rtl"] .now h2,
+html[dir="rtl"] .now .sub,
+html[dir="rtl"] .setcard .sd,
+html[dir="rtl"] .mnote{text-align:right;}
+html[dir="rtl"] .now .clock{right:auto;left:18px;}
+html[dir="rtl"] .row .body li{padding-left:0;padding-right:16px;}
+html[dir="rtl"] .row .body li::before{left:auto;right:0;}
+html[dir="rtl"] .shead .vi{margin-left:0;margin-right:auto;}
+html[dir="rtl"] .msearch{text-align:right;}
+html[dir="rtl"] .mitem{flex-direction:row-reverse;}
+html[dir="rtl"] .mitem .mtxt{text-align:right;}
+html[dir="rtl"] .lockup{flex-direction:row-reverse;}
+html[dir="rtl"] .lockup .word{text-align:right;}
+html[dir="rtl"] .mark{flex-direction:row-reverse;text-align:right;}
+html[dir="rtl"] .greet{flex-direction:row-reverse;}
+html[dir="rtl"] .hero h1,
+html[dir="rtl"] .eyebrow,
+html[dir="rtl"] .mgroup,
+html[dir="rtl"] .tile,
+html[dir="rtl"] .foot{text-align:right;}
+html[dir="rtl"] .mp,
+html[dir="rtl"] .setcard .sp,
+html[dir="rtl"] .now .clock,
+html[dir="rtl"] .slot .t,
+html[dir="rtl"] .row summary .meta,
+html[dir="rtl"] .tile .v{direction:ltr;unicode-bidi:isolate;}
+html[dir="rtl"] .mitem .mp,
+html[dir="rtl"] .tile .v,
+html[dir="rtl"] .setcard .sp{text-align:left;}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important;}
+}
+@media (min-width:600px){
+  :root{--pad:34px;}
+  body{border-left:1px solid var(--line);border-right:1px solid var(--line);max-width:560px;margin:0 auto;background:var(--paper);}
+}
+</style>
+<style>
+/* ---------- guest ordering (added 04 Sep 2026) ---------- */
+.mitem{align-items:center}
+.mqty{display:flex;align-items:center;gap:6px;margin-inline-start:10px;flex:none}
+.mqty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font:inherit;font-size:1rem;line-height:1;cursor:pointer}
+.mqty button:hover{border-color:var(--accent)}
+.mqty button[disabled]{opacity:.35;cursor:default}
+.mqty .n{min-width:1.4em;text-align:center;font-variant-numeric:tabular-nums}
+.mqty .n[data-zero=true]{color:var(--muted)}
+.mvar{margin-top:4px}
+.mvar select{font:inherit;font-size:.8rem;padding:3px 6px;border-radius:8px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:100%}
+.moff{font-size:.78rem;color:var(--muted);margin-inline-start:10px;flex:none}
+
+#obar{position:fixed;inset-inline:0;bottom:0;z-index:60;transform:translateY(110%);
+  transition:transform .18s ease;background:var(--card);border-top:1px solid var(--line);
+  box-shadow:0 -6px 24px rgba(0,0,0,.13)}
+#obar[data-show=true]{transform:none}
+#obar .in{max-width:var(--max);margin:0 auto;padding:10px 18px;display:flex;
+  align-items:center;gap:12px}
+#obar .sum{flex:1;min-width:0;font-size:.9rem}
+#obar .sum b{font-variant-numeric:tabular-nums}
+#obar button{font:inherit;padding:9px 18px;border-radius:10px;border:0;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink)}
+#obar .clr{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 12px}
+
+#osheet{border:0;border-radius:14px;padding:0;max-width:460px;width:calc(100% - 28px);
+  background:var(--card);color:var(--ink)}
+#osheet::backdrop{background:rgba(0,0,0,.45)}
+#osheet .pad{padding:18px}
+#osheet h3{margin:0 0 4px}
+#osheet .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+#osheet label{display:block;font-size:.8rem;color:var(--muted);margin:10px 0 3px}
+#osheet input,#osheet select,#osheet textarea{width:100%;font:inherit;padding:8px 10px;
+  border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+#osheet textarea{min-height:56px;resize:vertical}
+#osheet .lines{border:1px solid var(--line);border-radius:10px;padding:9px 11px;
+  font-size:.85rem;max-height:150px;overflow:auto;background:var(--bg)}
+#osheet .lines div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+#osheet .tot{display:flex;justify-content:space-between;font-weight:600;margin-top:9px;
+  padding-top:9px;border-top:1px solid var(--line)}
+#osheet .acts{display:flex;gap:8px;margin-top:16px}
+#osheet .acts button{flex:1;font:inherit;padding:10px;border-radius:10px;cursor:pointer;
+  border:0;background:var(--accent);color:var(--accent-ink)}
+#osheet .acts .no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+#omsg{margin-top:11px;font-size:.85rem;padding:9px 11px;border-radius:9px;display:none}
+#omsg[data-kind=err]{display:block;background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+#omsg[data-kind=ok]{display:block;background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+@media (max-width:520px){ #obar .in{padding:9px 12px;gap:8px} #obar .sum{font-size:.82rem} }
+.mone{font-size:.78rem;color:var(--muted)}
+</style>
+</head>
+<body data-phase="day">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="lakmark" viewBox="0 0 80 100">
+    <rect x="1.5" y="1.5" width="77" height="97" rx="7" fill="var(--brand)"/>
+    <g fill="none" stroke="#fff" stroke-linecap="round">
+      <!-- crossed tent poles: they meet high and splay to the base -->
+      <path d="M11 92 Q29 45 47 7" stroke-width="5.6"/>
+      <path d="M69 92 Q51 45 33 7" stroke-width="5.6"/>
+      <!-- tent flap pegs -->
+      <path d="M21 68 L19 82" stroke-width="3.4"/>
+      <path d="M59 68 L61 82" stroke-width="3.4"/>
+      <!-- the lake -->
+      <path d="M7 84 C20 77 31 89 44 83 C55 78 66 79 73 83" stroke-width="4"/>
+    </g>
+    <g transform="translate(40 58)">
+      <polygon fill="#fff" points="0,-15 2.2,-5.3 10.6,-10.6 5.3,-2.2 15,0 5.3,2.2 10.6,10.6 2.2,5.3 0,15 -2.2,5.3 -10.6,10.6 -5.3,2.2 -15,0 -5.3,-2.2 -10.6,-10.6 -2.2,-5.3"/>
+      <circle r="3.9" fill="var(--brand)"/>
+    </g>
+  </symbol>
+</svg>
+
+<div class="topbar">
+  <div class="mark"><svg><use href="#lakmark"/></svg>Lak Tented Camp <span>·</span> Hồ Lắk</div>
+  <div class="langs" role="group" aria-label="Language">
+    <button type="button" data-set="en" aria-pressed="true">EN</button>
+    <button type="button" data-set="vi" aria-pressed="false">VI</button>
+    <button type="button" data-set="fr" aria-pressed="false">FR</button>
+    <button type="button" data-set="he" aria-pressed="false">עב</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="lockup">
+    <svg><use href="#lakmark"/></svg>
+    <div class="word"><span class="l1">LAK</span><span class="l2">Tented Camp</span></div>
+  </div>
+  <div class="greet">
+    <span class="hello">Mơi nách chơn hi au!</span>
+    <span class="tongue">M'nông</span>
+  </div>
+  <div class="eyebrow" data-vi="Chào mừng quý khách" data-fr="Bienvenue, vous êtes connecté" data-he="ברוכים הבאים, אתם מחוברים">Welcome, you're connected</div>
+  <h1><span data-vi="Ăn." data-fr="Manger." data-he="לאכול.">Eat.</span> <span data-vi="Chơi." data-fr="Jouer." data-he="לשחק.">Play.</span> <span data-vi="Ngủ." data-fr="Dormir." data-he="לישון.">Sleep.</span><br><em data-vi="Sống nhẹ." data-fr="Marcher léger." data-he="לדרוך בעדינות.">Tread lightly.</em></h1>
+  <p data-vi="Mọi thứ quý khách cần trong thời gian lưu trú, bên hồ Lắk. Trang này không cần tải lại — cứ để mở." data-fr="Tout ce qu'il vous faut pendant votre séjour au bord du lac Lak. Gardez cette page ouverte — elle se met à jour au fil de la journée." data-he="כל מה שתצטרכו לשהות שלכם על שפת אגם לאק. השאירו את הדף פתוח — הוא מתעדכן במהלך היום.">Everything you need for your stay on the shore of Lak Lake. Keep this page open — it updates through the day.</p>
+</header>
+
+<div class="now">
+  <div class="clock" id="clock">--:--</div>
+  <div class="label"><span class="dot"></span><span data-vi="Đang diễn ra" data-fr="En ce moment au camp" data-he="עכשיו במחנה">Right now at camp</span></div>
+  <h2 id="nowTitle">—</h2>
+  <div class="sub" id="nowSub">—</div>
+  <div class="nextup" id="nowNext">—</div>
+</div>
+
+<div class="strip">
+  <div class="rail" id="rail"></div>
+</div>
+
+<!-- EAT -->
+<section id="eat">
+  <div class="shead"><h2 data-vi="Ăn" data-fr="Manger" data-he="אוכל">Eat</h2><div class="vi" data-vi="Nhà hàng &amp; bếp" data-fr="Cuisine &amp; terrasse" data-he="המטבח והמרפסת">Kitchen &amp; deck</div></div>
+  <p class="lede" data-vi="Bếp nấu theo mùa, nguyên liệu lấy từ chợ Liên Sơn và các vườn quanh hồ. Báo trước 2 tiếng cho món đặc biệt." data-fr="Nous cuisinons ce que le lac et les hauts plateaux nous donnent cette semaine — l'essentiel acheté le matin même au marché de Liên Sơn ou cultivé à quelques kilomètres d'ici." data-he="אנחנו מבשלים את מה שהאגם וההרים נותנים באותו שבוע — רובו נקנה באותו בוקר בשוק ליין סון או גדל במרחק כמה קילומטרים מכאן.">We cook what the lake and the highlands give us that week — most of it bought that morning in Liên Sơn market or grown within a few kilometres.</p>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Giờ phục vụ" data-fr="Heures de service" data-he="שעות הגשה">Serving hours</span><span class="meta">06:30–21:00</span><span class="chev">+</span></summary>
+    <div class="body">
+      <ul>
+        <li data-vi="<strong>Ăn sáng</strong> 06:30 – 09:30 · Sàn nhìn hồ" data-fr="<strong>Petit-déjeuner</strong> 06h30 – 09h30 · Terrasse du lac" data-he="<strong>ארוחת בוקר</strong> 06:30 – 09:30 · מרפסת האגם"><strong>Breakfast</strong> 06:30 – 09:30 · Lake Deck</li>
+        <li data-vi="<strong>Ăn trưa</strong> 11:30 – 14:00" data-fr="<strong>Déjeuner</strong> 11h30 – 14h00" data-he="<strong>ארוחת צהריים</strong> 11:30 – 14:00"><strong>Lunch</strong> 11:30 – 14:00</li>
+        <li data-vi="<strong>Ăn tối</strong> 18:00 – 21:00 · nên đặt bàn trước 16:00" data-fr="<strong>Dîner</strong> 18h00 – 21h00 · réservez avant 16h00" data-he="<strong>ארוחת ערב</strong> 18:00 – 21:00 · נא להזמין עד 16:00"><strong>Dinner</strong> 18:00 – 21:00 · please book by 16:00</li>
+        <li data-vi="<strong>Quầy bar &amp; cà phê</strong> 07:00 – 22:00" data-fr="<strong>Bar &amp; café</strong> 07h00 – 22h00" data-he="<strong>בר וקפה</strong> 07:00 – 22:00"><strong>Bar &amp; coffee</strong> 07:00 – 22:00</li>
+        
+      </ul>
+    </div>
+  </details>
+
+  <details class="row" id="menuRow">
+    <summary><span class="title" data-vi="Toàn bộ thực đơn" data-fr="Carte complète" data-he="התפריט המלא">Full à la carte menu</span><span class="meta" id="menuCount">86</span><span class="chev">+</span></summary>
+    <div class="body">
+      <div class="mbar" id="mbar"></div>
+      <div class="mbar mdiet" id="mdiet"></div>
+      <input class="msearch" id="msearch" type="search" autocomplete="off" placeholder="Search the menu — fish, tofu, chicken…" data-vi-ph="Tìm món — cá, đậu hủ, gà…">
+      <div id="mlist"></div>
+      <div class="mnote" data-vi="Giá tính bằng đồng, đã bao gồm thuế và phí phục vụ. Món theo mùa tuỳ theo chợ sáng hôm đó. Vui lòng báo dị ứng khi gọi món — bếp dùng nước mắm và đậu phộng thường xuyên." data-fr="Prix en VND, taxes et service compris. Les plats de saison dépendent du marché du matin. Signalez-nous vos allergies en commandant — cette cuisine utilise beaucoup de sauce de poisson et d'arachides." data-he="המחירים בדונג וייטנאמי, כולל מסים ושירות. מנות עונתיות תלויות בשוק של אותו בוקר. אנא ספרו לנו על אלרגיות בעת ההזמנה — במטבח הזה נעשה שימוש נרחב ברוטב דגים ובבוטנים.">Prices in VND, taxes and service included. Seasonal dishes depend on that morning's market. Please tell us about allergies when you order — fish sauce and peanuts are used widely in this kitchen.</div>
+    </div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Thực đơn set" data-fr="Menus complets" data-he="תפריטים קבועים">Set menus</span><span class="meta" data-vi="2 người trở lên" data-fr="dès 195 000" data-he="החל מ-195,000">from 195,000</span><span class="chev">+</span></summary>
+    <div class="body">
+      <p data-vi="Dành cho 2 người trở lên, giá tính trên mỗi người. Nên đặt trước 16:00." data-fr="Deux personnes minimum, prix par personne. À commander de préférence avant 16h00." data-he="מינימום שני סועדים, המחיר לאדם. מומלץ להזמין עד 16:00.">Minimum two people, priced per person. Best ordered by 16:00.</p>
+      <div class="sets" id="setlist"></div>
+    </div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Y Lak là ai" data-fr="Qui était Y Lak" data-he="מי היה י' לאק">Who was Y Lak</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Theo truyền thuyết M'nông, Thần Nước thua trận trước Thần Lửa và vùng đất chìm trong hạn hán. Y Lak — con của một vị thần và một cô gái M'nông — rời buôn đi tìm nước chuộc lỗi cho cha mẹ. Kiệt sức, chàng cứu một con lươn mắc kẹt trong hốc đá, và con lươn dẫn chàng tới một hồ nước mênh mông đầy cá và cây cỏ. Các buôn M'nông về đây định cư từ đó. Hồ mang tên chàng, và nhà hàng của chúng tôi cũng vậy." data-fr="Selon le récit m'nông, le dieu de l'Eau perdit son combat contre le dieu du Feu et la terre s'assécha. Y Lak — né d'un dieu et d'une jeune M'nông — quitta son village en quête d'eau pour expier la faute de ses parents. Épuisé, il libéra une anguille coincée dans un rocher, et l'anguille le mena à un lac immense, plein de poissons et de verdure. Les M'nông s'installèrent tout autour. Le lac porte son nom, et notre cuisine aussi." data-he="לפי המסורת של בני המנונג, אל המים הפסיד בקרב לאל האש והארץ יבשה. י' לאק — בנם של אל ונערה מבני המנונג — עזב את הכפר לחפש מים ולכפר על חטא הוריו. תשוש, הוא שחרר צלופח שנלכד בין הסלעים, והצלופח הוביל אותו אל אגם עצום מלא דגים וצמחייה. בני המנונג התיישבו סביבו. האגם נושא את שמו, וכך גם המטבח שלנו.">In the M'nông telling, the God of Water lost his fight with the God of Fire and the land went dry. Y Lak — born of a god and a M'nông girl — left his village to find water and atone for his parents. Exhausted, he freed an eel trapped in a rock, and the eel led him to an immense lake full of fish and green things. The M'nông settled around it. The lake carries his name, and so does our kitchen.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Kosher, halal &amp; ăn kiêng" data-fr="Casher, halal &amp; régimes" data-he="כשרות, חלאל ותזונה מיוחדת">Kosher, halal &amp; special diets</span><span class="meta" data-vi="Đọc kỹ" data-fr="À lire" data-he="חשוב לקרוא">Please read</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Chúng tôi không phải bếp kosher và không có chứng nhận — không có giám sát, không có dụng cụ riêng, và không có giết mổ kosher tại tỉnh này. Điều chúng tôi làm được: nấu không thịt heo, không tôm cua, không dùng chung thịt và sữa trong một món, và làm chay bất kỳ món nào. Dùng bộ lọc phía trên và báo lễ tân từ tối hôm trước để bếp chuẩn bị theo chợ sáng. Lưu ý nước mắm được dùng rộng rãi trong ẩm thực này, kể cả ở những món không có tên cá." data-fr="Notre cuisine n'est pas casher et ne détient aucune certification — ni supervision, ni ustensiles séparés, ni abattage rituel disponible dans cette province. Ce que nous pouvons faire honnêtement : cuisiner sans porc ni crustacés, ne pas mêler viande et laitage dans un même plat, et préparer n'importe quel plat en version végétarienne. Utilisez les filtres ci-dessus et prévenez la réception la veille au soir, pour que la cuisine s'organise selon le marché du matin. À noter : la sauce de poisson est utilisée partout dans cette cuisine, y compris dans des plats dont le nom ne mentionne aucun poisson." data-he="המטבח שלנו אינו כשר ואין בידינו תעודה — אין השגחה, אין כלים נפרדים, ואין שחיטה כשרה במחוז הזה. מה שאנחנו כן יכולים לעשות בכנות: לבשל בלי חזיר ובלי פירות ים, לא להגיש בשר וחלב באותה מנה, ולהכין כל מנה בגרסה צמחונית. השתמשו בסינון שלמעלה וספרו לקבלה בערב שלפני, כדי שהמטבח יוכל להיערך בהתאם לשוק של הבוקר. שימו לב: רוטב דגים נמצא בשימוש נרחב במטבח הזה, גם במנות ששמן אינו מזכיר דגים.">We are not a kosher kitchen and hold no certification — there is no supervision, no separate utensils, and no kosher slaughter available in this province. What we can do honestly: cook without pork or shellfish, keep meat and dairy off the same plate, and prepare any dish vegetarian. Use the filters above, and tell reception the evening before so the kitchen can plan around the morning market. Note that fish sauce is used throughout this cuisine, including in dishes with no fish in the name.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Ăn chay, dị ứng, trẻ em" data-fr="Végétarien, allergies, enfants" data-he="צמחוני, אלרגיות, ילדים">Vegetarian, allergies, children</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Bếp làm được món chay và thuần chay cho mọi bữa. Vui lòng báo dị ứng khi đặt bàn — nhà bếp dùng nước mắm và đậu phộng thường xuyên. Có ghế ăn và suất nhỏ cho trẻ em, không tính thêm." data-fr="Version végétarienne et végétalienne de chaque menu. Signalez-nous vos allergies à la réservation — cette cuisine utilise beaucoup de sauce de poisson et d'arachides. Chaises hautes et demi-portions pour les enfants, sans supplément." data-he="גרסה צמחונית וטבעונית לכל תפריט. ספרו לנו על אלרגיות בעת ההזמנה — במטבח הזה נעשה שימוש נרחב ברוטב דגים ובבוטנים. כיסאות תינוק ומנות קטנות לילדים, ללא תשלום.">Full vegetarian and vegan versions of every menu. Tell us about allergies when you book a table — fish sauce and peanuts are used widely in this kitchen. High chairs and half portions for children, no charge.</div>
+  </details>
+</section>
+
+<!-- PLAY -->
+<section id="play">
+  <div class="shead"><h2 data-vi="Chơi" data-fr="Jouer" data-he="פעילויות">Play</h2><div class="vi" data-vi="Hồ &amp; buôn làng" data-fr="Lac &amp; villages" data-he="האגם והכפרים">Lake &amp; villages</div></div>
+  <p class="lede" data-vi="Hầu hết các hoạt động đều miễn phí, chỉ cần có mặt. Lễ Tân thu xếp phần còn lại — hoạt động buổi sáng đăng ký từ tối hôm trước." data-fr="Presque tout ici est gratuit et ne demande que de se présenter. La réception organise le reste — les activités du matin se réservent la veille au soir." data-he="כמעט הכול כאן ללא תשלום ודורש רק להגיע. הקבלה מארגנת את השאר — פעילויות הבוקר נסגרות בערב שלפני.">Almost everything here is free and needs nothing but showing up. Reception arranges the rest — morning activities close the evening before.</p>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Đi dạo – chạy bộ" data-fr="Course à pied &amp; marche" data-he="ריצה והליכה">Running &amp; jogging</span><span class="meta" data-vi="5:00 &amp; 17:00" data-fr="05h &amp; 17h" data-he="05:00 ו-17:00">05:00 &amp; 17:00</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Khoảng 3km ven hồ, vòng quanh LAK Tented Camp. Đường đất, cấp phối, bê tông. Hồ súng, ruộng lúa, cà phê… 45–60 phút, cấp độ dễ. Bình minh 5:00–6:00 hoặc hoàng hôn 17:00–18:00. Tập trung ở Lễ Tân/Y LAK. Miễn phí, tự thực hiện." data-fr="Une boucle de 3 km autour du camp, sur terre, gravier et asphalte, entre étangs de lotus, rizières et caféiers. 45 à 60 minutes, facile. Lever du soleil 05h00–06h00 ou coucher 17h00–18h00. Rendez-vous à la réception ou au Y LAK. Gratuit, en autonomie." data-he="מסלול של 3 ק״מ סביב המחנה — דרך עפר, חצץ ואספלט, בין בריכות לוטוס, שדות אורז ומטעי קפה. 45–60 דקות, קל. זריחה 05:00–06:00 או שקיעה 17:00–18:00. מפגש בקבלה או ב-Y LAK. ללא תשלום, עצמאי.">A 3 km loop around the camp on dirt, gravel and asphalt, past lotus ponds, paddy fields and coffee gardens. 45–60 minutes, easy going. Sunrise 05:00–06:00 or sunset 17:00–18:00. Meet at Reception or Y LAK. Free, self-guided.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="SUP – Chèo kayak" data-fr="SUP &amp; kayak" data-he="סאפ וקיאק">SUP &amp; kayaking</span><span class="meta" data-vi="5:30" data-fr="05h30" data-he="05:30">05:30</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Góc hồ Lăk bình yên, bên trái LAK Tented Camp, đối diện đồi “cá sấu”. Từ 5:30, khoảng 1 giờ. Đón bình minh, ngắm cảnh đánh cá của đồng bào M’nông, đầm hoa súng từ T.6 đến T.11. Miễn phí &amp; tự khám phá. Nên giữ chỗ nếu ngày đông khách hoặc chèo buổi chiều. Bắt buộc mặc áo phao." data-fr="Sur le coin paisible du lac, entre le camp et la colline du « crocodile ». Dès 05h30, environ une heure — lever du soleil, pêcheurs m’nông au travail et nénuphars en pleine floraison de juin à novembre. Gratuit et en autonomie ; réservez à la réception les jours d’affluence. L’après-midi et le coucher du soleil sont tout aussi beaux. Gilet de sauvetage obligatoire." data-he="בפינה השקטה של האגם, בין המחנה לגבעת ה״תנין״. מ-05:30, כשעה — זריחה, דייגי מנונג בעבודתם, ונופרים בפריחה מלאה מיוני עד נובמבר. ללא תשלום ועצמאי; כדאי להזמין בקבלה בימים עמוסים. גם אחר הצהריים והשקיעה יפים. חגורת הצלה חובה.">On the calm corner of the lake between the camp and “Crocodile” hill. From 05:30, about an hour — sunrise, M’nông fishermen at work, and water lilies in full bloom from June to November. Free and self-guided; reserve at reception on busy days. Afternoon and sunset are just as good. Life jackets are compulsory.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Đường mòn khám phá" data-fr="Sentier de découverte" data-he="שביל התגליות">Jungle Discovery Trail</span><span class="meta" data-vi="9:00" data-fr="09h00" data-he="09:00">09:00</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Tham quan không gian xanh, vườn cây, trang trại, vườn rừng phía sau các lều và trên đồi. 1,5km từ/về lại Lễ Tân. Lúc 9:00, khoảng 60 phút. Tìm hiểu về các loài cây cỏ, công dụng. Hái sả, húng, pha trà thảo mộc. Miễn phí, có hướng dẫn viên." data-fr="Un sentier de 2 km dans le jardin forestier derrière les tentes et par-dessus la colline — 1,5 km depuis la réception, aller-retour. Dès 09h00, environ une heure, avec un guide. En chemin : habitat du coucal, bosquets de bambou, coqs sauvages, forêt de Hopea odorata, point de vue sur le lac, la ferme et la plantation de café et de cacao. Se termine par une tisane que vous cueillez et préparez vous-même. Gratuit." data-he="שביל של 2 ק״מ בגן המיוער שמאחורי האוהלים ומעל הגבעה — 1.5 ק״מ מהקבלה וחזרה. מ-09:00, כשעה, בליווי מדריך. בדרך: בית גידול של הקוקאל, חורשות במבוק, תרנגולי בר, יער הופאה, נקודת תצפית לאגם, החווה ומטעי הקפה והקקאו. בסיום — תה צמחים שאתם קוטפים ומכינים בעצמכם. ללא תשלום.">A 2 km trail through the forested garden behind the tents and over the hilltop — 1.5 km from reception and back. From 09:00, about an hour, with a guide. Along the way: coucal habitat, bamboo stands, junglefowl, Hopea odorata forest, the lake viewpoint, the farm, and the coffee and cacao plantation. It ends with a herbal tea you pick and brew yourself. Free.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Trải nghiệm cà phê" data-fr="Expérience café" data-he="חוויית הקפה">Coffee experience</span><span class="meta" data-vi="15:30" data-fr="15h30" data-he="15:30">15:30</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Vườn cà phê LAK Tented Camp. 15:30, khoảng 30–60 phút. Học, trải nghiệm rang, giã, pha cà phê truyền thống M’nông (thăm vườn cà phê, thu hoạch). Đã bao gồm hoặc có phụ phí 50.000đ/khách. Đăng ký trước ở Lễ Tân." data-fr="Dans le jardin de café et de cacao du camp. Dès 15h30, 30 à 60 minutes : torréfier, piler et préparer le café à la manière m’nông, et parcourir le jardin en saison de récolte. Inclus dans certains forfaits, sinon 50 000 ₫ par personne. Réservez à la réception." data-he="בגן הקפה והקקאו של המחנה. מ-15:30, 30 עד 60 דקות: לקלות, לכתוש ולחלוט קפה בדרכם של בני המנונג, ולסייר בגן בעונת הקטיף. כלול בחלק מהחבילות, אחרת 50,000₫ לאדם. יש להזמין מראש בקבלה.">In the camp’s own coffee and cacao garden. From 15:30, 30 to 60 minutes: roast, pound and brew coffee the M’nông way, and walk the garden in harvest season. Included in some packages, otherwise 50,000₫ per person. Please book at reception in advance.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Biểu diễn cồng chiêng" data-fr="Spectacle de gongs" data-he="מופע גונגים">Gong performance</span><span class="meta" data-vi="18:00 · T.6 &amp; T.7" data-fr="18h · ven. &amp; sam." data-he="18:00 · שישי ושבת">18:00 · Fri &amp; Sat</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Sân vườn trung tâm hoặc nhà hàng Y LAK. Từ 18:00, khoảng 1 giờ. Các nghi lễ chào mừng, giao lưu múa, hát cồng chiêng, thưởng thức rượu cần. Miễn phí tham dự tối thứ Sáu, thứ Bảy hoặc tổ chức theo yêu cầu cho đoàn khách đặt riêng." data-fr="Au jardin central ou à la maison Y LAK, dès 18h00 pendant environ une heure. Chants, danses, cérémonies d’accueil m’nông et dégustation de rượu cần. Gratuit tous les vendredis et samedis ; sur demande pour les groupes privés." data-he="בגן המרכזי או בבית Y LAK, מ-18:00 למשך כשעה. שירים, ריקודים, טקסי קבלת פנים של בני המנונג וטעימת רוּאוּ קֶן. ללא תשלום בכל יום שישי ושבת; לקבוצות פרטיות לפי בקשה.">In the Central Garden or at Y LAK House, from 18:00 for about an hour. Songs, dances, M’nông welcome ceremonies and rượu cần tasting. Free every Friday and Saturday; arranged on request for private groups.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Voi — cách chúng tôi làm" data-fr="Les éléphants — notre position" data-he="פילים — הגישה שלנו">Elephants — how we do it</span><span class="meta" data-vi="Không cưỡi" data-fr="Sans monte" data-he="בלי רכיבה">No riding</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Chúng tôi không bán và không đặt tour cưỡi voi, và mong quý khách cũng không mua dịch vụ này ở nơi khác quanh hồ. Thay vào đó, Lễ Tân có thể sắp xếp chuyến thăm đàn voi được thả tự do — quý khách đi bộ cùng nài voi và quan sát từ xa, theo nhịp của voi." data-fr="Nous ne vendons ni ne réservons de balades à dos d’éléphant, et nous demandons à nos hôtes de ne pas en acheter ailleurs autour du lac. Ce que la réception peut organiser à la place : une visite à un troupeau en liberté — vous marchez avec le cornac et observez à distance, selon les termes des éléphants." data-he="איננו מוכרים ואיננו מזמינים רכיבה על פילים, ואנו מבקשים מאורחינו לא לרכוש אותה במקומות אחרים סביב האגם. במקום זאת הקבלה יכולה לארגן ביקור בעדר חופשי — הולכים עם המאהוט וצופים מרחוק, בתנאים של הפילים.">We don’t sell or book elephant rides, and we ask our guests not to buy them elsewhere around the lake. What reception can arrange instead is a visit to a free-roaming herd — you walk with the mahout and watch from a distance, on the elephants’ terms.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Buôn làng, thuyền &amp; hoạt động khác" data-fr="Villages, sorties en bateau &amp; plus" data-he="כפרים, שיט ועוד">Villages, boat trips &amp; more</span><span class="meta" data-vi="Hỏi Lễ Tân" data-fr="À la réception" data-he="בקבלה">Ask reception</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Tour tham quan buôn M’nông (Nau, M’Liêng), chèo thuyền ngắm hoàng hôn, chụp ảnh và các hoạt động khác được thu xếp tại Lễ Tân, và nằm trong một số gói lưu trú. Vui lòng hỏi trước khi chụp ảnh người dân — đây là nhà của họ, không phải điểm tham quan." data-fr="Les visites guidées des villages m’nông de Nau et M’Liêng, les croisières au coucher du soleil, les sorties photo et d’autres excursions s’organisent à la réception ; elles sont incluses dans plusieurs forfaits. Demandez avant de photographier les habitants — ce sont des maisons, pas une exposition." data-he="סיורים מודרכים בכפרי המנונג נאו ומליינג, שיט בשקיעה, יציאות צילום וטיולים נוספים מאורגנים בקבלה, וחלקם כלולים בחבילות אירוח. בקשו רשות לפני צילום אנשים בכפרים — אלה בתים, לא תצוגה.">Guided visits to the M’nông villages of Nau and M’Liêng, sunset boat cruises, photography outings and other excursions are arranged at reception, and are included in several stay packages. Please ask before photographing people in the villages — these are homes, not exhibits.</div>
+  </details>
+
+</section>
+
+<!-- SLEEP -->
+<section id="sleep">
+  <div class="shead"><h2 data-vi="Ngủ" data-fr="Dormir" data-he="שינה">Sleep</h2><div class="vi" data-vi="Lều của quý khách" data-fr="Votre tente" data-he="האוהל שלכם">Your tent</div></div>
+  <p class="lede" data-vi="Vách lều bằng vải nghĩa là quý khách sẽ nghe thấy mặt hồ, tiếng ếch và những tiếng chim đầu tiên. Đừng mong khách sạn năm sao — hãy mong những đêm ngàn sao." data-fr="Des murs de toile : vous entendrez le lac, les grenouilles et les premiers oiseaux. N'attendez pas un luxe cinq étoiles ; attendez des nuits à mille étoiles." data-he="קירות בד פירושם שתשמעו את האגם, את הצפרדעים ואת הציפורים הראשונות. אל תצפו ליוקרה של חמישה כוכבים; צפו ללילות של אלף כוכבים.">Canvas walls mean you'll hear the lake, the frogs and the first birds. Don't expect five-star luxury; expect thousand-star nights.</p>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Nơi lưu trú" data-fr="Votre hébergement" data-he="היכן אתם שוהים">Where you're staying</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="25 đơn vị lưu trú trên 4,8 ha: 15 Lều nhìn hồ, 5 nhà nhỏ Kpan trên mặt hồ, 4 Bungalow ven hồ và nhà Y Liêng — nhà tập thể 8 giường bên mặt nước. Lều có phòng tắm riêng, ban công nhìn hồ, máy lạnh và quạt. Bungalow có thêm phòng khách và bồn tắm." data-fr="25 unités sur 4,8 hectares : 15 tentes-lodges vue lac, 5 Kpan (mini-maisons sur le lac), 4 bungalows en bord de lac et la maison Y Liêng, un dortoir de 8 couchages au bord de l'eau. Les tentes disposent d'une salle de bain privative, d'un balcon avec vue sur le lac, de la climatisation et d'un ventilateur. Les bungalows ajoutent un salon et une baignoire." data-he="25 יחידות על פני 4.8 הקטאר: 15 אוהלי לודג' עם נוף לאגם, 5 בתי קפאן זעירים על האגם, 4 בקתות על שפת האגם, ובית י' ליינג — מעונות בני 8 מיטות לצד המים. באוהלים חדר רחצה צמוד, מרפסת פרטית עם נוף לאגם, מיזוג ומאוורר. בבקתות יש גם סלון ואמבטיה.">25 units across 4.8 hectares: 15 Lakeview Tented Lodges, 5 Kpan tiny houses on the lake, 4 Lakefront Bungalows, and Y Liêng House, an 8-berth dormitory by the water. Tents have an en-suite bathroom, a private lake-view balcony, air conditioning and a fan. Bungalows add a living room and a bathtub.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Nước nóng &amp; điện" data-fr="Eau chaude &amp; électricité" data-he="מים חמים וחשמל">Hot water &amp; power</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Nước nóng dùng năng lượng mặt trời, nhiều nhất vào cuối chiều và buổi tối. Đây là khu nghỉ sinh thái, không phải khách sạn sang trọng: gió hồ làm bớt việc cho máy lạnh, còn tiếng dế và tiếng gà là chương trình giải trí ban đêm và đồng hồ báo thức." data-fr="L'eau chaude est chauffée à l'énergie solaire : elle est donc la plus abondante en fin d'après-midi et en soirée. Ceci est un éco-lodge, pas un hôtel de luxe : la brise du lac fait une partie du travail de la climatisation, et les grillons et les coqs tiennent lieu de spectacle nocturne et de réveil." data-he="המים החמים מחוממים באנרגיה סולארית, ולכן הם חזקים במיוחד אחר הצהריים ובערב. זהו אקו-לודג', לא מלון יוקרה: הרוח מהאגם עושה חלק מעבודת המיזוג, והצרצרים והתרנגולים הם הבידור הלילי ושעון המעורר.">Hot water is heated by solar power, so it is strongest in the late afternoon and evening. This is an eco-lodge, not a luxury hotel: expect the lake breeze to do some of the work of the air conditioning, and crickets and roosters to serve as the night entertainment and the wake-up call.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Côn trùng, tắc kè và rắn" data-fr="Insectes, geckos et serpents" data-he="חרקים, שממיות ונחשים">Insects, geckos and snakes</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Đây là thiên nhiên mở. Quý khách có thể gặp côn trùng, muỗi, tắc kè và đôi khi là rắn. Vui lòng đóng kín lều hoặc bungalow, và mang theo đèn pin trong phòng khi đi lại ban đêm. Tắc kè vô hại và ăn muỗi giúp quý khách." data-fr="Nous sommes en pleine nature. Vous pourrez croiser des insectes, des moustiques, des geckos et, parfois, des serpents. Gardez votre tente ou bungalow bien fermé, et emportez la lampe torche de votre chambre lors de vos déplacements nocturnes. Les geckos sont inoffensifs et mangent vos moustiques." data-he="זהו טבע פתוח. ייתכן שתפגשו חרקים, יתושים, שממיות ולעיתים גם נחשים. הקפידו לסגור היטב את האוהל או הבקתה, וקחו את הפנס מהחדר כשאתם הולכים בלילה. השממיות אינן מזיקות והן אוכלות את היתושים שלכם.">This is open nature. You may meet insects, mosquitoes, geckos and, occasionally, snakes. Keep your tent or bungalow properly closed, and carry the flashlight from your room when you walk at night. The geckos are harmless and eat your mosquitoes.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Trong phòng và tại Lễ Tân" data-fr="Dans votre chambre et à la réception" data-he="בחדר ובקבלה">In your room, and at reception</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Mỗi phòng đều có ô và đèn pin — vui lòng dùng cẩn thận và để lại khi rời đi. Trang sức và tài sản có giá trị có thể gửi tại két an toàn ở Lễ Tân, có biên nhận. Không hút thuốc trong phòng; vui lòng ra ban công hoặc hiên trước, và hỏi Lễ Tân để lấy gạt tàn. Mọi nhu cầu khác — giặt là, ăn sáng sớm, trả phòng muộn — vui lòng hỏi Lễ Tân." data-fr="Un parapluie et une lampe torche sont fournis dans chaque chambre — merci d'en prendre soin et de les laisser sur place. Bijoux et objets de valeur peuvent être déposés au coffre de la réception, contre reçu. Il est interdit de fumer dans les chambres ; utilisez votre balcon ou votre terrasse, et demandez un cendrier à la réception. Pour tout le reste — blanchisserie, petit-déjeuner matinal, départ tardif — adressez-vous à la réception." data-he="בכל חדר יש מטרייה ופנס — אנא השתמשו בהם בזהירות והשאירו אותם במקום. תכשיטים וחפצי ערך ניתן להפקיד בכספת שבקבלה, כנגד קבלה. העישון אסור בתוך החדרים; אנא השתמשו במרפסת או בחצר הקדמית, ובקשו מאפרה בקבלה. לכל דבר אחר — כביסה, ארוחת בוקר מוקדמת, עזיבה מאוחרת — פנו לקבלה.">An umbrella and a flashlight are provided in every room — please use them with care and leave them behind. Jewellery and other valuables can be deposited in the safe at reception, against a receipt. Smoking is not permitted inside the rooms; please use your balcony or front patio, and ask reception for an ashtray. For anything else — laundry, an early breakfast, a late departure — ask at reception.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Trẻ em &amp; an toàn trên hồ" data-fr="Enfants &amp; sécurité sur l'eau" data-he="ילדים ובטיחות במים">Children &amp; safety on the water</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Khu nghỉ phù hợp nhất với trẻ trên 6 tuổi, trẻ nhỏ hơn vẫn được chào đón dưới sự trông nom của cha mẹ. Trẻ dưới 6 tuổi ngủ chung giường miễn phí; từ 6 đến 11 tuổi tính 50%. Bắt buộc mặc áo phao với tất cả mọi người khi lên thuyền, kayak hoặc ván SUP." data-fr="Le camp convient surtout aux enfants de plus de 6 ans, les plus jeunes restant les bienvenus sous la responsabilité de leurs parents. Moins de 6 ans partageant un lit : gratuit ; de 6 à 11 ans : demi-tarif. Le gilet de sauvetage est obligatoire pour toute personne montant à bord d'un bateau, d'un kayak ou d'un paddle." data-he="המחנה מתאים במיוחד לילדים מגיל 6 ומעלה, אך גם צעירים יותר מוזמנים באחריות ההורים. מתחת לגיל 6 בחדר ההורים — ללא תשלום; מגיל 6 עד 11 — חצי מחיר. חגורת הצלה היא חובה לכל מי שעולה לסירה, לקיאק או לגלשן.">The camp suits children over 6 best, though younger ones are welcome under their parents' care. Under 6 sharing a bed is free; 6 to 11 is charged half. Life jackets are compulsory for everyone boarding a boat, kayak or paddleboard.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Nhận &amp; trả phòng" data-fr="Arrivée &amp; départ" data-he="צ'ק-אין וצ'ק-אאוט">Check-in &amp; check-out</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Lễ Tân xác nhận giờ chính xác, giữ hành lý sau khi trả phòng và thu xếp trả phòng muộn nếu còn phòng trống. Vui lòng hỏi từ tối hôm trước." data-fr="La réception confirme vos horaires exacts, garde vos bagages après le départ et organise un départ tardif si une chambre le permet. Demandez la veille au soir." data-he="הקבלה תאשר את השעות המדויקות, תשמור על המזוודות לאחר העזיבה ותארגן עזיבה מאוחרת כשיש חדר פנוי. אנא בקשו בערב שלפני.">Reception can confirm your exact times, hold your luggage after check-out, and arrange a late departure when a room allows it. Please ask the evening before.</div>
+  </details>
+
+</section>
+
+<!-- TREAD -->
+<section id="tread">
+  <div class="shead"><h2 data-vi="Sống nhẹ" data-fr="Marcher léger" data-he="לדרוך בעדינות">Tread lightly</h2><div class="vi" data-vi="Cách chúng tôi làm" data-fr="Notre manière" data-he="הדרך שלנו">Our way</div></div>
+  <p class="lede" data-vi="LAK Tented Camp được hình thành với hai mục tiêu: gìn giữ bản sắc văn hóa và bảo vệ môi trường nơi đây. Hồ Lăk là nhà của ai đó trước khi là cảnh đẹp của bất kỳ ai — chúng tôi cũng là khách ở đây." data-fr="LAK Tented Camp a été conçu autour de deux objectifs : préserver l'intégrité culturelle et protéger cet environnement. Le lac est le foyer de quelqu'un avant d'être le panorama de quiconque — nous aussi, nous sommes des invités ici." data-he="לאק טנטד קמפ נוסד סביב שתי מטרות: שימור שלמותה של התרבות המקומית והגנה על הסביבה הזו. האגם הוא ביתו של מישהו לפני שהוא הנוף של מישהו — גם אנחנו אורחים כאן.">LAK Tented Camp was conceived around two goals: preserving cultural integrity, and protecting this environment. The lake is somebody's home before it is anybody's view — we're guests here too.</p>
+
+  <div class="pledge">
+    <div class="num" data-vi="Nước" data-fr="L'eau" data-he="מים">Water</div>
+    <h3 data-vi="Bình nước trong lều là để đổ đầy lại" data-fr="La gourde de votre tente se remplit" data-he="הבקבוק באוהל נועד למילוי חוזר">The bottle in your tent is made to be refilled</h3>
+    <p data-vi="Nước tinh khiết từ giếng tự nhiên, phục vụ trong chai có thể đổ đầy lại. Hãy đổ đầy thay vì mua mới — chai nhựa là thứ hồ này không cần." data-fr="Eau purifiée issue d'un puits naturel, servie dans des bouteilles rechargeables. Remplissez plutôt que d'acheter — les bouteilles en plastique sont exactement ce dont ce lac n'a pas besoin." data-he="מים מטוהרים מבאר טבעית, מוגשים בבקבוקים הניתנים למילוי חוזר. מלאו מחדש במקום לקנות — בקבוקי פלסטיק הם בדיוק מה שהאגם הזה לא צריך.">Purified water from a natural well, served in refillable bottles. Refill rather than buy — plastic bottles are exactly what this lake does not need.</p>
+  </div>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Xây ít nhất, trồng nhiều nhất" data-fr="Construire au minimum, planter au maximum" data-he="בנייה מזערית, מקסימום עצים">Minimum build, maximum trees</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Chỉ 25 đơn vị lưu trú trên 4,8 ha, xây dựng hòa hợp với kiến trúc và sinh thái bản địa thay vì đè lên chúng, cùng cam kết trồng lại rừng. Điện năng được sử dụng ở mức thấp nhất có thể." data-fr="Seulement 25 unités sur 4,8 hectares, conçues pour s'inscrire dans l'architecture et l'écologie locales plutôt que de s'y imposer, avec un engagement continu de reforestation. La consommation d'électricité est volontairement réduite." data-he="רק 25 יחידות על פני 4.8 הקטאר, שנבנו כדי להשתלב בארכיטקטורה ובאקולוגיה המקומית ולא להשתלט עליהן, לצד מחויבות מתמשכת לייעור מחדש. צריכת החשמל נשמרת נמוכה במכוון.">Only 25 units across 4.8 hectares, built to sit within the local architecture and ecology rather than on top of it, with an ongoing commitment to reforestation. Electricity use is kept deliberately low.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Thức ăn đến từ đâu" data-fr="D'où vient votre nourriture" data-he="מהיכן מגיע האוכל">Where your food comes from</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="Khu nghỉ tự trồng rau và trái cây, bên cạnh vườn cà phê và ca cao, phần lớn đi thẳng vào bếp. Quý khách có thể tự hái rau và nấu. Thực đơn xây dựng trên nguyên liệu địa phương — chúng tôi không có hàng nghìn món quốc tế, nhưng những gì phục vụ đều tươi." data-fr="Le camp cultive ses propres légumes et fruits, à côté du jardin de café et de cacao, et l'essentiel part directement en cuisine. Vous êtes invités à cueillir vos légumes et à les cuisiner. La carte repose sur des produits locaux — nous ne proposons pas mille plats internationaux, mais ce que nous servons est frais." data-he="המחנה מגדל ירקות ופירות משלו, לצד גן הקפה והקקאו, ורובם מגיעים ישירות למטבח. אתם מוזמנים לקטוף ירקות ולבשל אותם בעצמכם. התפריט בנוי על חומרי גלם מקומיים — לא נציע לכם אלף מנות בין-לאומיות, אבל מה שכן מוגש הוא טרי.">The camp grows its own vegetables and fruit, alongside the coffee and cacao garden, and most of it goes straight to the kitchen. You are welcome to pick your own vegetables and cook them. The menu is built on locally sourced ingredients — we won't offer you a thousand international dishes, but what we do serve is fresh.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Người làm việc ở đây" data-fr="Qui travaille ici" data-he="מי עובד כאן">Who works here</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="LAK Tented Camp được làm bởi và dành cho người địa phương — người M’nông và bà con các buôn lân cận. Nhân viên và quản lý nói tiếng Việt, tiếng Anh và tiếng M’nông, một số nói được tiếng Pháp. Nếu dịch vụ đôi khi chưa hoàn hảo, họ rất mong nhận được góp ý của quý khách. Dạy họ vài câu tiếng Anh, họ sẽ dạy lại quý khách vài câu tiếng M’nông." data-fr="LAK Tented Camp a été conçu pour et par les habitants — les M'nông et les villageois voisins. Notre équipe et nos responsables parlent vietnamien, anglais et m'nông, et certains parlent français. Si le service manque parfois de raffinement, ils préfèrent de loin recevoir vos remarques. Apprenez-leur un peu d'anglais, ils vous apprendront un peu de m'nông." data-he="לאק טנטד קמפ נבנה עבור המקומיים ובידי המקומיים — בני המנונג ותושבי הכפרים השכנים. הצוות והמנהלים דוברים וייטנאמית, אנגלית ומנונג, וחלקם גם צרפתית. אם השירות אינו תמיד מלוטש, הם מעדיפים לשמוע את הערותיכם. לַמדו אותם קצת אנגלית, והם ילמדו אתכם קצת מנונג.">LAK Tented Camp was made for and by local people — the M’nông and neighbouring villagers. Our staff and managers speak Vietnamese, English and M’nông, and some speak French. If the service is sometimes short of polish, they would rather hear your feedback than not. Teach them some English and they will teach you some M’nông.</div>
+  </details>
+
+  <details class="row">
+    <summary><span class="title" data-vi="Ba điều nhỏ giúp chúng tôi" data-fr="Trois petites choses qui aident" data-he="שלושה דברים קטנים שעוזרים">Three small things that help</span><span class="chev">+</span></summary>
+    <div class="body" data-vi="<ul><li><strong>Tránh nhựa dùng một lần</strong> — túi ni lông, chai nhựa và hóa chất mạnh đều trôi về lưu vực hồ</li><li><strong>Tắt điều hòa</strong> khi ra khỏi lều; lều vải mát rất nhanh</li><li><strong>Không cho động vật hoang dã ăn</strong>, và giữ yên lặng sau khi trời tối — âm thanh đi rất xa trên mặt nước</li></ul>" data-fr="<ul><li><strong>Évitez le plastique jetable</strong> — sacs, bouteilles et produits chimiques agressifs finissent tous dans le bassin du lac</li><li><strong>Éteignez la climatisation</strong> en sortant ; la toile se rafraîchit vite</li><li><strong>Ne nourrissez pas les animaux</strong>, et baissez le ton après la tombée de la nuit — le son porte loin sur l'eau</li></ul>" data-he="<ul><li><strong>הימנעו מפלסטיק חד-פעמי</strong> — שקיות, בקבוקים וחומרים כימיים חריפים מגיעים כולם לאגן האגם</li><li><strong>כבו את המזגן</strong> ביציאה; אוהל בד מתקרר מהר</li><li><strong>אין להאכיל את בעלי החיים</strong>, ושמרו על השקט אחרי רדת החשכה — הקול נישא רחוק על המים</li></ul>"><ul><li><strong>Avoid single-use plastic</strong> — bags, bottles, and harsh chemicals all end up in the lake basin</li><li><strong>Switch off the aircon</strong> when you go out; canvas cools down fast</li><li><strong>Don't feed the wildlife</strong>, and keep the noise down after dark — sound travels a long way over water</li></ul></div>
+  </details>
+
+</section>
+
+<!-- HELP -->
+<div class="help" id="help">
+  <div class="shead"><h2 data-vi="Trợ giúp" data-fr="Aide" data-he="עזרה">Help</h2><div class="vi" data-vi="24/7" data-fr="24 h/24" data-he="24/7">24 / 7</div></div>
+  <div class="tiles">
+    <a class="tile wide" href="tel:+84399121258">
+      <div class="k" data-vi="Lễ tân — gọi bất cứ lúc nào" data-fr="Réception — à toute heure" data-he="קבלה — בכל שעה">Reception — any hour</div>
+      <div class="v">+84 399 121 258</div>
+    </a>
+    <a class="tile" href="https://zalo.me/84399121258">
+      <div class="k">Zalo</div>
+      <div class="v" data-vi="0399 121 258" data-fr="0399 121 258" data-he="0399 121 258">0399 121 258</div>
+    </a>
+    <a class="tile" href="https://wa.me/84399121258">
+      <div class="k">WhatsApp</div>
+      <div class="v" data-vi="+84 399 121 258" data-fr="+84 399 121 258" data-he="+84 399 121 258">+84 399 121 258</div>
+    </a>
+    <div class="tile">
+      <div class="k" data-vi="Wifi" data-fr="Wi-Fi" data-he="רשת אלחוטית">Wi-Fi</div>
+      <div class="v">LakCamp-Guest</div>
+    </div>
+    <div class="tile">
+      <div class="k" data-vi="Mật khẩu" data-fr="Mot de passe" data-he="סיסמה">Password</div>
+      <div class="v">laklake2026</div>
+    </div>
+    <a class="tile wide" href="mailto:res@laktentedcamp.com">
+      <div class="k" data-vi="Email đặt chỗ" data-fr="Réservations par e-mail" data-he="הזמנות באימייל">Reservations by email</div>
+      <div class="v">res@laktentedcamp.com</div>
+    </a>
+    <a class="tile wide" href="tel:+842626255552">
+      <div class="k" data-vi="Nhà hàng &amp; đặt bàn" data-fr="Restaurant &amp; réservation" data-he="מסעדה והזמנת שולחן">Restaurant &amp; table booking</div>
+      <div class="v">0262 6255 552</div>
+    </a>
+    <a class="tile wide" href="tel:115">
+      <div class="k" data-vi="Cấp cứu / Y tế — Liên Sơn 8 km" data-fr="Urgences / clinique — Liên Sơn, 8 km" data-he="חירום / מרפאה — ליין סון, 8 ק&quot;מ">Emergency / clinic — Liên Sơn, 8 km</div>
+      <div class="v">115</div>
+    </a>
+  </div>
+  <div class="foot">
+    <div class="rule"></div>
+    <span data-vi="Lak Tented Camp · Buôn B'hok, Yang Tao, Đắk Lắk · Ăn. Chơi. Ngủ. Sống nhẹ." data-fr="Lak Tented Camp · Buôn B'hok, Yang Tao, Đắk Lắk · Manger. Jouer. Dormir. Marcher léger." data-he="לאק טנטד קמפ · בון בהוק, יאנג טאו, דאק לאק · לאכול. לשחק. לישון. לדרוך בעדינות.">Lak Tented Camp · Buôn B'hok, Yang Tao, Đắk Lắk · Eat. Play. Sleep. Tread lightly.</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#eat" data-vi="Ăn" data-fr="Manger" data-he="אוכל">Eat</a>
+  <a href="#play" data-vi="Chơi" data-fr="Jouer" data-he="פעילות">Play</a>
+  <a href="#sleep" data-vi="Ngủ" data-fr="Dormir" data-he="שינה">Sleep</a>
+  <a href="#tread" data-vi="Nhẹ" data-fr="Léger" data-he="בעדינות">Tread</a>
+  <a href="#help" data-vi="Giúp" data-fr="Aide" data-he="עזרה">Help</a>
+</nav>
+
+<div id="obar" data-show="false" role="region" aria-label="Your order">
+  <div class="in">
+    <div class="sum" id="osum"></div>
+    <button type="button" class="clr" id="oclear"></button>
+    <button type="button" id="obook"></button>
+  </div>
+</div>
+
+<dialog id="osheet" aria-labelledby="otitle">
+  <form method="dialog" class="pad" id="oform">
+    <h3 id="otitle"></h3>
+    <div class="sub" id="osubtitle"></div>
+
+    <div class="lines" id="olines"></div>
+    <div class="tot"><span id="ototlab"></span><span id="ototal"></span></div>
+
+    <label for="oroom" id="oroomlab"></label>
+    <select id="oroom" required></select>
+
+    <label for="oname" id="onamelab"></label>
+    <input id="oname" type="text" required autocomplete="name" maxlength="60">
+
+    <label for="otime" id="otimelab"></label>
+    <input id="otime" type="time" required>
+
+    <label for="onote" id="onotelab"></label>
+    <textarea id="onote" maxlength="200"></textarea>
+
+    <div id="omsg"></div>
+
+    <div class="acts">
+      <button type="button" class="no" id="ocancel"></button>
+      <button type="button" id="osend"></button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* ============================================================
+   THE CAMP'S DAY — where reception edits it
+
+   1. Open the Google Sheet (link in the handover note).
+   2. Edit times and text. Save is automatic.
+   3. The page picks it up within a minute. Nothing to deploy.
+
+   Paste the sheet's "Publish to web → CSV" link below.
+   Leave it empty and the built-in schedule underneath is used.
+   ============================================================ */
+const SHEET_CSV_URL = "";
+
+/* Built-in schedule. Shown instantly, and kept if the sheet is
+   unreachable — so the page is never blank or wrong-by-silence.
+   Optional "d" limits a row to certain weekdays.                */
+const DEFAULT_DAY = [
+  {s:"00:00", en:["Camp asleep","Reception still answers"], vi:["Trại đã ngủ","Lễ tân vẫn trực"],
+              fr:["Le camp dort","La réception répond toujours"], he:["המחנה ישן","הקבלה עדיין עונה"]},
+  {s:"05:00", en:["Morning jog","3 km loop — meet at Reception or Y LAK"], vi:["Chạy bộ buổi sáng","Vòng 3km — tập trung ở Lễ Tân/Y LAK"],
+              fr:["Jogging du matin","Boucle de 3 km — rendez-vous à la réception"], he:["ריצת בוקר","מסלול 3 ק״מ — מפגש בקבלה"]},
+  {s:"05:30", en:["Sunrise on the water","SUP and kayaks, about an hour"], vi:["Bình minh trên hồ","SUP và kayak, khoảng 1 giờ"],
+              fr:["Lever du soleil sur l'eau","SUP et kayaks, environ une heure"], he:["זריחה על המים","סאפ וקיאקים, כשעה"]},
+  {s:"06:30", en:["Breakfast","Y LAK Restaurant"], vi:["Ăn sáng","Nhà hàng Y LAK"],
+              fr:["Petit-déjeuner","Restaurant Y LAK"], he:["ארוחת בוקר","מסעדת Y LAK"]},
+  {s:"09:00", en:["Discovery Trail","Meet at Reception, guided, about an hour"], vi:["Đường mòn khám phá","Tập trung ở Lễ Tân, có hướng dẫn viên"],
+              fr:["Sentier de découverte","Rendez-vous à la réception, avec guide"], he:["שביל התגליות","מפגש בקבלה, בליווי מדריך"]},
+  {s:"11:30", en:["Lunch","Y LAK Restaurant"], vi:["Ăn trưa","Nhà hàng Y LAK"],
+              fr:["Déjeuner","Restaurant Y LAK"], he:["ארוחת צהריים","מסעדת Y LAK"]},
+  {s:"14:00", en:["Quiet hours","Hammocks, books, the lake"], vi:["Giờ nghỉ trưa","Võng, sách, mặt hồ"],
+              fr:["Heures calmes","Hamacs, livres, le lac"], he:["שעות מנוחה","ערסלים, ספרים והאגם"]},
+  {s:"15:30", en:["Coffee experience","Roast and brew in the coffee garden"], vi:["Trải nghiệm cà phê","Rang, giã, pha ở vườn cà phê"],
+              fr:["Expérience café","Torréfier et préparer au jardin de café"], he:["חוויית הקפה","קלייה וחליטה בגן הקפה"]},
+  {s:"17:00", en:["Evening loop","Jog or walk the 3 km before sunset"], vi:["Vòng chạy chiều","Chạy hoặc đi bộ 3km trước hoàng hôn"],
+              fr:["Boucle du soir","Courir ou marcher 3 km avant le coucher du soleil"], he:["סיבוב ערב","ריצה או הליכה של 3 ק״מ לפני השקיעה"]},
+  {s:"18:00", d:["Fri","Sat"], en:["Gong performance","Central Garden or Y LAK House, one hour"], vi:["Biểu diễn cồng chiêng","Sân vườn trung tâm hoặc nhà Y LAK, 1 giờ"],
+              fr:["Spectacle de gongs","Jardin central ou maison Y LAK, une heure"], he:["מופע גונגים","הגן המרכזי או בית Y LAK, שעה"]},
+  {s:"18:00", d:["Sun","Mon","Tue","Wed","Thu"], en:["Dinner","Y LAK Restaurant, until 21:00"], vi:["Ăn tối","Nhà hàng Y LAK, đến 21:00"],
+              fr:["Dîner","Restaurant Y LAK, jusqu'à 21h00"], he:["ארוחת ערב","מסעדת Y LAK, עד 21:00"]},
+  {s:"19:00", d:["Fri","Sat"], en:["Dinner","Y LAK Restaurant, until 21:00"], vi:["Ăn tối","Nhà hàng Y LAK, đến 21:00"],
+              fr:["Dîner","Restaurant Y LAK, jusqu'à 21h00"], he:["ארוחת ערב","מסעדת Y LAK, עד 21:00"]},
+  {s:"22:00", en:["Lights down","Stargazing, and the crickets take over"], vi:["Giảm đèn","Ngắm sao, và tiếng dế lên tiếng"],
+              fr:["Extinction des lumières","Observation des étoiles, place aux grillons"], he:["עמעום אורות","צפייה בכוכבים, והצרצרים משתלטים"]}
+];
+
+let DAY = DEFAULT_DAY;
+let LANG = "en";
+const min = t => (+t.slice(0,2))*60 + (+t.slice(3));
+const NEXT_LABEL = {en:"Next", vi:"Tiếp theo", fr:"Ensuite", he:"הבא"};
+
+function phase(h){ return h<8?"dawn":h<16?"day":h<19?"dusk":"night"; }
+
+/* Camp time, not phone time. A guest whose phone is still on Seoul or
+   Paris time must still see what is happening here, on the lake. */
+function campNow(){
+  try{
+    const p = Object.fromEntries(
+      new Intl.DateTimeFormat("en-GB",{
+        timeZone:"Asia/Ho_Chi_Minh", hour12:false,
+        hour:"2-digit", minute:"2-digit", weekday:"short"
+      }).formatToParts(new Date()).map(x=>[x.type,x.value]));
+    return {h:(+p.hour)%24, m:+p.minute, wd:p.weekday};
+  }catch(e){
+    const d = new Date(Date.now() + 7*3600*1000);   // UTC+7 fallback
+    return {h:d.getUTCHours(), m:d.getUTCMinutes(),
+            wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getUTCDay()]};
+  }
+}
+
+function render(){
+  const now = campNow();
+  const nm = now.h*60 + now.m;
+  document.body.dataset.phase = phase(now.h);
+  document.getElementById("clock").textContent =
+    String(now.h).padStart(2,"0")+":"+String(now.m).padStart(2,"0")+" ICT";
+
+  let today = DAY.filter(d => !d.d || d.d.indexOf(now.wd) !== -1);
+  if(!today.length) today = DAY;
+
+  let idx = 0;
+  today.forEach((d,i)=>{ if(nm >= min(d.s)) idx = i; });
+
+  const cur = today[idx][LANG] || today[idx].en;
+  document.getElementById("nowTitle").innerHTML = cur[0];
+  document.getElementById("nowSub").innerHTML = cur[1];
+
+  const nx = today[(idx+1) % today.length];
+  document.getElementById("nowNext").innerHTML =
+    NEXT_LABEL[LANG] + ' · <b>' + nx.s + '</b> ' + (nx[LANG] || nx.en)[0];
+
+  const rail = document.getElementById("rail");
+  rail.innerHTML = "";
+  today.forEach((d,i)=>{
+    const el = document.createElement("div");
+    el.className = "slot " + (i<idx ? "past" : i===idx ? "live" : i===idx+1 ? "next" : "");
+    el.innerHTML = '<div class="t">'+d.s+'</div><div class="n">'+(d[LANG]||d.en)[0]+'</div>';
+    rail.appendChild(el);
+  });
+  const live = rail.querySelector(".live");
+  if(live) rail.scrollTo({left: Math.max(0, live.offsetLeft - 24), behavior:"smooth"});
+}
+
+/* ---------- read the sheet ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){ f+='"'; i++; } else q=false; }
+      else f+=c;
+    }
+    else if(c === '"') q=true;
+    else if(c === ','){ row.push(f); f=""; }
+    else if(c === '\n'){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if(c !== '\r') f+=c;
+  }
+  row.push(f);
+  if(row.length > 1 || row[0] !== "") rows.push(row);
+  return rows;
+}
+
+const DAYNAMES = {mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat",sun:"Sun"};
+
+function rowToSlot(r){
+  const t = (r[0]||"").trim();
+  if(!/^\d{1,2}:\d{2}$/.test(t)) return null;              // skip blanks and notes
+  const pad = t.length === 4 ? "0"+t : t;
+  if(+pad.slice(0,2) > 23 || +pad.slice(3) > 59) return null;
+  const en0 = (r[1]||"").trim(); if(!en0) return null;
+  const days = (r[5]||"").split(/[,;/ ]+/)
+    .map(x => DAYNAMES[x.trim().slice(0,3).toLowerCase()])
+    .filter(Boolean);
+  const slot = {
+    s: pad,
+    en:[en0, (r[2]||"").trim()],
+    vi:[(r[3]||"").trim() || en0, (r[4]||"").trim() || (r[2]||"").trim()]
+  };
+  // columns G-J: French, then Hebrew. Blank falls back to English.
+  if((r[6]||"").trim()) slot.fr = [(r[6]||"").trim(), (r[7]||"").trim()];
+  if((r[8]||"").trim()) slot.he = [(r[8]||"").trim(), (r[9]||"").trim()];
+  if(days.length && days.length < 7) slot.d = days;
+  return slot;
+}
+
+function loadSchedule(){
+  if(!SHEET_CSV_URL) return;
+  fetch(SHEET_CSV_URL, {cache:"no-store"})
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(text => {
+      const slots = parseCSV(text).slice(1).map(rowToSlot).filter(Boolean);
+      if(slots.length < 2) return;                          // ignore a broken sheet
+      slots.sort((a,b) => min(a.s) - min(b.s));
+      DAY = slots;
+      render();
+    })
+    .catch(()=>{ /* keep the built-in schedule */ });
+}
+
+
+/* ---------- the menu ---------- */
+const MENU = [{"vi":"Khai vị chay","en":"Vegetarian platter — spring rolls, jackfruit & papaya salad","p":185000,"c":"veg","fr":"Assortiment végétarien — nems, salades de jaque et de papaye","he":"מגש צמחוני — אביבוניות, סלט ג'קפרוט וסלט פפאיה","t":[]},{"vi":"Gỏi đu đủ chay","en":"Green papaya salad, carrot, herbs, tofu, peanut","p":135000,"c":"veg","fr":"Salade de papaye verte, carotte, herbes, tofu, cacahuète","he":"סלט פפאיה ירוקה, גזר, עשבי תיבול, טופו ובוטנים","t":[]},{"vi":"Gỏi mít chay","en":"Green jackfruit salad, herbs, tofu, peanut","p":135000,"c":"veg","fr":"Salade de jaque verte, herbes, tofu, cacahuète","he":"סלט ג'קפרוט ירוק, עשבי תיבול, טופו ובוטנים","t":[]},{"vi":"Gỏi măng rừng chay","en":"Young bamboo salad, herbs, tofu, peanut · seasonal","p":135000,"c":"veg","fr":"Salade de pousses de bambou, herbes, tofu, cacahuète · de saison","he":"סלט נבטי במבוק, עשבי תיבול, טופו ובוטנים · עונתי","t":[]},{"vi":"Chả giò chay","en":"Crispy spring rolls with tofu, taro, carrot","p":105000,"c":"veg","fr":"Nems croustillants au tofu, taro et carotte","he":"אביבוניות פריכות עם טופו, טארו וגזר","t":[]},{"vi":"Đậu hủ chiên muối sả","en":"Tofu fried with salt and lemongrass","p":75000,"c":"veg","fr":"Tofu frit au sel et à la citronnelle","he":"טופו מטוגן במלח ולימונית","t":[]},{"vi":"Đậu hủ nhồi nhân sốt cà chua","en":"Tofu stuffed with mushroom and carrot, tomato sauce","p":95000,"c":"veg","fr":"Tofu farci aux champignons et carotte, sauce tomate","he":"טופו ממולא בפטריות וגזר ברוטב עגבניות","t":[]},{"vi":"Nấm kho tộ","en":"Caramelised mushroom in claypot","p":155000,"c":"veg","fr":"Champignons caramélisés en marmite de terre","he":"פטריות מקורמלות בסיר חרס","t":[]},{"vi":"Mít non kho","en":"Caramelised young jackfruit in claypot","p":135000,"c":"veg","fr":"Jaque verte caramélisée en marmite de terre","he":"ג'קפרוט צעיר מקורמל בסיר חרס","t":[]},{"vi":"Cà tím kho tộ","en":"Caramelised eggplant in claypot","p":95000,"c":"veg","fr":"Aubergine caramélisée en marmite de terre","he":"חציל מקורמל בסיר חרס","t":[]},{"vi":"Ngũ quả luộc kho quẹt chay","en":"Steamed five vegetables, vegetarian dipping sauce","p":135000,"c":"veg","fr":"Cinq légumes vapeur, sauce végétarienne","he":"חמישה ירקות מאודים ברוטב טבילה צמחוני","t":[]},{"vi":"Cà tím xào lá lốt","en":"Stir-fried eggplant with betel leaf","p":95000,"c":"veg","fr":"Aubergine sautée à la feuille de bétel","he":"חציל מוקפץ בעלה בטל","t":[]},{"vi":"Đậu khuôn xào giá & rau củ","en":"Stir-fried tofu with bean sprouts and vegetables","p":95000,"c":"veg","fr":"Tofu sauté aux germes de soja et légumes","he":"טופו מוקפץ עם נבטים וירקות","t":[]},{"vi":"Canh chua chay","en":"Sour soup — tofu, tomato, pineapple, okra, bean sprouts","p":135000,"c":"veg","fr":"Soupe aigre — tofu, tomate, ananas, gombo, germes","he":"מרק חמוץ — טופו, עגבנייה, אננס, במיה ונבטים","t":[]},{"vi":"Canh bí đỏ đậu phộng","en":"Pumpkin soup with peanut","p":135000,"c":"veg","fr":"Soupe de potiron aux cacahuètes","he":"מרק דלעת עם בוטנים","t":[]},{"vi":"Canh lagim","en":"Pumpkin, carrot, potato and squash soup","p":135000,"c":"veg","fr":"Soupe de potiron, carotte, pomme de terre et courge","he":"מרק דלעת, גזר, תפוח אדמה וקישוא","t":[]},{"vi":"Lẩu nấu chao","en":"Vegetable hotpot with tofu, taro, fermented soya","p":375000,"c":"veg","fr":"Fondue de légumes au tofu, taro et soja fermenté","he":"קדרה רותחת של ירקות עם טופו, טארו וסויה מותססת","t":[]},{"vi":"Khai vị Y Lak","en":"Y Lak platter — eggplant & anchovy salad, egg salad, fish cake, grilled chicken","p":185000,"c":"start","fr":"Assortiment Y Lak — salade d'aubergine aux anchois, salade d'œufs, croquette de poisson, poulet grillé","he":"מגש י' לאק — סלט חציל ואנשובי, סלט ביצים, קציצת דגים ועוף בגריל","t":["f","m"]},{"vi":"Soup bí đỏ","en":"Pumpkin soup","p":95000,"c":"start","fr":"Soupe de potiron","he":"מרק דלעת","t":[]},{"vi":"Salad rau xanh","en":"Garden salad, tomato, cucumber, vinegar dressing","p":95000,"c":"start","fr":"Salade du jardin, tomate, concombre, vinaigrette","he":"סלט מהגינה, עגבנייה, מלפפון ורוטב חומץ","t":[]},{"vi":"Gỏi cuốn tôm thịt vườn Lắk","en":"Summer rolls with pork, shrimp and garden herbs","p":135000,"c":"start","fr":"Rouleaux de printemps frais au porc, crevette et herbes du jardin","he":"רולים טריים עם חזיר, שרימפס ועשבי הגינה","t":["p","s"]},{"vi":"Chả giò tôm thịt","en":"Crispy spring rolls with pork and shrimp","p":135000,"c":"start","fr":"Nems croustillants au porc et à la crevette","he":"אביבוניות פריכות עם חזיר ושרימפס","t":["p","s"]},{"vi":"Gỏi cà đắng cá cơm","en":"Wild eggplant salad with dried anchovy","p":135000,"c":"start","fr":"Salade d'aubergine sauvage aux anchois séchés","he":"סלט חציל בר עם אנשובי מיובש","t":["f"]},{"vi":"Gỏi bò bóp thấu","en":"Beef salad with Vietnamese herbs","p":165000,"c":"start","fr":"Salade de bœuf aux herbes vietnamiennes","he":"סלט בקר עם עשבי תיבול וייטנאמיים","t":["m"]},{"vi":"Gỏi măng rừng tôm thịt","en":"Young bamboo salad with pork and shrimp · seasonal","p":165000,"c":"start","fr":"Salade de pousses de bambou au porc et à la crevette · de saison","he":"סלט נבטי במבוק עם חזיר ושרימפס · עונתי","t":["p","s"]},{"vi":"Gỏi gà hoa chuối","en":"Banana flower salad with chicken","p":165000,"c":"start","fr":"Salade de fleur de bananier au poulet","he":"סלט פרח בננה עם עוף","t":["m"]},{"vi":"Gỏi ngó sen tôm thịt","en":"Lotus root salad with pork and shrimp","p":165000,"c":"start","fr":"Salade de racines de lotus au porc et à la crevette","he":"סלט שורש לוטוס עם חזיר ושרימפס","t":["p","s"]},{"vi":"Gỏi đu đủ tôm thịt","en":"Papaya salad with pork and shrimp","p":165000,"c":"start","fr":"Salade de papaye au porc et à la crevette","he":"סלט פפאיה עם חזיר ושרימפס","t":["p","s"]},{"vi":"Cá rô phi chiên giòn chấm mắm xoài","en":"Crispy tilapia from the lake, green mango and fish sauce","p":165000,"c":"lake","fr":"Tilapia du lac croustillant, mangue verte et sauce de poisson","he":"טילפיה פריכה מהאגם, מנגו ירוק ורוטב דגים","t":["f"]},{"vi":"Cá diêu hồng chiên sốt chanh dây","en":"Red tilapia fillet, passion fruit sauce","p":165000,"c":"lake","fr":"Filet de tilapia rouge, sauce fruit de la passion","he":"פילה טילפיה אדומה ברוטב פסיפלורה","t":["f"]},{"vi":"Cá diêu hồng nướng giấy bạc","en":"Red tilapia fillet baked in foil","p":165000,"c":"lake","fr":"Filet de tilapia rouge en papillote","he":"פילה טילפיה אדומה אפוי בנייר כסף","t":["f"]},{"vi":"Tép hồ Lắk ram mặn với khế","en":"Lak Lake shrimp stir-fried with star fruit","p":185000,"c":"lake","fr":"Crevettes du lac Lak sautées à la carambole","he":"שרימפס מאגם לאק מוקפץ עם קרמבולה","t":["s"]},{"vi":"Chả cá hồ Lắk","en":"Lak Lake fish cake, local herbs and chilli sauce","p":195000,"c":"lake","fr":"Croquettes de poisson du lac Lak, herbes locales et sauce chili","he":"קציצות דגים מאגם לאק, עשבי מקום ורוטב צ'ילי","t":["f"]},{"vi":"Cá lăng kho tộ","en":"Caramelised Lak catfish in claypot","p":215000,"c":"lake","fr":"Poisson-chat du Lak caramélisé en marmite de terre","he":"דג חתול מאגם לאק מקורמל בסיר חרס","t":["f"]},{"vi":"Cá bống kho tiêu","en":"Caramelised goby fish with black pepper","p":195000,"c":"lake","fr":"Gobies caramélisés au poivre noir","he":"דגי גובי מקורמלים בפלפל שחור","t":["f"]},{"vi":"Tôm kho tộ","en":"Caramelised shrimp with black pepper","p":195000,"c":"lake","fr":"Crevettes caramélisées au poivre noir","he":"שרימפס מקורמל בפלפל שחור","t":["s"]},{"vi":"Cá lăng ướp nghệ nướng lá chuối","en":"Catfish fillet in turmeric, grilled in banana leaf","p":215000,"c":"grill","fr":"Filet de poisson-chat au curcuma, grillé en feuille de bananier","he":"פילה דג חתול בכורכום, צלוי בעלה בננה","t":["f"]},{"vi":"Heo nướng ống tre ăn kèm cơm lam","en":"Charcoal pork in bamboo with bamboo sticky rice","p":195000,"c":"grill","fr":"Porc grillé au charbon dans le bambou, riz gluant en bambou","he":"חזיר צלוי על גחלים בתוך במבוק, עם אורז דביק בבמבוק","t":["p"]},{"vi":"Sườn nướng BBQ cơm lam","en":"Pork ribs, house BBQ sauce, bamboo sticky rice","p":215000,"c":"grill","fr":"Travers de porc, sauce barbecue maison, riz gluant en bambou","he":"צלעות חזיר ברוטב ברביקיו של הבית, עם אורז דביק בבמבוק","t":["p"]},{"vi":"Bò nướng lá lốt","en":"Grilled beef wrapped in wild betel leaf","p":165000,"c":"grill","fr":"Bœuf grillé en feuille de bétel sauvage","he":"בקר צלוי עטוף בעלה בטל בר","t":["m"]},{"vi":"Gà nướng dùng kèm cơm lam","en":"M'nông charcoal chicken with bamboo sticky rice · half","p":275000,"c":"grill","fr":"Poulet grillé au charbon à la m'nông, riz gluant en bambou · demi","he":"עוף על גחלים בסגנון מנונג עם אורז דביק בבמבוק · חצי","t":["m"]},{"vi":"Gà hấp lá chanh","en":"Steamed chicken with lime leaf · half","p":275000,"c":"grill","fr":"Poulet vapeur aux feuilles de combava · demi","he":"עוף מאודה עם עלה ליים · חצי","t":["m"]},{"vi":"Gà ram gừng / chiên nước mắm","en":"Chicken with ginger, or fried with fish sauce · half","p":275000,"c":"grill","fr":"Poulet au gingembre, ou frit à la sauce de poisson · demi","he":"עוף בג'ינג'ר או מטוגן ברוטב דגים · חצי","t":["f","m"]},{"vi":"Vịt quay hồ Lắk sốt tiêu đen","en":"Duck roasted over coals, black pepper and honey","p":395000,"c":"grill","fr":"Canard rôti aux braises, poivre noir et miel","he":"ברווז צלוי על גחלים, פלפל שחור ודבש","t":["m"]},{"vi":"Thịt heo kho tộ","en":"Caramelised pork belly in claypot","p":165000,"c":"grill","fr":"Poitrine de porc caramélisée en marmite de terre","he":"חזה חזיר מקורמל בסיר חרס","t":["p"]},{"vi":"Thịt heo đồng bào xào lăn","en":"Stir-fried local pork with lemongrass","p":185000,"c":"grill","fr":"Porc local sauté à la citronnelle","he":"חזיר מקומי מוקפץ בלימונית","t":["p"]},{"vi":"Rau muống / rau rừng / đậu rồng / đậu cove / lá bép xào tỏi","en":"Morning glory, wild greens, dragon bean, cove bean or bép leaf, garlic","p":95000,"c":"veg2","fr":"Liseron d'eau, herbes sauvages, haricot ailé, haricot vert ou feuille de bép, à l'ail","he":"לפופית מים, עלי בר, שעועית כנף, שעועית ירוקה או עלה בפ, בשום","t":[]},{"vi":"Rau muống / rau rừng / đậu rồng / đậu cove / lá bép luộc kho quẹt","en":"The same greens, steamed, with Lak caramelised dipping sauce","p":115000,"c":"veg2","fr":"Les mêmes légumes vapeur, sauce caramélisée du Lak","he":"אותם ירקות מאודים, ברוטב טבילה מקורמל בסגנון לאק","t":["f","p"]},{"vi":"Lá bép xào cá hộp","en":"Sautéed bép leaves with canned fish","p":115000,"c":"veg2","fr":"Feuilles de bép sautées au poisson en conserve","he":"עלי בפ מוקפצים עם דג משומר","t":["f"]},{"vi":"Ngó sen tươi hồ Lắk xào tỏi","en":"Fresh lotus root with garlic · seasonal","p":95000,"c":"veg2","fr":"Racines de lotus fraîches à l'ail · de saison","he":"שורש לוטוס טרי בשום · עונתי","t":[]},{"vi":"Rau củ xào thập cẩm","en":"Mixed vegetables in oyster sauce","p":95000,"c":"veg2","fr":"Légumes sautés à la sauce d'huître","he":"ירקות מוקפצים ברוטב צדפות","t":["s"]},{"vi":"Đọt bí xào tỏi","en":"Pumpkin shoots with garlic","p":95000,"c":"veg2","fr":"Pousses de potiron à l'ail","he":"נבטי דלעת בשום","t":[]},{"vi":"Cà tím nướng mỡ hành","en":"Charcoal eggplant with spring onion oil","p":95000,"c":"veg2","fr":"Aubergine grillée au charbon, huile de ciboule","he":"חציל על גחלים בשמן בצל ירוק","t":[]},{"vi":"Trứng vịt hồ Lắk chiên hành / thịt băm","en":"Lak duck egg fried with onion, or with minced pork","p":45000,"c":"veg2","fr":"Œuf de cane du Lak frit à l'oignon, ou au porc haché","he":"ביצת ברווז מאגם לאק מטוגנת עם בצל או עם בשר חזיר טחון","t":["p"]},{"vi":"Tempura củ quả","en":"Vegetable tempura — eggplant, onion, carrot, okra","p":135000,"c":"veg2","fr":"Tempura de légumes — aubergine, oignon, carotte, gombo","he":"טמפורה ירקות — חציל, בצל, גזר ובמיה","t":[]},{"vi":"Tôm hồ Lắk chiên với khoai lang","en":"Lak Lake shrimp fried with sweet potato","p":185000,"c":"veg2","fr":"Crevettes du lac Lak frites à la patate douce","he":"שרימפס מאגם לאק מטוגן עם בטטה","t":["s"]},{"vi":"Khoai lang / khoai tây chiên","en":"Sweet potato or french fries","p":65000,"c":"veg2","fr":"Frites de patate douce ou de pomme de terre","he":"צ'יפס בטטה או צ'יפס תפוחי אדמה","t":[]},{"vi":"Cơm trắng / cơm lam","en":"Steamed rice, or sticky rice in bamboo","p":30000,"c":"rice","fr":"Riz vapeur, ou riz gluant en bambou","he":"אורז מאודה או אורז דביק בבמבוק","t":[]},{"vi":"Cơm chiên hải sản / gà / heo / bò hạt sen","en":"Fried rice with lotus seed — seafood, chicken, pork or beef","p":155000,"c":"rice","fr":"Riz sauté aux graines de lotus — fruits de mer, poulet, porc ou bœuf","he":"אורז מטוגן עם גרעיני לוטוס — פירות ים, עוף, חזיר או בקר","t":["m","p","s"]},{"vi":"Cơm chiên cá mặn / trứng tỏi / muối ớt","en":"Fried rice — salted fish, egg and garlic, or chilli salt","p":135000,"c":"rice","fr":"Riz sauté — poisson salé, œuf et ail, ou sel pimenté","he":"אורז מטוגן — דג מלוח, ביצה ושום, או מלח צ'ילי","t":["f"]},{"vi":"Cơm chiên rau củ, hạt sen","en":"Vegetable fried rice with lotus seed","p":135000,"c":"rice","fr":"Riz sauté aux légumes et graines de lotus","he":"אורז מטוגן עם ירקות וגרעיני לוטוס","t":[]},{"vi":"Miến xào bò / heo / gà / hải sản","en":"Stir-fried glass noodles with beef, pork, chicken or seafood","p":155000,"c":"rice","fr":"Vermicelles sautés au bœuf, porc, poulet ou fruits de mer","he":"אטריות זכוכית מוקפצות עם בקר, חזיר, עוף או פירות ים","t":["m","p","s"]},{"vi":"Mì xào bò / heo / gà / hải sản","en":"Stir-fried egg noodles with beef, pork, chicken or seafood","p":155000,"c":"rice","fr":"Nouilles aux œufs sautées au bœuf, porc, poulet ou fruits de mer","he":"אטריות ביצים מוקפצות עם בקר, חזיר, עוף או פירות ים","t":["m","p","s"]},{"vi":"Mì xào rau củ","en":"Stir-fried egg noodles with vegetables","p":135000,"c":"rice","fr":"Nouilles aux œufs sautées aux légumes","he":"אטריות ביצים מוקפצות עם ירקות","t":[]},{"vi":"Mì Ý sốt cà chua","en":"Spaghetti pomodoro","p":135000,"c":"rice","fr":"Spaghettis à la tomate","he":"ספגטי ברוטב עגבניות","t":[]},{"vi":"Mì Ý sốt bò bằm","en":"Spaghetti bolognese","p":155000,"c":"rice","fr":"Spaghettis à la bolognaise","he":"ספגטי בולונז","t":["m"]},{"vi":"Bò lúc lắc khoai tây chiên","en":"Wok-fried beef cubes with french fries","p":245000,"c":"rice","fr":"Dés de bœuf sautés au wok et frites","he":"קוביות בקר מוקפצות בווק עם צ'יפס","t":["m"]},{"vi":"Club sandwich gà / heo","en":"Club sandwich with chicken or pork","p":245000,"c":"rice","fr":"Club sandwich au poulet ou au porc","he":"קלאב סנדוויץ' עם עוף או חזיר","t":["m","p"]},{"vi":"Canh cải thịt bằm","en":"Mustard leaf soup with minced pork","p":135000,"c":"soup","fr":"Soupe de feuilles de moutarde au porc haché","he":"מרק עלי חרדל עם בשר חזיר טחון","t":["p"]},{"vi":"Canh cua / tôm tập tàng","en":"Garden vegetable soup with field crab or shrimp","p":135000,"c":"soup","fr":"Soupe de légumes du jardin au crabe des rizières ou à la crevette","he":"מרק ירקות מהגינה עם סרטן שדות או שרימפס","t":["s"]},{"vi":"Canh bí đao / khổ qua nhồi thịt","en":"Squash or bitter melon stuffed with pork","p":165000,"c":"soup","fr":"Courge ou melon amer farci au porc","he":"קישוא או מלון מר ממולא בבשר חזיר","t":["p"]},{"vi":"Canh gà lá giang","en":"Chicken soup with sour-sop creeper leaf","p":185000,"c":"soup","fr":"Soupe de poulet à la feuille de liane aigre","he":"מרק עוף עם עלה מטפס חמוץ","t":["m"]},{"vi":"Canh chua cá bông lau","en":"Sweet and sour catfish soup","p":165000,"c":"soup","fr":"Soupe aigre-douce au poisson-chat","he":"מרק חמוץ-מתוק עם דג חתול","t":["f"]},{"vi":"Canh cà đắng cá cơm","en":"Wild eggplant soup with anchovy","p":165000,"c":"soup","fr":"Soupe d'aubergine sauvage aux anchois","he":"מרק חציל בר עם אנשובי","t":["f"]},{"vi":"Canh sườn heo nấu đu đủ / măng","en":"Pork rib soup with papaya or young bamboo · seasonal","p":165000,"c":"soup","fr":"Soupe de travers de porc à la papaye ou aux pousses de bambou · de saison","he":"מרק צלעות חזיר עם פפאיה או נבטי במבוק · עונתי","t":["p"]},{"vi":"Canh chua chả cá thác lác / mướp đắng rừng","en":"Sour soup with fish cake, or wild bitter melon","p":165000,"c":"soup","fr":"Soupe aigre aux croquettes de poisson, ou au melon amer sauvage","he":"מרק חמוץ עם קציצות דגים או מלון מר בר","t":["f"]},{"vi":"Canh chua cá lăng","en":"Sweet and sour catfish soup","p":195000,"c":"soup","fr":"Soupe aigre-douce au poisson-chat","he":"מרק חמוץ-מתוק עם דג חתול","t":["f"]},{"vi":"Lẩu cá lăng nấu măng chua","en":"Catfish and sour bamboo hotpot","p":385000,"c":"soup","fr":"Fondue de poisson-chat aux pousses de bambou aigres","he":"קדרה רותחת של דג חתול ונבטי במבוק חמוצים","t":["f"]},{"vi":"Lẩu chả cá thác lác măng chua / mướp đắng","en":"Fish cake hotpot with sour bamboo or bitter melon","p":385000,"c":"soup","fr":"Fondue de croquettes de poisson au bambou aigre ou melon amer","he":"קדרה רותחת של קציצות דגים עם במבוק חמוץ או מלון מר","t":["f"]},{"vi":"Lẩu gà lá giang","en":"Chicken hotpot with chilli and sour-sop creeper leaf","p":385000,"c":"soup","fr":"Fondue de poulet au piment et à la feuille de liane aigre","he":"קדרה רותחת של עוף עם צ'ילי ועלה מטפס חמוץ","t":["m"]},{"vi":"Chè chuối","en":"Banana sweet soup","p":35000,"c":"sweet","fr":"Soupe sucrée à la banane","he":"מרק מתוק של בננה","t":[]},{"vi":"Chè hạt sen","en":"Lotus seed sweet soup","p":35000,"c":"sweet","fr":"Soupe sucrée aux graines de lotus","he":"מרק מתוק של גרעיני לוטוס","t":[]},{"vi":"Sữa chua trái cây theo mùa","en":"Seasonal fruit yoghurt","p":35000,"c":"sweet","fr":"Yaourt aux fruits de saison","he":"יוגורט עם פירות העונה","t":["d"]},{"vi":"Trái cây theo mùa","en":"Seasonal fruit platter","p":75000,"c":"sweet","fr":"Assiette de fruits de saison","he":"מגש פירות העונה","t":[]},{"vi":"Bánh chuối nướng dùng kèm kem vani","en":"Baked banana cake with vanilla ice cream","p":75000,"c":"sweet","fr":"Gâteau à la banane et glace vanille","he":"עוגת בננה אפויה עם גלידת וניל","t":["d"]},{"vi":"Kem sô cô la / vani","en":"Chocolate or vanilla ice cream","p":65000,"c":"sweet","fr":"Glace chocolat ou vanille","he":"גלידת שוקולד או וניל","t":["d"]}];
+const SETS = [{"p":195000,"k":"veg","n":"Set 1","d":"Lettuce rolls & corn fritters · Caramelised eggplant in claypot · Stir-fried mustard greens · Pumpkin and peanut soup · Steamed rice · Lotus seed sweet soup","dfr":"Rouleaux de laitue & beignets de maïs · Aubergine caramélisée · Moutarde sautée · Soupe potiron-cacahuète · Riz vapeur · Soupe sucrée aux graines de lotus","dhe":"רולים בעלי חסה וקציצות תירס · חציל מקורמל בסיר חרס · עלי חרדל מוקפצים · מרק דלעת ובוטנים · אורז מאודה · מרק מתוק של גרעיני לוטוס"},{"p":195000,"k":"veg","n":"Set 2","d":"Morning glory salad with tofu · Caramelised tofu with mushroom · Stir-fried cove beans · Sour vegetable soup · Steamed rice · Banana sweet soup","dfr":"Salade de liseron d'eau au tofu · Tofu caramélisé aux champignons · Haricots verts sautés · Soupe aigre de légumes · Riz vapeur · Soupe sucrée à la banane","dhe":"סלט לפופית מים עם טופו · טופו מקורמל עם פטריות · שעועית ירוקה מוקפצת · מרק ירקות חמוץ · אורז מאודה · מרק מתוק של בננה"},{"p":255000,"k":"veg","n":"Set 3","d":"Jackfruit salad with tofu and herbs · Tofu fried with lemongrass · Caramelised straw mushroom · Eggplant with betel leaf · Lagim soup · Fruit yoghurt","dfr":"Salade de jaque au tofu et aux herbes · Tofu frit à la citronnelle · Champignons de paille caramélisés · Aubergine à la feuille de bétel · Soupe lagim · Yaourt aux fruits","dhe":"סלט ג'קפרוט עם טופו ועשבי תיבול · טופו מטוגן בלימונית · פטריות קש מקורמלות · חציל בעלה בטל · מרק לאגים · יוגורט פירות"},{"p":255000,"k":"veg","n":"Set 4","d":"Y Lak vegetarian platter — spring rolls, corn fritters, morning glory and papaya salads · Thai-style hotpot · Oven-baked banana cake","dfr":"Assortiment végétarien Y Lak — nems, beignets de maïs, salades de liseron d'eau et de papaye · Fondue thaïe · Gâteau à la banane","dhe":"מגש צמחוני י' לאק — אביבוניות, קציצות תירס, סלט לפופית מים וסלט פפאיה · קדרה רותחת בסגנון תאילנדי · עוגת בננה אפויה"},{"p":245000,"k":"all","n":"Set 1","d":"Banana flower salad with chicken · Lake shrimp with star fruit · Bép leaf with garlic · Papaya and chicken soup · Steamed rice · Lotus seed sweet soup","dfr":"Salade de fleur de bananier au poulet · Crevettes du lac à la carambole · Feuilles de bép à l'ail · Soupe papaye-poulet · Riz vapeur · Soupe sucrée aux graines de lotus","dhe":"סלט פרח בננה עם עוף · שרימפס מהאגם עם קרמבולה · עלי בפ בשום · מרק פפאיה ועוף · אורז מאודה · מרק מתוק של גרעיני לוטוס"},{"p":245000,"k":"all","n":"Set 2","d":"Papaya salad with pork and shrimp · Local pork with lemongrass · Fried egg with onion · Wild eggplant and anchovy soup · Steamed rice · Banana sweet soup","dfr":"Salade de papaye au porc et à la crevette · Porc local à la citronnelle · Œuf frit à l'oignon · Soupe d'aubergine sauvage aux anchois · Riz vapeur · Soupe sucrée à la banane","dhe":"סלט פפאיה עם חזיר ושרימפס · חזיר מקומי בלימונית · ביצה מטוגנת עם בצל · מרק חציל בר ואנשובי · אורז מאודה · מרק מתוק של בננה"},{"p":295000,"k":"all","n":"Set 3","d":"Wild eggplant and anchovy salad · Grilled beef in betel leaf · Crispy tilapia with green mango · Wild greens with garlic · Garden soup with shrimp · Steamed rice · Lotus seed sweet soup","dfr":"Salade d'aubergine sauvage aux anchois · Bœuf grillé en feuille de bétel · Tilapia croustillant à la mangue verte · Herbes sauvages à l'ail · Soupe du jardin à la crevette · Riz vapeur · Soupe sucrée aux graines de lotus","dhe":"סלט חציל בר ואנשובי · בקר צלוי בעלה בטל · טילפיה פריכה עם מנגו ירוק · עלי בר בשום · מרק מהגינה עם שרימפס · אורז מאודה · מרק מתוק של גרעיני לוטוס"},{"p":295000,"k":"all","n":"Set 4","d":"Morning glory salad with lake shrimp · Fried Lak fish cake · Caramelised local pork in claypot · Steamed five vegetables · Garden soup with lake crab · Steamed rice · Banana sweet soup","dfr":"Salade de liseron d'eau aux crevettes du lac · Croquettes de poisson du Lak · Porc local caramélisé · Cinq légumes vapeur · Soupe du jardin au crabe du lac · Riz vapeur · Soupe sucrée à la banane","dhe":"סלט לפופית מים עם שרימפס מהאגם · קציצות דגים מטוגנות · חזיר מקומי מקורמל בסיר חרס · חמישה ירקות מאודים · מרק מהגינה עם סרטן האגם · אורז מאודה · מרק מתוק של בננה"},{"p":375000,"k":"all","n":"Set 5","d":"Wild eggplant and anchovy salad · M'nông grilled chicken with bamboo rice · Caramelised goby fish · Steamed wild greens · Sour soup with Lak fish cake · Steamed rice · Lotus seed sweet soup","dfr":"Salade d'aubergine sauvage aux anchois · Poulet grillé m'nông et riz en bambou · Gobies caramélisés · Herbes sauvages vapeur · Soupe aigre aux croquettes de poisson · Riz vapeur · Soupe sucrée aux graines de lotus","dhe":"סלט חציל בר ואנשובי · עוף בגריל בסגנון מנונג עם אורז בבמבוק · דגי גובי מקורמלים · עלי בר מאודים · מרק חמוץ עם קציצות דגים · אורז מאודה · מרק מתוק של גרעיני לוטוס"},{"p":375000,"k":"all","n":"Set 6","d":"Morning glory salad with lake shrimp · Pork grilled in bamboo with bamboo rice · Chicken and sour leaf hotpot · Banana sweet soup","dfr":"Salade de liseron d'eau aux crevettes du lac · Porc grillé en bambou et riz en bambou · Fondue de poulet à la feuille aigre · Soupe sucrée à la banane","dhe":"סלט לפופית מים עם שרימפס מהאגם · חזיר צלוי בבמבוק עם אורז בבמבוק · קדרה רותחת של עוף ועלה חמוץ · מרק מתוק של בננה"},{"p":455000,"k":"all","n":"Set 7","d":"Y Lak platter — spring rolls, summer rolls, eggplant and banana flower salads · M'nông grilled chicken with bamboo rice · Catfish and sour bamboo hotpot · Fruit yoghurt","dfr":"Assortiment Y Lak — nems, rouleaux frais, salades d'aubergine et de fleur de bananier · Poulet grillé m'nông et riz en bambou · Fondue de poisson-chat au bambou aigre · Yaourt aux fruits","dhe":"מגש י' לאק — אביבוניות, רולים טריים, סלט חציל וסלט פרח בננה · עוף בגריל בסגנון מנונג עם אורז בבמבוק · קדרה רותחת של דג חתול ובמבוק חמוץ · יוגורט פירות"},{"p":455000,"k":"all","n":"Set 8","d":"Y Lak platter — spring rolls, summer rolls, eggplant and banana flower salads · Roast duck over coals · Fish cake and sour bamboo hotpot · Seasonal fruit","dfr":"Assortiment Y Lak — nems, rouleaux frais, salades d'aubergine et de fleur de bananier · Canard rôti aux braises · Fondue de croquettes de poisson au bambou aigre · Fruits de saison","dhe":"מגש י' לאק — אביבוניות, רולים טריים, סלט חציל וסלט פרח בננה · ברווז צלוי על גחלים · קדרה רותחת של קציצות דגים ובמבוק חמוץ · פירות העונה"}];
+const CATS = [
+  {k:"all",   en:"Everything",      vi:"Tất cả",     fr:"Tout",              he:"הכול"},
+  {k:"start", en:"Starters",        vi:"Khai vị",    fr:"Entrées",           he:"מנות ראשונות"},
+  {k:"lake",  en:"From the lake",   vi:"Cá hồ Lắk",  fr:"Du lac",            he:"מן האגם"},
+  {k:"grill", en:"Charcoal & clay", vi:"Nướng & kho",fr:"Braises & marmite", he:"גריל וסיר חרס"},
+  {k:"soup",  en:"Soups & hotpot",  vi:"Canh & lẩu", fr:"Soupes & fondues",  he:"מרקים וקדרות"},
+  {k:"veg2",  en:"Vegetables",      vi:"Rau & trứng",fr:"Légumes",           he:"ירקות וביצים"},
+  {k:"rice",  en:"Rice & noodles",  vi:"Cơm & mì",   fr:"Riz & nouilles",    he:"אורז ואטריות"},
+  {k:"veg",   en:"Vegetarian",      vi:"Món chay",   fr:"Végétarien",        he:"צמחוני"},
+  {k:"sweet", en:"Sweet",           vi:"Tráng miệng",fr:"Desserts",          he:"קינוחים"}
+];
+const CATNAME = {};
+CATS.forEach(c => CATNAME[c.k] = c);
+let MCAT = "all", MQ = "";
+const DIETS = [
+  {k:"p", en:"No pork",      vi:"Không thịt heo",   fr:"Sans porc",        he:"בלי חזיר"},
+  {k:"s", en:"No shellfish", vi:"Không tôm cua",    fr:"Sans crustacés",   he:"בלי פירות ים"},
+  {k:"m", en:"No meat",      vi:"Không thịt",       fr:"Sans viande",      he:"בלי בשר"}
+];
+const OFF = new Set();   // tags the guest has chosen to hide
+
+const vnd = n => n.toLocaleString("en-US");
+const strip = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+                    .replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase();
+
+function drawBar(){
+  const bar = document.getElementById("mbar");
+  if(!bar) return;
+  bar.innerHTML = "";
+  CATS.forEach(c=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = c[LANG];
+    b.setAttribute("aria-pressed", String(c.k === MCAT));
+    b.addEventListener("click", ()=>{ MCAT = c.k; drawBar(); drawMenu(); });
+    bar.appendChild(b);
+  });
+}
+
+function drawDiet(){
+  const bar = document.getElementById("mdiet");
+  if(!bar) return;
+  bar.innerHTML = "";
+  DIETS.forEach(d=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = d[LANG];
+    b.setAttribute("aria-pressed", String(OFF.has(d.k)));
+    b.addEventListener("click", ()=>{
+      OFF.has(d.k) ? OFF.delete(d.k) : OFF.add(d.k);
+      drawDiet(); drawMenu();
+    });
+    bar.appendChild(b);
+  });
+}
+
+function drawMenu(){
+  const box = document.getElementById("mlist");
+  if(!box) return;
+  const q = strip(MQ.trim());
+  const hits = MENU.filter(m =>
+    (MCAT === "all" || m.c === MCAT) &&
+    !(m.t || []).some(t => OFF.has(t)) &&
+    (!q || strip(m.vi).includes(q) || strip(m.en).includes(q)));
+
+  document.getElementById("menuCount").textContent = hits.length;
+
+  if(!hits.length){
+    box.innerHTML = '<div class="mnone">' +
+      (OFF.size ? ({en:"Nothing here fits those filters — try another section, or ask the kitchen.",
+                    vi:"Không có món nào phù hợp — thử mục khác hoặc hỏi nhà bếp.",
+                    fr:"Rien ne correspond à ces filtres — essayez une autre catégorie, ou demandez à la cuisine.",
+                    he:"אין מנות שמתאימות לסינון — נסו קטגוריה אחרת או שאלו את המטבח."}[LANG]) :
+      ({vi:"Không tìm thấy món nào. Hỏi lễ tân giúp nhé.",
+        fr:"Aucun résultat. Demandez-nous — la cuisine sait souvent improviser.",
+        he:"לא נמצאו תוצאות. שאלו אותנו — המטבח לרוב יודע לאלתר.",
+        en:"Nothing matched. Ask us — the kitchen can often improvise."}[LANG])) + '</div>';
+    return;
+  }
+
+  let html = "", seen = "";
+  const order = CATS.map(c => c.k).filter(k => k !== "all");
+  const sorted = hits.slice().sort((a,b) => order.indexOf(a.c) - order.indexOf(b.c));
+  sorted.forEach(m=>{
+    if(m.c !== seen && MCAT === "all"){
+      seen = m.c;
+      html += '<div class="mgroup">' + CATNAME[m.c][LANG] + '</div>';
+    }
+    // The Vietnamese name is what you say to the kitchen, so it always shows.
+    const first  = LANG === "vi" ? m.vi : (m[LANG] || m.en);
+    const second = LANG === "vi" ? m.en : m.vi;
+    html += '<div class="mitem"><div class="mtxt"><div class="mvi">' + first +
+            '</div><div class="men">' + second + '</div></div>' +
+            '<div class="mp">' + vnd(m.p) + '</div></div>';
+  });
+  box.innerHTML = html;
+}
+
+function drawSets(){
+  const box = document.getElementById("setlist");
+  if(!box) return;
+  const per  = {en:" / person", vi:" / người", fr:" / personne", he:" / לאדם"}[LANG];
+  const vlab = {en:"Vegetarian", vi:"Chay", fr:"Végétarien", he:"צמחוני"}[LANG];
+  const desc = x => LANG === "fr" ? x.dfr : LANG === "he" ? x.dhe : x.d;
+  box.innerHTML = SETS.map(x =>
+    '<div class="setcard"><div class="sh"><span class="sn">' + x.n +
+    '</span><span class="sp">' + vnd(x.p) + per + '</span></div>' +
+    '<div class="sd">' + desc(x) + '</div>' +
+    (x.k === "veg" ? '<span class="sv">' + vlab + '</span>' : '') + '</div>').join("");
+}
+
+const si = document.getElementById("msearch");
+if(si) si.addEventListener("input", e=>{ MQ = e.target.value; drawMenu(); });
+
+function drawFood(){
+  if(si) si.placeholder = {
+    en: si.dataset.enPh,
+    vi: si.dataset.viPh,
+    fr: "Rechercher — poisson, tofu, poulet…",
+    he: "חיפוש בתפריט — דג, טופו, עוף…"
+  }[LANG] || si.dataset.enPh;
+  drawBar(); drawDiet(); drawMenu(); drawSets();
+}
+
+/* ---------- language ---------- */
+const RTL = ["he"];
+const LANGS = ["en","vi","fr","he"];
+
+function setLang(l){
+  if(LANGS.indexOf(l) === -1) l = "en";
+  LANG = l;
+  try{ localStorage.setItem("lak-lang", l); }catch(e){}
+  const root = document.documentElement;
+  root.lang = l;
+  root.dir = RTL.indexOf(l) !== -1 ? "rtl" : "ltr";
+  root.setAttribute("data-lang", l);
+  document.querySelectorAll("[data-vi]").forEach(el=>{
+    if(!el.dataset.en) el.dataset.en = el.innerHTML;
+    const v = el.dataset[l];
+    el.innerHTML = (v === undefined || v === "") ? el.dataset.en : v;
+  });
+  document.querySelectorAll(".langs button").forEach(b=>
+    b.setAttribute("aria-pressed", String(b.dataset.set === l)));
+  render();
+  drawFood();
+}
+document.querySelectorAll(".langs button").forEach(b=>
+  b.addEventListener("click", ()=> setLang(b.dataset.set)));
+
+function deviceLang(){
+  try{
+    const saved = localStorage.getItem("lak-lang");
+    if(LANGS.indexOf(saved) !== -1) return saved;
+  }catch(e){}
+  const tags = navigator.languages && navigator.languages.length
+    ? navigator.languages : [navigator.language || "en"];
+  for(const raw of tags){
+    const t = String(raw).toLowerCase();
+    if(t.startsWith("vi")) return "vi";
+    if(t.startsWith("fr")) return "fr";
+    if(t.startsWith("he") || t.startsWith("iw")) return "he";   // iw = legacy Hebrew tag
+    if(t.startsWith("en")) return "en";
+  }
+  return "en";
+}
+
+/* ---------- nav highlighting ---------- */
+const links = [...document.querySelectorAll(".nav a")];
+const obs = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(a=> a.classList.toggle("active", a.getAttribute("href") === "#"+e.target.id));
+    }
+  });
+},{rootMargin:"-45% 0px -50% 0px"});
+["eat","play","sleep","tread","help"].forEach(id=>{
+  const n = document.getElementById(id); if(n) obs.observe(n);
+});
+document.documentElement.style.scrollBehavior = "smooth";
+
+if(si) si.dataset.enPh = si.placeholder;
+setLang(deviceLang());
+loadSchedule();
+setInterval(render, 30000);
+setInterval(loadSchedule, 300000);
+
+/* generated by build_link.py -- edit menu_link.py, not this */
+const LINK = {"items": {"Khai vị chay": {"p": "KHAI VỊ CHAY HỒ LAK"}, "Gỏi đu đủ chay": {"p": "GỎI ĐU ĐỦ CHAY"}, "Gỏi mít chay": {"p": "GỎI MÍT TRỘN"}, "Gỏi măng rừng chay": {"p": "GỎI MĂNG RỪNG"}, "Chả giò chay": {"p": "CHẢ GIÒ CHAY"}, "Đậu hủ chiên muối sả": {"p": "ĐẬU HỦ CHIÊN SẢ"}, "Đậu hủ nhồi nhân sốt cà chua": {"p": "ĐẬU HỦ NHỒI SỐT CÀ CHUA"}, "Nấm kho tộ": {"p": "NẤM KHO TỘ"}, "Mít non kho": {"p": "MÍT NON KHO RỊU"}, "Cà tím kho tộ": {"p": "CÀ TÍM KHO TỘ"}, "Ngũ quả luộc kho quẹt chay": {"p": "NGŨ QUẢ LUỘC + KHO QUẸT CHAY"}, "Cà tím xào lá lốt": {"p": "CÀ TÍM XÀO LÁ LỐT"}, "Đậu khuôn xào giá & rau củ": {"p": "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ"}, "Canh chua chay": {"p": "CANH CHUA CHAY"}, "Canh bí đỏ đậu phộng": {"p": "CANH BÍ ĐỎ ĐẬU PHỘNG"}, "Canh lagim": {"p": "CANH LAGIM"}, "Lẩu nấu chao": {"p": "LẨU NẤU CHAO"}, "Khai vị Y Lak": {"p": "KHAI VỊ Y LAK"}, "Soup bí đỏ": {"p": "SOUP BÍ ĐỎ"}, "Salad rau xanh": {"p": "SALAD RAU XANH HỖN HỢP"}, "Gỏi cuốn tôm thịt vườn Lắk": {"p": "GỎI CUỐN TÔM THỊT"}, "Chả giò tôm thịt": {"p": "CHẢ GIÒ TÔM THỊT"}, "Gỏi cà đắng cá cơm": {"p": "GỎI CÀ ĐẮNG CÁ CƠM"}, "Gỏi bò bóp thấu": {"p": "GỎI  BÒ BÓP THẤU"}, "Gỏi măng rừng tôm thịt": {"p": "GỎI MĂNG RỪNG TÔM THỊT"}, "Gỏi gà hoa chuối": {"p": "GỎI GÀ HOA CHUỐI"}, "Gỏi ngó sen tôm thịt": {"p": "GỎI NGÓ SEN TÔM THỊT"}, "Gỏi đu đủ tôm thịt": {"p": "GỎI ĐU ĐỦ TÔM THỊT"}, "Cá rô phi chiên giòn chấm mắm xoài": {"p": "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI"}, "Cá diêu hồng chiên sốt chanh dây": {"p": "CÁ DIÊU HỒNG SỐT CHANH DÂY"}, "Cá diêu hồng nướng giấy bạc": {"p": "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC"}, "Tép hồ Lắk ram mặn với khế": {"p": "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN"}, "Chả cá hồ Lắk": {"p": "CHẢ CÁ HỒ LĂK"}, "Cá lăng kho tộ": {"p": "CÁ LĂNG KHO TỘ"}, "Cá bống kho tiêu": {"p": "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN"}, "Tôm kho tộ": {"p": "TÔM KHO TỘ"}, "Cá lăng ướp nghệ nướng lá chuối": {"p": "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI"}, "Heo nướng ống tre ăn kèm cơm lam": {"p": "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM"}, "Sườn nướng BBQ cơm lam": {"p": "SƯỜN NƯỚNG BBQ CƠM LAM"}, "Bò nướng lá lốt": {"p": "BÒ NƯỚNG LÁ LỐT"}, "Gà nướng dùng kèm cơm lam": {"p": "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM"}, "Gà hấp lá chanh": {"p": "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH"}, "Gà ram gừng / chiên nước mắm": {"v": ["GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH"]}, "Vịt quay hồ Lắk sốt tiêu đen": {"p": "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG"}, "Thịt heo kho tộ": {"p": "THỊT HEO KHO TỘ"}, "Thịt heo đồng bào xào lăn": {"p": "HEO XÀO LĂN"}, "Rau muống / rau rừng / đậu rồng / đậu cove / lá bép xào tỏi": {"v": ["RAU MUỐNG XÀO TỎI", "RAU RỪNG XÀO TỎI", "ĐẬU RỒNG XÀO/ LUỘC", "ĐẬU COVE XÀO TỎI", "LÁ BÉP XÀO TỎI"]}, "Rau muống / rau rừng / đậu rồng / đậu cove / lá bép luộc kho quẹt": {"v": ["RAU RỪNG LUỘC KHO QUẸT", "ĐẬU RỒNG XÀO/ LUỘC", "ĐẬU COVE XÀO/ LUỘC"]}, "Lá bép xào cá hộp": {"p": "LÁ BÉP XÀO CÁ HỘP"}, "Ngó sen tươi hồ Lắk xào tỏi": {"p": "NGÓ SEN TƯƠI HỒ LĂK XÀO"}, "Rau củ xào thập cẩm": {"p": "RAU CỦ XÀO THẬP CẨM"}, "Đọt bí xào tỏi": {"p": "ĐỌT BÍ XÀO"}, "Cà tím nướng mỡ hành": {"p": "CÀ TÍM NƯỚNG MỠ HÀNH"}, "Trứng vịt hồ Lắk chiên hành / thịt băm": {"v": ["TRỨNG VỊT HỒ LAK CHIÊN", "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM"]}, "Tempura củ quả": {"p": "TEMPURA CỦ QUẢ"}, "Tôm hồ Lắk chiên với khoai lang": {"p": "BÁNH TÔM HỒ CHIÊN KHOAI LANG"}, "Khoai lang / khoai tây chiên": {"v": ["KHOAI LANG CHIÊN", "KHOAI TÂY CHIÊN"]}, "Cơm trắng / cơm lam": {"v": ["CƠM TRẮNG", "CƠM LAM"]}, "Cơm chiên hải sản / gà / heo / bò hạt sen": {"v": ["CƠM CHIÊN HẢI SẢN HẠT SEN", "CƠM CHIÊN GÀ XÉ HẠT SEN", "CƠM CHIÊN THỊT HEO", "CƠM CHIÊN THỊT BÒ"]}, "Cơm chiên cá mặn / trứng tỏi / muối ớt": {"absent": true}, "Cơm chiên rau củ, hạt sen": {"p": "CƠM CHIÊN RAU CỦ HẠT SEN"}, "Miến xào bò / heo / gà / hải sản": {"v": ["MIẾN XÀO THỊT BÒ", "MIẾN XÀO THỊT GÀ", "MIẾN XÀO HẢI SẢN"]}, "Mì xào bò / heo / gà / hải sản": {"v": ["MÌ XÀO BÒ", "MÌ XÀO THỊT HEO", "MÌ XÀO THỊT GÀ", "MÌ XÀO HẢI SẢN"]}, "Mì xào rau củ": {"p": "MÌ XÀO RAU CỦ"}, "Mì Ý sốt cà chua": {"p": "MÌ Ý SỐT CÀ CHUA"}, "Mì Ý sốt bò bằm": {"p": "MÌ Ý SỐT BÒ BẰM"}, "Bò lúc lắc khoai tây chiên": {"p": "BÒ LÚC LẮC KHOAI TÂY CHIÊN"}, "Club sandwich gà / heo": {"v": ["CLUB SANDWICH GÀ"]}, "Canh cải thịt bằm": {"p": "CANH CẢI THỊT BẰM"}, "Canh cua / tôm tập tàng": {"v": ["CANH CUA TẬP TÀNG", "CANH TÔM TẬP TÀNG"]}, "Canh bí đao / khổ qua nhồi thịt": {"v": ["CANH BÍ ĐAO NẤU THỊT BẰM", "CANH KHỔ QUA NHỒI THỊT"]}, "Canh gà lá giang": {"p": "CANH GÀ LÁ GIANG"}, "Canh chua cá bông lau": {"p": "CANH CHUA CÁ BÔNG LAU"}, "Canh cà đắng cá cơm": {"p": "CANH CÀ ĐẮNG CÁ CƠM"}, "Canh sườn heo nấu đu đủ / măng": {"v": ["CANH SƯỜN HEO NẤU ĐU ĐỦ", "CANH SƯỜN HEO NẤU MĂNG"]}, "Canh chua chả cá thác lác / mướp đắng rừng": {"v": ["CANH CÁ THÁC LÁC MĂNG CHUA", "CANH CHẢ CÁ NẤU MƯỚP ĐẮNG"]}, "Canh chua cá lăng": {"p": "CANH CHUA CÁ LĂNG"}, "Lẩu cá lăng nấu măng chua": {"p": "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA"}, "Lẩu chả cá thác lác măng chua / mướp đắng": {"v": ["LẨU CÁ THÁC LÁC NẤU MƯỚP ĐẮNG", "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG"]}, "Lẩu gà lá giang": {"p": "LẨU GÀ LÁ GIANG/ LÁ É"}, "Chè chuối": {"p": "CHÈ CHUỐI"}, "Chè hạt sen": {"p": "CHÈ HẠT SEN LONG NHÃN"}, "Sữa chua trái cây theo mùa": {"p": "SỮA CHUA"}, "Trái cây theo mùa": {"p": "TRÁI CÂY THEO MÙA"}, "Bánh chuối nướng dùng kèm kem vani": {"p": "BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA"}, "Kem sô cô la / vani": {"v": ["KEM SÔ CÔ LA", "KEM VANI"]}}, "sets": {"Set 1|195000": "COMBO SET MENU 01 195000", "Set 2|195000": "COMBO SET MENU 02 195000", "Set 3|255000": "COMBO SET MENU 01 255000", "Set 4|255000": "COMBO SET MENU 02 255000", "Set 1|245000": "COMBO SET LUNCH 01 245000", "Set 2|245000": "COMBO SET LUNCH 02 245000", "Set 3|295000": "COMBO SET DINNER 01 295000", "Set 4|295000": "COMBO SET DINNER 02 295000", "Set 5|375000": "COMBO SET DINNER 01 375000", "Set 6|375000": "COMBO SET DINNER 02 375000", "Set 7|455000": "COMBO SET DINNER 01 455000", "Set 8|455000": "COMBO SET DINNER 02 455000"}, "needs": ["BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA", "BÁNH TÔM HỒ CHIÊN KHOAI LANG", "BÒ LÚC LẮC KHOAI TÂY CHIÊN", "BÒ NƯỚNG LÁ LỐT", "CANH BÍ ĐAO NẤU THỊT BẰM", "CANH BÍ ĐỎ ĐẬU PHỘNG", "CANH CHUA CHAY", "CANH CHUA CÁ BÔNG LAU", "CANH CHUA CÁ LĂNG", "CANH CHẢ CÁ NẤU MƯỚP ĐẮNG", "CANH CUA TẬP TÀNG", "CANH CÀ ĐẮNG CÁ CƠM", "CANH CÁ THÁC LÁC MĂNG CHUA", "CANH CẢI THỊT BẰM", "CANH GÀ LÁ GIANG", "CANH KHỔ QUA NHỒI THỊT", "CANH LAGIM", "CANH SƯỜN HEO NẤU MĂNG", "CANH SƯỜN HEO NẤU ĐU ĐỦ", "CANH TÔM TẬP TÀNG", "CHÈ CHUỐI", "CHÈ HẠT SEN LONG NHÃN", "CHẢ CÁ HỒ LĂK", "CHẢ GIÒ CHAY", "CHẢ GIÒ TÔM THỊT", "CLUB SANDWICH GÀ", "COMBO SET DINNER 01 295000", "COMBO SET DINNER 01 375000", "COMBO SET DINNER 01 455000", "COMBO SET DINNER 02 295000", "COMBO SET DINNER 02 375000", "COMBO SET DINNER 02 455000", "COMBO SET LUNCH 01 245000", "COMBO SET LUNCH 02 245000", "COMBO SET MENU 01 195000", "COMBO SET MENU 01 255000", "COMBO SET MENU 02 195000", "COMBO SET MENU 02 255000", "CÀ TÍM KHO TỘ", "CÀ TÍM NƯỚNG MỠ HÀNH", "CÀ TÍM XÀO LÁ LỐT", "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN", "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC", "CÁ DIÊU HỒNG SỐT CHANH DÂY", "CÁ LĂNG KHO TỘ", "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI", "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI", "CƠM CHIÊN GÀ XÉ HẠT SEN", "CƠM CHIÊN HẢI SẢN HẠT SEN", "CƠM CHIÊN RAU CỦ HẠT SEN", "CƠM CHIÊN THỊT BÒ", "CƠM CHIÊN THỊT HEO", "CƠM LAM", "CƠM TRẮNG", "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH", "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM", "GỎI  BÒ BÓP THẤU", "GỎI CUỐN TÔM THỊT", "GỎI CÀ ĐẮNG CÁ CƠM", "GỎI GÀ HOA CHUỐI", "GỎI MÍT TRỘN", "GỎI MĂNG RỪNG", "GỎI MĂNG RỪNG TÔM THỊT", "GỎI NGÓ SEN TÔM THỊT", "GỎI ĐU ĐỦ CHAY", "GỎI ĐU ĐỦ TÔM THỊT", "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM", "HEO XÀO LĂN", "KEM SÔ CÔ LA", "KEM VANI", "KHAI VỊ CHAY HỒ LAK", "KHAI VỊ Y LAK", "KHOAI LANG CHIÊN", "KHOAI TÂY CHIÊN", "LÁ BÉP XÀO CÁ HỘP", "LÁ BÉP XÀO TỎI", "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA", "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG", "LẨU CÁ THÁC LÁC NẤU MƯỚP ĐẮNG", "LẨU GÀ LÁ GIANG/ LÁ É", "LẨU NẤU CHAO", "MIẾN XÀO HẢI SẢN", "MIẾN XÀO THỊT BÒ", "MIẾN XÀO THỊT GÀ", "MÌ XÀO BÒ", "MÌ XÀO HẢI SẢN", "MÌ XÀO RAU CỦ", "MÌ XÀO THỊT GÀ", "MÌ XÀO THỊT HEO", "MÌ Ý SỐT BÒ BẰM", "MÌ Ý SỐT CÀ CHUA", "MÍT NON KHO RỊU", "NGÓ SEN TƯƠI HỒ LĂK XÀO", "NGŨ QUẢ LUỘC + KHO QUẸT CHAY", "NẤM KHO TỘ", "RAU CỦ XÀO THẬP CẨM", "RAU MUỐNG XÀO TỎI", "RAU RỪNG LUỘC KHO QUẸT", "RAU RỪNG XÀO TỎI", "SALAD RAU XANH HỖN HỢP", "SOUP BÍ ĐỎ", "SƯỜN NƯỚNG BBQ CƠM LAM", "SỮA CHUA", "TEMPURA CỦ QUẢ", "THỊT HEO KHO TỘ", "TRÁI CÂY THEO MÙA", "TRỨNG VỊT HỒ LAK CHIÊN", "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM", "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN", "TÔM KHO TỘ", "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG", "ĐẬU COVE XÀO TỎI", "ĐẬU COVE XÀO/ LUỘC", "ĐẬU HỦ CHIÊN SẢ", "ĐẬU HỦ NHỒI SỐT CÀ CHUA", "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ", "ĐẬU RỒNG XÀO/ LUỘC", "ĐỌT BÍ XÀO"]};
+
+/* ================= guest ordering (added 04 Sep 2026) =================
+
+   Bolted onto the 24 Aug page rather than replacing it. The page keeps its
+   own curated, fully translated menu; this layer only asks the till which of
+   those dishes exist right now, what they cost today, and which product id
+   to put on the order. Nothing here re-renders the prose, the schedule or
+   the set-menu descriptions.
+
+   LINK maps a page dish to the product(s) it became on the till -- see
+   menu_link.py for why that mapping is curated by hand.
+   ==================================================================== */
+
+const OAPI  = (window.LAK_API || "/api/lak").replace(/\/$/, "");
+const TILL  = {};        // normalised till name -> {id, price}
+const VSEL  = {};        // page dish -> index of the chosen variant
+let   CART  = {};        // product id -> {qty, label, price}
+let   ROOMS = [];
+
+/* The PMS calls the rooms BUN01..KPAN04; guests know them by name. Both are
+   shown -- "Jun (BUN01)" -- and the CODE is what gets sent, so reception
+   reads the code it already uses and any mis-pairing here is visible on the
+   order rather than silently wrong. Owner's list, 04 Sep 2026. */
+const ROOMNAME = {
+  BUN01: "Jun", BUN02: "Mlieng", BUN03: "B'Hok", BUN04: "Drung",
+  KPAN01: "Kpan 1", KPAN02: "Kpan 2", KPAN03: "Kpan 3",
+  KPAN04: "Kpan 4 (Dur Kman)"
+};
+function roomLabel(r){
+  const n = ROOMNAME[r.code];
+  if(n) return n + " · " + r.code;
+  if(/^TENT(\d+)$/.test(r.code))
+    return "Lake View Tent " + Number(r.code.slice(4)) + " · " + r.code;
+  return r.code + (r.type ? " — " + r.type : "");
+}
+let   SENDING = false;
+
+/* Same normalisation as build_link.py. Keep the two in step: the lake is
+   spelled Lăk, Lak and Lắk across the till, the deck and the page. */
+function onorm(s){
+  s = (s || "").normalize("NFC").toLowerCase();
+  s = s.split("lăk").join("lắk").split("lak").join("lắk");
+  return s.replace(/[+\/]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+const OT = {
+  bar1:   {en:"1 item",  vi:"1 món",     fr:"1 plat",     he:"מנה אחת"},
+  barN:   {en:"%n items",vi:"%n món",    fr:"%n plats",   he:"%n מנות"},
+  clear:  {en:"Clear",   vi:"Xoá",       fr:"Vider",      he:"נקה"},
+  book:   {en:"Book",    vi:"Đặt món",   fr:"Commander",  he:"להזמין"},
+  title:  {en:"Send this to the kitchen",       vi:"Gửi đơn xuống bếp",
+           fr:"Envoyer en cuisine",             he:"לשלוח למטבח"},
+  sub:    {en:"Meals are served in the restaurant. Reception will confirm before anything is charged.",
+           vi:"Các món được phục vụ tại nhà hàng. Lễ tân sẽ xác nhận trước khi tính tiền.",
+           fr:"Les repas sont servis au restaurant. La réception confirmera avant toute facturation.",
+           he:"הארוחות מוגשות במסעדה. הקבלה תאשר לפני שנחייב אתכם."},
+  total:  {en:"Total",   vi:"Tổng cộng", fr:"Total",      he:"סה״כ"},
+  room:   {en:"Room",    vi:"Phòng",     fr:"Chambre",    he:"חדר"},
+  name:   {en:"Your name",vi:"Tên của bạn",fr:"Votre nom",he:"השם שלכם"},
+  time:   {en:"Time you would like to eat", vi:"Giờ bạn muốn dùng bữa",
+           fr:"Heure du repas",             he:"שעת הארוחה"},
+  note:   {en:"Anything we should know? Allergies, no chilli…",
+           vi:"Bạn cần lưu ý gì không? Dị ứng, không cay…",
+           fr:"Quelque chose à signaler ? Allergies, sans piment…",
+           he:"משהו שכדאי שנדע? אלרגיות, בלי חריף…"},
+  cancel: {en:"Not yet",  vi:"Để sau",   fr:"Pas encore", he:"עוד לא"},
+  send:   {en:"Send order",vi:"Gửi đơn", fr:"Envoyer",    he:"שליחה"},
+  sending:{en:"Sending…", vi:"Đang gửi…",fr:"Envoi…",     he:"שולח…"},
+  pick:   {en:"Choose a room", vi:"Chọn phòng", fr:"Choisissez une chambre",
+           he:"בחרו חדר"},
+  off:    {en:"Ask us",   vi:"Hỏi nhân viên", fr:"Demandez-nous", he:"שאלו אותנו"},
+  ok:     {en:"Order %r is with the kitchen. Reception will confirm it.",
+           vi:"Đơn %r đã xuống bếp. Lễ tân sẽ xác nhận.",
+           fr:"Commande %r transmise à la cuisine. La réception confirmera.",
+           he:"הזמנה %r הועברה למטבח. הקבלה תאשר."},
+  need:   {en:"Please give your room and name.",
+           vi:"Vui lòng cho biết phòng và tên.",
+           fr:"Indiquez votre chambre et votre nom.",
+           he:"נא למלא חדר ושם."},
+  bad:    {en:"That did not go through. Please call reception.",
+           vi:"Gửi không thành công. Vui lòng gọi lễ tân.",
+           fr:"L'envoi a échoué. Appelez la réception.",
+           he:"השליחה נכשלה. התקשרו לקבלה."},
+  closed: {en:"The kitchen is not taking orders on the app right now.",
+           vi:"Bếp hiện chưa nhận đơn qua ứng dụng.",
+           fr:"La cuisine ne prend pas de commandes ici pour le moment.",
+           he:"המטבח לא מקבל כרגע הזמנות דרך האתר."}
+};
+function ot(k, sub){
+  let s = (OT[k] && (OT[k][LANG] || OT[k].en)) || "";
+  if(sub) Object.keys(sub).forEach(x => { s = s.split(x).join(sub[x]); });
+  return s;
+}
+
+/* ---------- what the till actually sells ---------- */
+function loadTill(){
+  return fetch(OAPI + "/menu", {headers:{accept:"application/json"}})
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(d => {
+      (d.items || []).forEach(it => {
+        TILL[onorm(it.name_vi)] = {id: it.id, price: it.price};
+      });
+      drawFood();
+    })
+    .catch(() => { /* no till: the page stays a menu, ordering just never appears */ });
+}
+
+function loadRooms(){
+  return fetch(OAPI + "/rooms", {headers:{accept:"application/json"}})
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(d => { ROOMS = d.rooms || []; drawRooms(); })
+    .catch(() => {});
+}
+
+/* A page dish -> the till options behind it, or null if it is not sellable. */
+function options(m){
+  const L = LINK.items[m.vi];
+  if(!L || L.absent) return null;
+  const names = L.p ? [L.p] : (L.v || []);
+  const out = [];
+  names.forEach(n => {
+    const t = TILL[onorm(n)];
+    if(t) out.push({label: n, id: t.id, price: t.price});
+  });
+  return out.length ? out : null;
+}
+function chosen(m){
+  const o = options(m);
+  if(!o) return null;
+  const i = Math.min(VSEL[m.vi] || 0, o.length - 1);
+  return o[i];
+}
+
+/* ---------- cart ---------- */
+function bump(m, delta){
+  const c = chosen(m);
+  if(!c) return;
+  const cur = (CART[c.id] || {}).qty || 0;
+  const next = Math.max(0, Math.min(30, cur + delta));
+  if(next === 0) delete CART[c.id];
+  else CART[c.id] = {qty: next, label: c.label, price: c.price};
+  drawMenu(); drawSets(); drawBarTotals();
+}
+function cartCount(){ return Object.values(CART).reduce((a, l) => a + l.qty, 0); }
+function cartTotal(){ return Object.values(CART).reduce((a, l) => a + l.qty * l.price, 0); }
+
+function stepper(m){
+  const c = chosen(m);
+  if(!c) return '<div class="moff">' + ot("off") + '</div>';
+  const n = (CART[c.id] || {}).qty || 0;
+  const k = encodeURIComponent(m.vi);
+  return '<div class="mqty">' +
+    '<button type="button" data-step="-1" data-k="' + k + '" aria-label="-"' +
+      (n ? '' : ' disabled') + '>−</button>' +
+    '<span class="n" data-zero="' + (n ? "false" : "true") + '">' + n + '</span>' +
+    '<button type="button" data-step="1" data-k="' + k + '" aria-label="+">+</button>' +
+    '</div>';
+}
+function variantPicker(m){
+  const o = options(m);
+  const L = LINK.items[m.vi];
+  const asked = (L && L.v) ? L.v.length : 1;
+  if(!o) return "";
+  // The till may carry only some of a group -- it sells four kinds of fried
+  // noodle but only three glass-noodle ones. Say which one the guest is
+  // actually getting rather than silently narrowing the choice to it.
+  if(o.length === 1) return asked > 1
+    ? '<div class="mvar"><span class="mone">' + o[0].label + '</span></div>' : "";
+  const i = Math.min(VSEL[m.vi] || 0, o.length - 1);
+  return '<div class="mvar"><select data-var="' + encodeURIComponent(m.vi) + '">' +
+    o.map((x, j) => '<option value="' + j + '"' + (j === i ? " selected" : "") +
+                    '>' + x.label + '</option>').join("") +
+    '</select></div>';
+}
+
+/* ---------- re-render the menu with steppers ----------
+   drawMenu and drawSets are replaced, not edited: the originals stay in the
+   page above, and this reassignment keeps the same grouping, sorting and
+   empty-state wording so the only visible change is the quantity control. */
+const _origDrawMenu = drawMenu;
+drawMenu = function(){
+  _origDrawMenu();                                  // wording, groups, sorting
+  const box = document.getElementById("mlist");
+  if(!box) return;
+  const q = strip(MQ.trim());
+  const hits = MENU.filter(m =>
+    (MCAT === "all" || m.c === MCAT) &&
+    !(m.t || []).some(t => OFF.has(t)) &&
+    (!q || strip(m.vi).includes(q) || strip(m.en).includes(q)));
+  const order = CATS.map(c => c.k).filter(k => k !== "all");
+  const sorted = hits.slice().sort((a, b) => order.indexOf(a.c) - order.indexOf(b.c));
+
+  const rows = box.querySelectorAll(".mitem");
+  sorted.forEach((m, i) => {
+    const row = rows[i];
+    if(!row) return;
+    const c = chosen(m);
+    if(c){                                          // live price beats the printed one
+      const p = row.querySelector(".mp");
+      if(p) p.textContent = vnd(c.price);
+    }
+    const txt = row.querySelector(".mtxt");
+    if(txt) txt.insertAdjacentHTML("beforeend", variantPicker(m));
+    row.insertAdjacentHTML("beforeend", stepper(m));
+  });
+};
+
+const _origDrawSets = drawSets;
+drawSets = function(){
+  _origDrawSets();
+  const box = document.getElementById("setlist");
+  if(!box) return;
+  box.querySelectorAll(".setcard").forEach((card, i) => {
+    const s = SETS[i];
+    if(!s) return;
+    const name = LINK.sets[s.n + "|" + s.p];
+    const t = name ? TILL[onorm(name)] : null;
+    if(!t) return;
+    const n = (CART[t.id] || {}).qty || 0;
+    const k = "set:" + i;
+    card.insertAdjacentHTML("beforeend",
+      '<div class="mqty">' +
+      '<button type="button" data-sstep="-1" data-k="' + k + '" aria-label="-"' +
+        (n ? '' : ' disabled') + '>−</button>' +
+      '<span class="n" data-zero="' + (n ? "false" : "true") + '">' + n + '</span>' +
+      '<button type="button" data-sstep="1" data-k="' + k + '" aria-label="+">+</button>' +
+      '</div>');
+  });
+};
+
+function bumpSet(i, delta){
+  const s = SETS[i];
+  if(!s) return;
+  const name = LINK.sets[s.n + "|" + s.p];
+  const t = name ? TILL[onorm(name)] : null;
+  if(!t) return;
+  const cur = (CART[t.id] || {}).qty || 0;
+  const next = Math.max(0, Math.min(30, cur + delta));
+  if(next === 0) delete CART[t.id];
+  else CART[t.id] = {qty: next, label: name, price: t.price};
+  drawMenu(); drawSets(); drawBarTotals();
+}
+
+/* ---------- the bar and the sheet ---------- */
+function drawBarTotals(){
+  const bar = document.getElementById("obar");
+  if(!bar) return;
+  const n = cartCount();
+  bar.dataset.show = n > 0 ? "true" : "false";
+  document.getElementById("osum").innerHTML =
+    (n === 1 ? ot("bar1") : ot("barN", {"%n": n})) + " · <b>" + vnd(cartTotal()) + "</b>";
+  document.getElementById("oclear").textContent = ot("clear");
+  document.getElementById("obook").textContent = ot("book");
+}
+
+function drawRooms(){
+  const sel = document.getElementById("oroom");
+  if(!sel) return;
+  const keep = sel.value;
+  sel.innerHTML = '<option value="">' + ot("pick") + "</option>" +
+    ROOMS.map(r => '<option value="' + r.code + '">' + roomLabel(r) +
+                   "</option>").join("");
+  if(keep) sel.value = keep;
+}
+
+function drawSheet(){
+  document.getElementById("otitle").textContent    = ot("title");
+  document.getElementById("osubtitle").textContent = ot("sub");
+  document.getElementById("ototlab").textContent   = ot("total");
+  document.getElementById("oroomlab").textContent  = ot("room");
+  document.getElementById("onamelab").textContent  = ot("name");
+  document.getElementById("otimelab").textContent  = ot("time");
+  document.getElementById("onotelab").textContent  = ot("note");
+  document.getElementById("ocancel").textContent   = ot("cancel");
+  document.getElementById("osend").textContent     = SENDING ? ot("sending") : ot("send");
+  document.getElementById("olines").innerHTML =
+    Object.values(CART).map(l =>
+      "<div><span>" + l.qty + " × " + l.label + "</span><span>" +
+      vnd(l.qty * l.price) + "</span></div>").join("");
+  document.getElementById("ototal").textContent = vnd(cartTotal());
+  drawRooms();
+}
+
+function msg(kind, text){
+  const el = document.getElementById("omsg");
+  el.dataset.kind = kind || "";
+  el.textContent = text || "";
+  if(!kind) el.removeAttribute("data-kind");
+}
+
+function send(){
+  if(SENDING) return;
+  const room = document.getElementById("oroom").value.trim();
+  const name = document.getElementById("oname").value.trim();
+  if(!room || !name){ msg("err", ot("need")); return; }
+  SENDING = true; drawSheet(); msg("", "");
+  fetch(OAPI + "/order", {
+    method: "POST",
+    headers: {"content-type": "application/json"},
+    body: JSON.stringify({
+      room: room, name: name,
+      dine_at: document.getElementById("otime").value.trim(),
+      note: document.getElementById("onote").value.trim(),
+      lang: LANG,
+      lines: Object.keys(CART).map(id => ({id: Number(id), qty: CART[id].qty}))
+    })
+  })
+  .then(r => r.json().catch(() => ({ok: false})))
+  .then(d => {
+    SENDING = false;
+    if(d && d.ok){
+      msg("ok", ot("ok", {"%r": d.reference || ""}));
+      CART = {};
+      drawMenu(); drawSets(); drawBarTotals();
+      setTimeout(() => { document.getElementById("osheet").close(); msg("", ""); }, 2600);
+    } else {
+      msg("err", (d && d.error === "disabled") ? ot("closed") : ot("bad"));
+    }
+    drawSheet();
+  })
+  .catch(() => { SENDING = false; msg("err", ot("bad")); drawSheet(); });
+}
+
+/* ---------- wiring ---------- */
+document.addEventListener("click", e => {
+  const b = e.target.closest("button[data-step], button[data-sstep]");
+  if(!b) return;
+  if(b.dataset.sstep) bumpSet(Number(b.dataset.k.split(":")[1]), Number(b.dataset.sstep));
+  else {
+    const vi = decodeURIComponent(b.dataset.k);
+    const m = MENU.find(x => x.vi === vi);
+    if(m) bump(m, Number(b.dataset.step));
+  }
+});
+document.addEventListener("change", e => {
+  const s = e.target.closest("select[data-var]");
+  if(!s) return;
+  VSEL[decodeURIComponent(s.dataset.var)] = Number(s.value);
+  drawMenu();
+});
+document.getElementById("oclear").addEventListener("click", () => {
+  CART = {}; drawMenu(); drawSets(); drawBarTotals();
+});
+document.getElementById("obook").addEventListener("click", () => {
+  drawSheet(); msg("", "");
+  const d = document.getElementById("osheet");
+  d.showModal ? d.showModal() : (d.open = true);
+});
+document.getElementById("ocancel").addEventListener("click",
+  () => document.getElementById("osheet").close());
+document.getElementById("osend").addEventListener("click", send);
+
+/* Language: the page's own setLang calls drawFood(); extend that so the
+   ordering chrome follows the same switch instead of staying in English. */
+const _origDrawFood = drawFood;
+drawFood = function(){ _origDrawFood(); drawBarTotals(); drawSheet(); };
+
+drawBarTotals();
+loadTill();
+loadRooms();
+
+</script>
+</body>
+</html>

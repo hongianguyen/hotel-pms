@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lak Tented Camp · Eat. Play. Sleep.</title>
+<style>
+:root{
+  --ink:#1b1a17; --muted:#6b6558; --line:#e2ddd2; --bg:#faf7f1; --card:#fff;
+  --accent:#7a5c2e; --accent-ink:#fff; --good:#2f6f4f; --bad:#a33a2a;
+  --radius:14px; --max:940px;
+  --font:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Hebrew",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --ink:#f2ede3; --muted:#a89f8d; --line:#332f28; --bg:#141310; --card:#1d1b17;
+    --accent:#c9a35e; --accent-ink:#141310;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+[dir=rtl] body{font-family:"Noto Sans Hebrew",var(--sans)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 18px}
+h1,h2,h3{font-family:var(--font);font-weight:600;line-height:1.15;margin:0}
+[dir=rtl] h1,[dir=rtl] h2,[dir=rtl] h3{font-family:var(--sans)}
+
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:14px;padding:10px 0;flex-wrap:wrap}
+.brand{font-family:var(--font);font-size:1.05rem;letter-spacing:.02em;margin-inline-end:auto}
+[dir=rtl] .brand{font-family:var(--sans)}
+.langs{display:flex;gap:2px}
+.langs button{border:1px solid var(--line);background:var(--card);color:var(--muted);
+  font:inherit;font-size:.78rem;padding:5px 9px;cursor:pointer;border-radius:8px}
+.langs button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.sections{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}
+nav.sections a{white-space:nowrap;font-size:.85rem;color:var(--muted);text-decoration:none;
+  padding:5px 10px;border-radius:8px}
+nav.sections a:hover{background:var(--card);color:var(--ink)}
+
+.hero{padding:44px 0 30px}
+.hero h1{font-size:clamp(2.1rem,7vw,3.4rem)}
+.hero .sub{font-style:italic;color:var(--muted);font-size:1.15rem;margin-top:6px}
+.hero p{max-width:56ch;color:var(--muted);margin:16px 0 0}
+.mnong{font-size:.85rem;color:var(--accent);margin-bottom:10px;letter-spacing:.04em}
+
+section{padding:30px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sec-head h2{font-size:1.75rem}
+.sec-head .kicker{color:var(--muted);font-size:.9rem}
+section>.wrap>p.lead{color:var(--muted);max-width:62ch}
+
+details.acc{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+  margin-top:10px;overflow:hidden}
+details.acc>summary{cursor:pointer;padding:13px 16px;display:flex;gap:10px;align-items:baseline;
+  font-weight:600;list-style:none}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:"+";margin-inline-start:auto;color:var(--muted);font-weight:400}
+details.acc[open]>summary::after{content:"−"}
+details.acc>summary .note{font-weight:400;color:var(--muted);font-size:.85rem}
+.acc-body{padding:0 16px 15px;color:var(--muted)}
+.acc-body ul{margin:8px 0;padding-inline-start:20px}
+.acc-body li{margin:4px 0}
+
+/* ---- menu ---- */
+.menu-tools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.menu-tools input,.menu-tools select{font:inherit;padding:9px 11px;border:1px solid var(--line);
+  border-radius:10px;background:var(--card);color:var(--ink)}
+.menu-tools input{flex:1;min-width:180px}
+.cat{margin-top:20px}
+.cat h3{font-size:1.05rem;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:5px}
+.dish{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.dish:last-child{border-bottom:0}
+.dish .txt{flex:1;min-width:0}
+.dish .n{font-weight:600}
+.dish .n2{color:var(--muted);font-size:.86rem}
+.dish .d{color:var(--muted);font-size:.82rem;margin-top:2px}
+.dish .p{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font:inherit;font-size:1rem;cursor:pointer}
+.qty button:hover{border-color:var(--accent)}
+.qty output{min-width:1.4ch;text-align:center;font-variant-numeric:tabular-nums}
+.qty output:not([data-n="0"]){color:var(--accent);font-weight:700}
+
+/* ---- order bar + sheet ---- */
+.orderbar{position:fixed;inset-inline:0;bottom:0;z-index:40;background:var(--accent);
+  color:var(--accent-ink);display:none;box-shadow:0 -4px 20px rgba(0,0,0,.18)}
+.orderbar.on{display:block}
+.orderbar .wrap{display:flex;align-items:center;gap:12px;padding:11px 18px}
+.orderbar strong{font-variant-numeric:tabular-nums}
+.orderbar button{margin-inline-start:auto;background:var(--accent-ink);color:var(--accent);
+  border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer}
+dialog{border:0;border-radius:16px 16px 0 0;padding:0;width:min(560px,100%);
+  margin-inline:auto;margin-bottom:0;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.sheet{padding:20px}
+.sheet h3{font-size:1.3rem;margin-bottom:4px}
+.field{margin-top:13px}
+.field label{display:block;font-size:.84rem;color:var(--muted);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;font:inherit;padding:10px 12px;
+  border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.field textarea{min-height:64px;resize:vertical}
+.req{color:var(--bad)}
+.summary{margin-top:14px;border-top:1px solid var(--line);padding-top:10px;font-size:.9rem}
+.summary div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.summary .tot{font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:6px}
+.actions{display:flex;gap:10px;margin-top:16px}
+.actions button{flex:1;font:inherit;padding:12px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn-go{background:var(--accent);color:var(--accent-ink);border:0}
+.btn-off{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.msg{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:.88rem;display:none}
+.msg.on{display:block}
+.msg.ok{background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good)}
+.msg.err{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+
+.help{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:14px}
+.help .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.help .card .k{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.help .card .v{font-size:1.05rem;font-weight:600;margin-top:3px;word-break:break-word}
+.help a{color:var(--accent)}
+footer{padding:26px 0 90px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+.pending{font-size:.78rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <span class="brand">LAK Tented Camp · Hồ Lắk</span>
+      <div class="langs" id="langs">
+        <button data-lang="en" aria-pressed="true">EN</button>
+        <button data-lang="vi" aria-pressed="false">VI</button>
+        <button data-lang="fr" aria-pressed="false">FR</button>
+        <button data-lang="he" aria-pressed="false">עב</button>
+      </div>
+    </div>
+    <nav class="sections">
+      <a href="#eat"   data-t="nav_eat">Eat</a>
+      <a href="#play"  data-t="nav_play">Play</a>
+      <a href="#sleep" data-t="nav_sleep">Sleep</a>
+      <a href="#tread" data-t="nav_tread">Tread lightly</a>
+      <a href="#help"  data-t="nav_help">Help</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="mnong">Mơi nách chơn hi au! · M'nông</div>
+  <h1 data-t="hero_h1">Eat. Play. Sleep.</h1>
+  <div class="sub" data-t="hero_sub">Tread lightly.</div>
+  <p data-t="hero_p">Everything you need for your stay on the shore of Lak Lake. Keep this page open — it updates through the day.</p>
+</div>
+
+<!-- ============================== EAT ============================== -->
+<section id="eat"><div class="wrap">
+  <div class="sec-head"><h2 data-t="eat_h">Eat</h2><span class="kicker" data-t="eat_k">Kitchen &amp; deck</span></div>
+  <p class="lead" data-t="eat_lead">We cook what the lake and the highlands give us that week — most of it bought that morning in Liên Sơn market or grown within a few kilometres.</p>
+
+  <details class="acc"><summary><span data-t="hours_h">Serving hours</span><span class="note">06:30–21:00</span></summary>
+    <div class="acc-body"><ul>
+      <li data-t="hours_1"><b>Breakfast</b> 06:30 – 09:30 · Lake Deck</li>
+      <li data-t="hours_2"><b>Lunch</b> 11:30 – 14:00</li>
+      <li data-t="hours_3"><b>Dinner</b> 18:00 – 21:00 · please book by 16:00</li>
+      <li data-t="hours_4"><b>Bar &amp; coffee</b> 07:00 – 22:00</li>
+      <li data-t="hours_5"><b>In-tent dining</b> small tray charge, order 30 min ahead</li>
+    </ul></div>
+  </details>
+
+  <details class="acc" open><summary><span data-t="menu_h">Full à la carte menu</span><span class="note" id="menuCount">—</span></summary>
+    <div class="acc-body">
+      <p data-t="menu_note">Prices in VND, taxes and service included. Seasonal dishes depend on that morning's market. Please tell us about allergies when you order — fish sauce and peanuts are used widely in this kitchen.</p>
+      <div class="menu-tools">
+        <input id="q" type="search" data-t-ph="search_ph" placeholder="Search the menu…">
+        <select id="catFilter"><option value="" data-t="all_cats">All courses</option></select>
+      </div>
+      <div id="menu" aria-live="polite"></div>
+    </div>
+  </details>
+
+  <details class="acc"><summary><span data-t="diet_h">Kosher, halal &amp; special diets</span><span class="note" data-t="diet_n">Please read</span></summary>
+    <div class="acc-body"><p data-t="diet_b">We are not a kosher kitchen and hold no certification — there is no supervision, no separate utensils, and no kosher slaughter available in this province. What we can do honestly: cook without pork or shellfish, keep meat and dairy off the same plate, and prepare any dish vegetarian. Tell reception the evening before so the kitchen can plan around the morning market. Note that fish sauce is used throughout this cuisine, including in dishes with no fish in the name.</p></div>
+  </details>
+
+  <details class="acc"><summary><span data-t="veg_h">Vegetarian, allergies, children</span></summary>
+    <div class="acc-body"><p data-t="veg_b">Full vegetarian and vegan versions of every menu. Tell us about allergies when you book a table — fish sauce and peanuts are used widely in this kitchen. High chairs and half portions for children, no charge.</p></div>
+  </details>
+
+  <details class="acc"><summary><span data-t="ylak_h">Who was Y Lak</span></summary>
+    <div class="acc-body"><p data-t="ylak_b">In the M'nông telling, the God of Water lost his fight with the God of Fire and the land went dry. Y Lak — born of a god and a M'nông girl — left his village to find water and atone for his parents. Exhausted, he freed an eel trapped in a rock, and the eel led him to an immense lake full of fish and green things. The M'nông settled around it. The lake carries his name, and so does our kitchen.</p></div>
+  </details>
+</div></section>
+
+<!-- ============================== PLAY ============================== -->
+<section id="play"><div class="wrap">
+  <div class="sec-head"><h2 data-t="play_h">Play</h2><span class="kicker" data-t="play_k">Lake &amp; villages</span></div>
+  <p class="lead" data-t="play_lead">Almost everything here is free and needs nothing but showing up. Reception arranges the rest — morning activities close the evening before.</p>
+  <details class="acc"><summary><span data-t="p1_h">Running &amp; jogging</span><span class="note">05:00 &amp; 17:00</span></summary><div class="acc-body"><p data-t="p1_b">A 3 km loop around the camp on dirt, gravel and asphalt, past lotus ponds, paddy fields and coffee gardens. 45–60 minutes, easy going. Sunrise 05:00–06:00 or sunset 17:00–18:00. Meet at Reception or Y LAK. Free, self-guided.</p></div></details>
+  <details class="acc"><summary><span data-t="p2_h">SUP &amp; kayaking</span><span class="note">05:30</span></summary><div class="acc-body"><p data-t="p2_b">On the calm corner of the lake between the camp and "Crocodile" hill. From 05:30, about an hour — sunrise, M'nông fishermen at work, and water lilies in full bloom from June to November. Free and self-guided; reserve at reception on busy days. Life jackets are compulsory.</p></div></details>
+  <details class="acc"><summary><span data-t="p3_h">Jungle Discovery Trail</span><span class="note">09:00</span></summary><div class="acc-body"><p data-t="p3_b">A 2 km trail through the forested garden behind the tents and over the hilltop. From 09:00, about an hour, with a guide. Along the way: coucal habitat, bamboo stands, junglefowl, Hopea odorata forest, the lake viewpoint, the farm, and the coffee and cacao plantation. It ends with a herbal tea you pick and brew yourself. Free.</p></div></details>
+  <details class="acc"><summary><span data-t="p4_h">Coffee experience</span><span class="note">15:30</span></summary><div class="acc-body"><p data-t="p4_b">In the camp's own coffee and cacao garden. From 15:30, 30 to 60 minutes: roast, pound and brew coffee the M'nông way, and walk the garden in harvest season. Included in some packages, otherwise 50,000₫ per person. Please book at reception in advance.</p></div></details>
+  <details class="acc"><summary><span data-t="p5_h">Gong performance</span><span class="note">18:00 · Fri &amp; Sat</span></summary><div class="acc-body"><p data-t="p5_b">In the Central Garden or at Y LAK House, from 18:00 for about an hour. Songs, dances, M'nông welcome ceremonies and rượu cần tasting. Free every Friday and Saturday; arranged on request for private groups.</p></div></details>
+  <details class="acc"><summary><span data-t="p6_h">Elephants — how we do it</span><span class="note" data-t="p6_n">No riding</span></summary><div class="acc-body"><p data-t="p6_b">We don't sell or book elephant rides, and we ask our guests not to buy them elsewhere around the lake. What reception can arrange instead is a visit to a free-roaming herd — you walk with the mahout and watch from a distance, on the elephants' terms.</p></div></details>
+  <details class="acc"><summary><span data-t="p7_h">Villages, boat trips &amp; more</span></summary><div class="acc-body"><p data-t="p7_b">Guided visits to the M'nông villages of Nau and M'Liêng, sunset boat cruises, photography outings and other excursions are arranged at reception, and are included in several stay packages. Please ask before photographing people in the villages — these are homes, not exhibits.</p></div></details>
+</div></section>
+
+<!-- ============================== SLEEP ============================== -->
+<section id="sleep"><div class="wrap">
+  <div class="sec-head"><h2 data-t="sleep_h">Sleep</h2><span class="kicker" data-t="sleep_k">Your tent</span></div>
+  <p class="lead" data-t="sleep_lead">Canvas walls mean you'll hear the lake, the frogs and the first birds. Don't expect five-star luxury; expect thousand-star nights.</p>
+  <details class="acc"><summary><span data-t="s1_h">Where you're staying</span></summary><div class="acc-body"><p data-t="s1_b">25 units across 4.8 hectares: 15 Lakeview Tented Lodges, 5 Kpan tiny houses on the lake, 4 Lakefront Bungalows, and Y Liêng House, an 8-berth dormitory by the water. Tents have an en-suite bathroom, a private lake-view balcony, air conditioning and a fan. Bungalows add a living room and a bathtub.</p></div></details>
+  <details class="acc"><summary><span data-t="s2_h">Hot water &amp; power</span></summary><div class="acc-body"><p data-t="s2_b">Hot water is heated by solar power, so it is strongest in the late afternoon and evening. This is an eco-lodge, not a luxury hotel: expect the lake breeze to do some of the work of the air conditioning, and crickets and roosters to serve as the night entertainment and the wake-up call.</p></div></details>
+  <details class="acc"><summary><span data-t="s3_h">Insects, geckos and snakes</span></summary><div class="acc-body"><p data-t="s3_b">This is open nature. You may meet insects, mosquitoes, geckos and, occasionally, snakes. Keep your tent or bungalow properly closed, and carry the flashlight from your room when you walk at night. The geckos are harmless and eat your mosquitoes.</p></div></details>
+  <details class="acc"><summary><span data-t="s4_h">In your room, and at reception</span></summary><div class="acc-body"><p data-t="s4_b">An umbrella, a flashlight and a hat are provided in every room — please use them with care and leave them behind. Jewellery and other valuables can be deposited in the safe at reception, against a receipt. Smoking is not permitted inside the rooms; please use your balcony or front patio. For anything else — laundry, an early breakfast, a late departure — ask at reception.</p></div></details>
+  <details class="acc"><summary><span data-t="s5_h">Children &amp; safety on the water</span></summary><div class="acc-body"><p data-t="s5_b">The camp suits children over 6 best, though younger ones are welcome under their parents' care. Under 6 sharing a bed is free; 6 to 11 is charged half. Life jackets are compulsory for everyone boarding a boat, kayak or paddleboard.</p></div></details>
+</div></section>
+
+<!-- ============================== TREAD ============================== -->
+<section id="tread"><div class="wrap">
+  <div class="sec-head"><h2 data-t="tread_h">Tread lightly</h2><span class="kicker" data-t="tread_k">Our way</span></div>
+  <p class="lead" data-t="tread_lead">LAK Tented Camp was conceived around two goals: preserving cultural integrity, and protecting this environment. The lake is somebody's home before it is anybody's view — we're guests here too.</p>
+  <details class="acc" open><summary><span data-t="t0_h">The bottle in your tent is made to be refilled</span></summary><div class="acc-body"><p data-t="t0_b">Purified water from a natural well, served in refillable bottles. Refill rather than buy — plastic bottles are exactly what this lake does not need.</p></div></details>
+  <details class="acc"><summary><span data-t="t1_h">Minimum build, maximum trees</span></summary><div class="acc-body"><p data-t="t1_b">Only 25 units across 4.8 hectares, built to sit within the local architecture and ecology rather than on top of it, with an ongoing commitment to reforestation. Electricity use is kept deliberately low.</p></div></details>
+  <details class="acc"><summary><span data-t="t2_h">Where your food comes from</span></summary><div class="acc-body"><p data-t="t2_b">The camp grows its own vegetables and fruit, alongside the coffee and cacao garden, and most of it goes straight to the kitchen. You are welcome to pick your own vegetables and cook them. The menu is built on locally sourced ingredients — we won't offer you a thousand international dishes, but what we do serve is fresh.</p></div></details>
+  <details class="acc"><summary><span data-t="t3_h">Who works here</span></summary><div class="acc-body"><p data-t="t3_b">LAK Tented Camp was made for and by local people — the M'nông and neighbouring villagers. Our staff and managers speak Vietnamese, English and M'nông, and some speak French. If the service is sometimes short of polish, they would rather hear your feedback than not. Teach them some English and they will teach you some M'nông.</p></div></details>
+  <details class="acc"><summary><span data-t="t4_h">Three small things that help</span></summary><div class="acc-body"><ul>
+    <li data-t="t4_1"><b>Avoid single-use plastic</b> — bags, bottles and harsh chemicals all end up in the lake basin</li>
+    <li data-t="t4_2"><b>Switch off the aircon</b> when you go out; canvas cools down fast</li>
+    <li data-t="t4_3"><b>Don't feed the wildlife</b>, and keep the noise down after dark — sound travels a long way over water</li>
+  </ul></div></details>
+</div></section>
+
+<!-- ============================== HELP ============================== -->
+<section id="help"><div class="wrap">
+  <div class="sec-head"><h2 data-t="help_h">Help</h2><span class="kicker">24 / 7</span></div>
+  <div class="help">
+    <div class="card"><div class="k" data-t="h_rec">Reception — any hour</div><div class="v"><a href="tel:+84399121258">+84 399 121 258</a></div></div>
+    <div class="card"><div class="k">Zalo / WhatsApp</div><div class="v"><a href="https://zalo.me/84399121258">Zalo</a> · <a href="https://wa.me/84399121258">WhatsApp</a></div></div>
+    <div class="card"><div class="k" data-t="h_wifi">Wi-Fi</div><div class="v">LakCamp-Guest<br><span style="font-size:.85rem;color:var(--muted)" data-t="h_pw">Password</span> laklake2026</div></div>
+    <div class="card"><div class="k" data-t="h_res">Reservations</div><div class="v"><a href="mailto:res@laktentedcamp.com">res@laktentedcamp.com</a></div></div>
+    <div class="card"><div class="k" data-t="h_rest">Restaurant &amp; table booking</div><div class="v"><a href="tel:+842626255552">0262 6255 552</a></div></div>
+    <div class="card"><div class="k" data-t="h_er">Emergency / clinic — Liên Sơn, 8 km</div><div class="v"><a href="tel:115">115</a></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  Lak Tented Camp · Buôn B'hok, Yang Tao, Đắk Lắk · <span data-t="hero_h1">Eat. Play. Sleep.</span> <span data-t="hero_sub">Tread lightly.</span>
+</div></footer>
+
+<div class="orderbar" id="orderbar"><div class="wrap">
+  <span><strong id="barCount">0</strong> <span data-t="bar_items">items</span></span>
+  <strong id="barTotal"></strong>
+  <button id="openSheet" data-t="book">Book</button>
+</div></div>
+
+<dialog id="sheet"><form method="dialog" class="sheet" id="orderForm">
+  <h3 data-t="sheet_h">Order to your room</h3>
+  <p style="color:var(--muted);font-size:.87rem;margin:4px 0 0" data-t="sheet_p">We'll bring this to the kitchen and confirm with you. Nothing is charged until reception checks it.</p>
+
+  <div class="field">
+    <label for="room" data-t="f_room">Room <span class="req">*</span></label>
+    <select id="room" required><option value="" data-t="f_room_ph">Choose your room…</option></select>
+  </div>
+  <div class="field">
+    <label for="gname" data-t="f_name">Your name <span class="req">*</span></label>
+    <input id="gname" required autocomplete="name" maxlength="60">
+  </div>
+  <div class="field">
+    <label for="dine" data-t="f_time">Time you'd like to eat</label>
+    <input id="dine" type="time" step="900">
+  </div>
+  <div class="field">
+    <label for="note" data-t="f_note">Allergies or anything else we should know</label>
+    <textarea id="note" maxlength="200"></textarea>
+  </div>
+
+  <div class="summary" id="sum"></div>
+  <div class="msg" id="msg"></div>
+  <div class="actions">
+    <button type="button" class="btn-off" id="closeSheet" data-t="cancel">Back to the menu</button>
+    <button type="button" class="btn-go" id="send" data-t="send">Send to the kitchen</button>
+  </div>
+</form></dialog>
+
+<script>
+/* ------------------------------------------------------------------ config */
+/* Same-origin by default: put this page on Cloudflare with a Worker or a
+   Pages Function proxying /api/lak/* to Odoo. A cross-origin absolute URL
+   also works, but ONLY over https -- an https page may not call http, so
+   pointing this at http://14.225.192.16 is silently blocked by the browser. */
+var API = (window.LAK_API || "/api/lak").replace(/\/$/, "");
+
+/* ------------------------------------------------------------------- i18n */
+var STR = {
+ en:{nav_eat:"Eat",nav_play:"Play",nav_sleep:"Sleep",nav_tread:"Tread lightly",nav_help:"Help",
+  hero_h1:"Eat. Play. Sleep.",hero_sub:"Tread lightly.",
+  eat_h:"Eat",eat_k:"Kitchen & deck",play_h:"Play",play_k:"Lake & villages",
+  sleep_h:"Sleep",sleep_k:"Your tent",tread_h:"Tread lightly",tread_k:"Our way",help_h:"Help",
+  hours_h:"Serving hours",menu_h:"Full à la carte menu",all_cats:"All courses",
+  search_ph:"Search the menu…",book:"Book",bar_items:"items",
+  sheet_h:"Order to your room",
+  sheet_p:"We'll bring this to the kitchen and confirm with you. Nothing is charged until reception checks it.",
+  f_room:"Room",f_room_ph:"Choose your room…",f_name:"Your name",
+  f_time:"Time you'd like to eat",f_note:"Allergies or anything else we should know",
+  cancel:"Back to the menu",send:"Send to the kitchen",total:"Total",
+  ok:"Thank you — the kitchen has your order. Reference {r}. Reception will confirm.",
+  e_room:"Please choose your room.",e_name:"Please tell us your name.",
+  e_unknown_room:"We don't recognise that room. Please check with reception.",
+  e_no_open_session:"The kitchen till isn't open right now — please call reception on +84 399 121 258.",
+  e_empty:"Your order is empty.",e_net:"We couldn't reach the kitchen. Please call reception on +84 399 121 258.",
+  loading:"Loading the menu…",menu_fail:"The live menu is unavailable right now. Please call reception."},
+ vi:{nav_eat:"Ăn",nav_play:"Chơi",nav_sleep:"Nghỉ",nav_tread:"Sống nhẹ nhàng",nav_help:"Trợ giúp",
+  hero_h1:"Ăn. Chơi. Nghỉ.",hero_sub:"Sống nhẹ nhàng.",
+  eat_h:"Ăn",eat_k:"Bếp & sàn hồ",play_h:"Chơi",play_k:"Hồ & buôn làng",
+  sleep_h:"Nghỉ",sleep_k:"Lều của bạn",tread_h:"Sống nhẹ nhàng",tread_k:"Cách của chúng tôi",help_h:"Trợ giúp",
+  hours_h:"Giờ phục vụ",menu_h:"Thực đơn gọi món",all_cats:"Tất cả các món",
+  search_ph:"Tìm món…",book:"Đặt món",bar_items:"món",
+  sheet_h:"Gọi món về phòng",
+  sheet_p:"Chúng tôi sẽ chuyển cho bếp và xác nhận lại với bạn. Chưa tính tiền cho đến khi lễ tân kiểm tra.",
+  f_room:"Phòng",f_room_ph:"Chọn phòng của bạn…",f_name:"Tên của bạn",
+  f_time:"Giờ bạn muốn dùng bữa",f_note:"Dị ứng hoặc điều cần lưu ý",
+  cancel:"Quay lại thực đơn",send:"Gửi cho bếp",total:"Tổng cộng",
+  ok:"Cảm ơn bạn — bếp đã nhận đơn. Mã {r}. Lễ tân sẽ xác nhận.",
+  e_room:"Vui lòng chọn phòng.",e_name:"Vui lòng cho biết tên của bạn.",
+  e_unknown_room:"Chúng tôi không nhận ra phòng này. Vui lòng hỏi lễ tân.",
+  e_no_open_session:"Quầy thu ngân chưa mở — vui lòng gọi lễ tân +84 399 121 258.",
+  e_empty:"Đơn của bạn đang trống.",e_net:"Không kết nối được với bếp. Vui lòng gọi lễ tân +84 399 121 258.",
+  loading:"Đang tải thực đơn…",menu_fail:"Thực đơn trực tuyến hiện không khả dụng. Vui lòng gọi lễ tân."},
+ fr:{nav_eat:"Manger",nav_play:"Découvrir",nav_sleep:"Dormir",nav_tread:"Léger",nav_help:"Aide",
+  hero_h1:"Manger. Découvrir. Dormir.",hero_sub:"Marcher léger.",
+  eat_h:"Manger",eat_k:"Cuisine & terrasse",play_h:"Découvrir",play_k:"Lac & villages",
+  sleep_h:"Dormir",sleep_k:"Votre tente",tread_h:"Marcher léger",tread_k:"Notre façon",help_h:"Aide",
+  hours_h:"Heures de service",menu_h:"Carte complète",all_cats:"Tous les plats",
+  search_ph:"Rechercher un plat…",book:"Commander",bar_items:"plats",
+  sheet_h:"Commander dans votre chambre",
+  sheet_p:"Nous transmettons à la cuisine et vous confirmons. Rien n'est facturé avant vérification par la réception.",
+  f_room:"Chambre",f_room_ph:"Choisissez votre chambre…",f_name:"Votre nom",
+  f_time:"Heure souhaitée",f_note:"Allergies ou autre à nous signaler",
+  cancel:"Retour à la carte",send:"Envoyer en cuisine",total:"Total",
+  ok:"Merci — la cuisine a votre commande. Référence {r}. La réception vous confirmera.",
+  e_room:"Veuillez choisir votre chambre.",e_name:"Veuillez indiquer votre nom.",
+  e_unknown_room:"Chambre inconnue. Merci de vérifier avec la réception.",
+  e_no_open_session:"La caisse n'est pas ouverte — appelez la réception au +84 399 121 258.",
+  e_empty:"Votre commande est vide.",e_net:"Impossible de joindre la cuisine. Appelez la réception au +84 399 121 258.",
+  loading:"Chargement de la carte…",menu_fail:"La carte en direct est indisponible. Merci d'appeler la réception."},
+ he:{nav_eat:"אוכל",nav_play:"פעילויות",nav_sleep:"לינה",nav_tread:"בעדינות",nav_help:"עזרה",
+  hero_h1:"לאכול. לחוות. לישון.",hero_sub:"בעדינות.",
+  eat_h:"אוכל",eat_k:"המטבח והמרפסת",play_h:"פעילויות",play_k:"האגם והכפרים",
+  sleep_h:"לינה",sleep_k:"האוהל שלכם",tread_h:"בעדינות",tread_k:"הדרך שלנו",help_h:"עזרה",
+  hours_h:"שעות הגשה",menu_h:"תפריט מלא",all_cats:"כל המנות",
+  search_ph:"חיפוש בתפריט…",book:"להזמין",bar_items:"מנות",
+  sheet_h:"הזמנה לחדר",
+  sheet_p:"נעביר למטבח ונאשר מולכם. לא מחויב דבר עד שהקבלה בודקת.",
+  f_room:"חדר",f_room_ph:"בחרו את החדר שלכם…",f_name:"השם שלכם",
+  f_time:"השעה שתרצו לאכול",f_note:"אלרגיות או כל דבר שכדאי שנדע",
+  cancel:"חזרה לתפריט",send:"שליחה למטבח",total:"סה״כ",
+  ok:"תודה — ההזמנה התקבלה במטבח. מספר {r}. הקבלה תאשר.",
+  e_room:"אנא בחרו חדר.",e_name:"אנא כתבו את שמכם.",
+  e_unknown_room:"החדר אינו מזוהה. אנא בדקו מול הקבלה.",
+  e_no_open_session:"הקופה סגורה כרגע — אנא התקשרו לקבלה 258 121 399 84+.",
+  e_empty:"ההזמנה ריקה.",e_net:"לא הצלחנו להגיע למטבח. אנא התקשרו לקבלה 258 121 399 84+.",
+  loading:"טוען תפריט…",menu_fail:"התפריט אינו זמין כרגע. אנא התקשרו לקבלה."}
+};
+
+/* The long descriptive paragraphs exist in English and Vietnamese. French and
+   Hebrew cover the whole interface, the ordering flow and every heading; the
+   detail paragraphs fall back to English until the camp has reviewed a
+   translation of them. Nothing guest-facing is machine-guessed silently. */
+var LONG_VI = {
+ hero_p:"Mọi thứ bạn cần cho kỳ nghỉ bên hồ Lắk. Hãy mở sẵn trang này — nội dung được cập nhật trong ngày.",
+ eat_lead:"Chúng tôi nấu những gì hồ và cao nguyên cho tuần đó — phần lớn mua buổi sáng ở chợ Liên Sơn hoặc trồng cách đây vài cây số.",
+ menu_note:"Giá tính bằng VND, đã bao gồm thuế và phí phục vụ. Món theo mùa phụ thuộc vào chợ sáng hôm đó. Vui lòng báo dị ứng khi gọi món — nước mắm và đậu phộng được dùng rộng rãi trong bếp này.",
+ play_lead:"Hầu hết mọi hoạt động đều miễn phí và chỉ cần bạn có mặt. Lễ tân sắp xếp phần còn lại — hoạt động buổi sáng chốt từ tối hôm trước.",
+ sleep_lead:"Vách lều bằng vải nghĩa là bạn sẽ nghe tiếng hồ, tiếng ếch và tiếng chim đầu tiên. Đừng mong tiện nghi năm sao; hãy mong những đêm ngàn sao.",
+ tread_lead:"LAK Tented Camp được hình thành quanh hai mục tiêu: gìn giữ bản sắc văn hóa và bảo vệ môi trường này. Hồ là nhà của ai đó trước khi là cảnh đẹp của bất kỳ ai — chúng tôi cũng là khách ở đây."
+};
+
+var lang = "en";
+function t(k){ return (STR[lang] && STR[lang][k]) || STR.en[k] || k; }
+
+function applyLang(next){
+  lang = next;
+  document.documentElement.lang = next === "he" ? "he" : next;
+  document.documentElement.dir  = next === "he" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-t]").forEach(function(el){
+    var k = el.getAttribute("data-t");
+    var v = (STR[next] && STR[next][k]) || (next === "vi" && LONG_VI[k]) || null;
+    if (v) el.textContent = v;
+  });
+  document.querySelectorAll("[data-t-ph]").forEach(function(el){
+    el.placeholder = t(el.getAttribute("data-t-ph"));
+  });
+  document.querySelectorAll("#langs button").forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.lang === next));
+  });
+  try { localStorage.setItem("lak_lang", next); } catch(e){}
+  renderMenu();  // dish names follow the language too -- the whole point
+  renderSummary();
+}
+
+document.getElementById("langs").addEventListener("click", function(e){
+  var b = e.target.closest("button[data-lang]");
+  if (b) applyLang(b.dataset.lang);
+});
+
+/* ------------------------------------------------------------------- menu */
+var ITEMS = [], CART = {}, CURRENCY = "VND";
+var money = function(n){ return new Intl.NumberFormat("vi-VN").format(Math.round(n)) + " ₫"; };
+
+function dishName(it){ return lang === "vi" ? it.name_vi : it.name_en; }
+function dishAlt(it){
+  var alt = lang === "vi" ? it.name_en : it.name_vi;
+  return alt && alt !== dishName(it) ? alt : "";
+}
+
+function renderMenu(){
+  var host = document.getElementById("menu");
+  if (!ITEMS.length){ return; }
+  var q = (document.getElementById("q").value || "").toLowerCase().trim();
+  var cat = document.getElementById("catFilter").value;
+  var groups = {};
+  ITEMS.forEach(function(it){
+    if (cat && it.category !== cat) return;
+    if (q && (it.name_vi + " " + it.name_en + " " + it.description).toLowerCase().indexOf(q) < 0) return;
+    (groups[it.category || "—"] = groups[it.category || "—"] || []).push(it);
+  });
+  var html = "";
+  Object.keys(groups).sort().forEach(function(g){
+    html += '<div class="cat"><h3>' + esc(g) + "</h3>";
+    groups[g].forEach(function(it){
+      var n = CART[it.id] || 0;
+      html += '<div class="dish"><div class="txt">' +
+        '<div class="n">' + esc(dishName(it)) + "</div>" +
+        (dishAlt(it) ? '<div class="n2">' + esc(dishAlt(it)) + "</div>" : "") +
+        (it.description ? '<div class="d">' + esc(it.description) + "</div>" : "") +
+        '</div><div class="p">' + money(it.price) + "</div>" +
+        '<div class="qty"><button type="button" data-minus="' + it.id + '" aria-label="−">−</button>' +
+        '<output data-n="' + n + '">' + n + "</output>" +
+        '<button type="button" data-plus="' + it.id + '" aria-label="+">+</button></div></div>';
+    });
+    html += "</div>";
+  });
+  host.innerHTML = html || "<p>—</p>";
+}
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+document.getElementById("menu").addEventListener("click", function(e){
+  var plus = e.target.getAttribute("data-plus"), minus = e.target.getAttribute("data-minus");
+  if (!plus && !minus) return;
+  var id = Number(plus || minus);
+  CART[id] = Math.max(0, Math.min(30, (CART[id] || 0) + (plus ? 1 : -1)));
+  if (!CART[id]) delete CART[id];
+  renderMenu(); renderBar();
+});
+document.getElementById("q").addEventListener("input", renderMenu);
+document.getElementById("catFilter").addEventListener("change", renderMenu);
+
+function cartLines(){
+  return Object.keys(CART).map(function(id){
+    var it = ITEMS.find(function(x){ return String(x.id) === String(id); });
+    return it ? { it: it, qty: CART[id] } : null;
+  }).filter(Boolean);
+}
+function renderBar(){
+  var lines = cartLines();
+  var count = lines.reduce(function(a, l){ return a + l.qty; }, 0);
+  var total = lines.reduce(function(a, l){ return a + l.qty * l.it.price; }, 0);
+  document.getElementById("barCount").textContent = count;
+  document.getElementById("barTotal").textContent = count ? money(total) : "";
+  document.getElementById("orderbar").classList.toggle("on", count > 0);
+  renderSummary();
+}
+function renderSummary(){
+  var lines = cartLines(), html = "";
+  lines.forEach(function(l){
+    html += "<div><span>" + l.qty + " × " + esc(dishName(l.it)) + "</span><span>" +
+            money(l.qty * l.it.price) + "</span></div>";
+  });
+  var total = lines.reduce(function(a, l){ return a + l.qty * l.it.price; }, 0);
+  html += '<div class="tot"><span>' + esc(t("total")) + "</span><span>" + money(total) + "</span></div>";
+  document.getElementById("sum").innerHTML = html;
+}
+
+/* ------------------------------------------------------------------ load */
+function boot(){
+  document.getElementById("menu").innerHTML = "<p>" + esc(t("loading")) + "</p>";
+  fetch(API + "/menu", { headers: { Accept: "application/json" } })
+    .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){
+      ITEMS = d.items || []; CURRENCY = d.currency || "VND";
+      document.getElementById("menuCount").textContent = ITEMS.length + "+";
+      var cats = Array.from(new Set(ITEMS.map(function(i){ return i.category; }).filter(Boolean))).sort();
+      var sel = document.getElementById("catFilter");
+      cats.forEach(function(c){
+        var o = document.createElement("option"); o.value = c; o.textContent = c; sel.appendChild(o);
+      });
+      renderMenu(); renderBar();
+    })
+    .catch(function(){
+      document.getElementById("menu").innerHTML = "<p>" + esc(t("menu_fail")) + "</p>";
+    });
+
+  fetch(API + "/rooms", { headers: { Accept: "application/json" } })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var sel = document.getElementById("room");
+      (d.rooms || []).forEach(function(r){
+        var o = document.createElement("option");
+        o.value = r.code; o.textContent = r.code + (r.type ? " — " + r.type : "");
+        sel.appendChild(o);
+      });
+    })
+    .catch(function(){ /* the field stays a plain picker with no options; the
+                          server validates the room again anyway */ });
+}
+
+/* ----------------------------------------------------------------- submit */
+var sheet = document.getElementById("sheet");
+document.getElementById("openSheet").onclick = function(){ renderSummary(); sheet.showModal(); };
+document.getElementById("closeSheet").onclick = function(){ sheet.close(); };
+
+function say(kind, text){
+  var m = document.getElementById("msg");
+  m.className = "msg on " + kind; m.textContent = text;
+}
+
+document.getElementById("send").onclick = function(){
+  var room = document.getElementById("room").value.trim();
+  var name = document.getElementById("gname").value.trim();
+  var lines = cartLines();
+  if (!room) return say("err", t("e_room"));
+  if (!name) return say("err", t("e_name"));
+  if (!lines.length) return say("err", t("e_empty"));
+
+  var btn = this; btn.disabled = true;
+  fetch(API + "/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      room: room, name: name,
+      dine_at: document.getElementById("dine").value || "",
+      note: document.getElementById("note").value || "",
+      lang: lang,
+      lines: lines.map(function(l){ return { id: l.it.id, qty: l.qty }; })
+    })
+  })
+  .then(function(r){ return r.json().then(function(d){ return { s: r.status, d: d }; }); })
+  .then(function(res){
+    if (res.d && res.d.ok){
+      say("ok", t("ok").replace("{r}", res.d.reference || ""));
+      CART = {}; renderMenu(); renderBar();
+      setTimeout(function(){ sheet.close(); }, 4000);
+    } else {
+      var key = "e_" + ((res.d && res.d.error) || "net");
+      say("err", (STR[lang] && STR[lang][key]) ? STR[lang][key] : t("e_net"));
+    }
+  })
+  .catch(function(){ say("err", t("e_net")); })
+  .finally(function(){ btn.disabled = false; });
+};
+
+try { var saved = localStorage.getItem("lak_lang"); if (saved && STR[saved]) lang = saved; } catch(e){}
+applyLang(lang);
+boot();
+</script>
+</body>
+</html>

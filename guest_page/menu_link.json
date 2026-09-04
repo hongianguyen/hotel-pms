@@ -1,0 +1,451 @@
+{
+ "items": {
+  "Khai vị chay": {
+   "p": "KHAI VỊ CHAY HỒ LAK"
+  },
+  "Gỏi đu đủ chay": {
+   "p": "GỎI ĐU ĐỦ CHAY"
+  },
+  "Gỏi mít chay": {
+   "p": "GỎI MÍT TRỘN"
+  },
+  "Gỏi măng rừng chay": {
+   "p": "GỎI MĂNG RỪNG"
+  },
+  "Chả giò chay": {
+   "p": "CHẢ GIÒ CHAY"
+  },
+  "Đậu hủ chiên muối sả": {
+   "p": "ĐẬU HỦ CHIÊN SẢ"
+  },
+  "Đậu hủ nhồi nhân sốt cà chua": {
+   "p": "ĐẬU HỦ NHỒI SỐT CÀ CHUA"
+  },
+  "Nấm kho tộ": {
+   "p": "NẤM KHO TỘ"
+  },
+  "Mít non kho": {
+   "p": "MÍT NON KHO RỊU"
+  },
+  "Cà tím kho tộ": {
+   "p": "CÀ TÍM KHO TỘ"
+  },
+  "Ngũ quả luộc kho quẹt chay": {
+   "p": "NGŨ QUẢ LUỘC + KHO QUẸT CHAY"
+  },
+  "Cà tím xào lá lốt": {
+   "p": "CÀ TÍM XÀO LÁ LỐT"
+  },
+  "Đậu khuôn xào giá & rau củ": {
+   "p": "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ"
+  },
+  "Canh chua chay": {
+   "p": "CANH CHUA CHAY"
+  },
+  "Canh bí đỏ đậu phộng": {
+   "p": "CANH BÍ ĐỎ ĐẬU PHỘNG"
+  },
+  "Canh lagim": {
+   "p": "CANH LAGIM"
+  },
+  "Lẩu nấu chao": {
+   "p": "LẨU NẤU CHAO"
+  },
+  "Khai vị Y Lak": {
+   "p": "KHAI VỊ Y LAK"
+  },
+  "Soup bí đỏ": {
+   "p": "SOUP BÍ ĐỎ"
+  },
+  "Salad rau xanh": {
+   "p": "SALAD RAU XANH HỖN HỢP"
+  },
+  "Gỏi cuốn tôm thịt vườn Lắk": {
+   "p": "GỎI CUỐN TÔM THỊT"
+  },
+  "Chả giò tôm thịt": {
+   "p": "CHẢ GIÒ TÔM THỊT"
+  },
+  "Gỏi cà đắng cá cơm": {
+   "p": "GỎI CÀ ĐẮNG CÁ CƠM"
+  },
+  "Gỏi bò bóp thấu": {
+   "p": "GỎI  BÒ BÓP THẤU"
+  },
+  "Gỏi măng rừng tôm thịt": {
+   "p": "GỎI MĂNG RỪNG TÔM THỊT"
+  },
+  "Gỏi gà hoa chuối": {
+   "p": "GỎI GÀ HOA CHUỐI"
+  },
+  "Gỏi ngó sen tôm thịt": {
+   "p": "GỎI NGÓ SEN TÔM THỊT"
+  },
+  "Gỏi đu đủ tôm thịt": {
+   "p": "GỎI ĐU ĐỦ TÔM THỊT"
+  },
+  "Cá rô phi chiên giòn chấm mắm xoài": {
+   "p": "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI"
+  },
+  "Cá diêu hồng chiên sốt chanh dây": {
+   "p": "CÁ DIÊU HỒNG SỐT CHANH DÂY"
+  },
+  "Cá diêu hồng nướng giấy bạc": {
+   "p": "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC"
+  },
+  "Tép hồ Lắk ram mặn với khế": {
+   "p": "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN"
+  },
+  "Chả cá hồ Lắk": {
+   "p": "CHẢ CÁ HỒ LĂK"
+  },
+  "Cá lăng kho tộ": {
+   "p": "CÁ LĂNG KHO TỘ"
+  },
+  "Cá bống kho tiêu": {
+   "p": "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN"
+  },
+  "Tôm kho tộ": {
+   "p": "TÔM KHO TỘ"
+  },
+  "Cá lăng ướp nghệ nướng lá chuối": {
+   "p": "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI"
+  },
+  "Heo nướng ống tre ăn kèm cơm lam": {
+   "p": "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM"
+  },
+  "Sườn nướng BBQ cơm lam": {
+   "p": "SƯỜN NƯỚNG BBQ CƠM LAM"
+  },
+  "Bò nướng lá lốt": {
+   "p": "BÒ NƯỚNG LÁ LỐT"
+  },
+  "Gà nướng dùng kèm cơm lam": {
+   "p": "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM"
+  },
+  "Gà hấp lá chanh": {
+   "p": "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH"
+  },
+  "Gà ram gừng / chiên nước mắm": {
+   "v": [
+    "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH"
+   ]
+  },
+  "Vịt quay hồ Lắk sốt tiêu đen": {
+   "p": "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG"
+  },
+  "Thịt heo kho tộ": {
+   "p": "THỊT HEO KHO TỘ"
+  },
+  "Thịt heo đồng bào xào lăn": {
+   "p": "HEO XÀO LĂN"
+  },
+  "Rau muống / rau rừng / đậu rồng / đậu cove / lá bép xào tỏi": {
+   "v": [
+    "RAU MUỐNG XÀO TỎI",
+    "RAU RỪNG XÀO TỎI",
+    "ĐẬU RỒNG XÀO/ LUỘC",
+    "ĐẬU COVE XÀO TỎI",
+    "LÁ BÉP XÀO TỎI"
+   ]
+  },
+  "Rau muống / rau rừng / đậu rồng / đậu cove / lá bép luộc kho quẹt": {
+   "v": [
+    "RAU RỪNG LUỘC KHO QUẸT",
+    "ĐẬU RỒNG XÀO/ LUỘC",
+    "ĐẬU COVE XÀO/ LUỘC"
+   ]
+  },
+  "Lá bép xào cá hộp": {
+   "p": "LÁ BÉP XÀO CÁ HỘP"
+  },
+  "Ngó sen tươi hồ Lắk xào tỏi": {
+   "p": "NGÓ SEN TƯƠI HỒ LĂK XÀO"
+  },
+  "Rau củ xào thập cẩm": {
+   "p": "RAU CỦ XÀO THẬP CẨM"
+  },
+  "Đọt bí xào tỏi": {
+   "p": "ĐỌT BÍ XÀO"
+  },
+  "Cà tím nướng mỡ hành": {
+   "p": "CÀ TÍM NƯỚNG MỠ HÀNH"
+  },
+  "Trứng vịt hồ Lắk chiên hành / thịt băm": {
+   "v": [
+    "TRỨNG VỊT HỒ LAK CHIÊN",
+    "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM"
+   ]
+  },
+  "Tempura củ quả": {
+   "p": "TEMPURA CỦ QUẢ"
+  },
+  "Tôm hồ Lắk chiên với khoai lang": {
+   "p": "BÁNH TÔM HỒ CHIÊN KHOAI LANG"
+  },
+  "Khoai lang / khoai tây chiên": {
+   "v": [
+    "KHOAI LANG CHIÊN",
+    "KHOAI TÂY CHIÊN"
+   ]
+  },
+  "Cơm trắng / cơm lam": {
+   "v": [
+    "CƠM TRẮNG",
+    "CƠM LAM"
+   ]
+  },
+  "Cơm chiên hải sản / gà / heo / bò hạt sen": {
+   "v": [
+    "CƠM CHIÊN HẢI SẢN HẠT SEN",
+    "CƠM CHIÊN GÀ XÉ HẠT SEN",
+    "CƠM CHIÊN THỊT HEO",
+    "CƠM CHIÊN THỊT BÒ"
+   ]
+  },
+  "Cơm chiên cá mặn / trứng tỏi / muối ớt": {
+   "absent": true
+  },
+  "Cơm chiên rau củ, hạt sen": {
+   "p": "CƠM CHIÊN RAU CỦ HẠT SEN"
+  },
+  "Miến xào bò / heo / gà / hải sản": {
+   "v": [
+    "MIẾN XÀO THỊT BÒ",
+    "MIẾN XÀO THỊT GÀ",
+    "MIẾN XÀO HẢI SẢN"
+   ]
+  },
+  "Mì xào bò / heo / gà / hải sản": {
+   "v": [
+    "MÌ XÀO BÒ",
+    "MÌ XÀO THỊT HEO",
+    "MÌ XÀO THỊT GÀ",
+    "MÌ XÀO HẢI SẢN"
+   ]
+  },
+  "Mì xào rau củ": {
+   "p": "MÌ XÀO RAU CỦ"
+  },
+  "Mì Ý sốt cà chua": {
+   "p": "MÌ Ý SỐT CÀ CHUA"
+  },
+  "Mì Ý sốt bò bằm": {
+   "p": "MÌ Ý SỐT BÒ BẰM"
+  },
+  "Bò lúc lắc khoai tây chiên": {
+   "p": "BÒ LÚC LẮC KHOAI TÂY CHIÊN"
+  },
+  "Club sandwich gà / heo": {
+   "v": [
+    "CLUB SANDWICH GÀ"
+   ]
+  },
+  "Canh cải thịt bằm": {
+   "p": "CANH CẢI THỊT BẰM"
+  },
+  "Canh cua / tôm tập tàng": {
+   "v": [
+    "CANH CUA TẬP TÀNG",
+    "CANH TÔM TẬP TÀNG"
+   ]
+  },
+  "Canh bí đao / khổ qua nhồi thịt": {
+   "v": [
+    "CANH BÍ ĐAO NẤU THỊT BẰM",
+    "CANH KHỔ QUA NHỒI THỊT"
+   ]
+  },
+  "Canh gà lá giang": {
+   "p": "CANH GÀ LÁ GIANG"
+  },
+  "Canh chua cá bông lau": {
+   "p": "CANH CHUA CÁ BÔNG LAU"
+  },
+  "Canh cà đắng cá cơm": {
+   "p": "CANH CÀ ĐẮNG CÁ CƠM"
+  },
+  "Canh sườn heo nấu đu đủ / măng": {
+   "v": [
+    "CANH SƯỜN HEO NẤU ĐU ĐỦ",
+    "CANH SƯỜN HEO NẤU MĂNG"
+   ]
+  },
+  "Canh chua chả cá thác lác / mướp đắng rừng": {
+   "v": [
+    "CANH CÁ THÁC LÁC MĂNG CHUA",
+    "CANH CHẢ CÁ NẤU MƯỚP ĐẮNG"
+   ]
+  },
+  "Canh chua cá lăng": {
+   "p": "CANH CHUA CÁ LĂNG"
+  },
+  "Lẩu cá lăng nấu măng chua": {
+   "p": "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA"
+  },
+  "Lẩu chả cá thác lác măng chua / mướp đắng": {
+   "v": [
+    "LẨU CÁ THÁC LÁC NẤU MƯỚP ĐẮNG",
+    "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG"
+   ]
+  },
+  "Lẩu gà lá giang": {
+   "p": "LẨU GÀ LÁ GIANG/ LÁ É"
+  },
+  "Chè chuối": {
+   "p": "CHÈ CHUỐI"
+  },
+  "Chè hạt sen": {
+   "p": "CHÈ HẠT SEN LONG NHÃN"
+  },
+  "Sữa chua trái cây theo mùa": {
+   "p": "SỮA CHUA"
+  },
+  "Trái cây theo mùa": {
+   "p": "TRÁI CÂY THEO MÙA"
+  },
+  "Bánh chuối nướng dùng kèm kem vani": {
+   "p": "BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA"
+  },
+  "Kem sô cô la / vani": {
+   "v": [
+    "KEM SÔ CÔ LA",
+    "KEM VANI"
+   ]
+  }
+ },
+ "sets": {
+  "Set 1|195000": "COMBO SET MENU 01 195000",
+  "Set 2|195000": "COMBO SET MENU 02 195000",
+  "Set 3|255000": "COMBO SET MENU 01 255000",
+  "Set 4|255000": "COMBO SET MENU 02 255000",
+  "Set 1|245000": "COMBO SET LUNCH 01 245000",
+  "Set 2|245000": "COMBO SET LUNCH 02 245000",
+  "Set 3|295000": "COMBO SET DINNER 01 295000",
+  "Set 4|295000": "COMBO SET DINNER 02 295000",
+  "Set 5|375000": "COMBO SET DINNER 01 375000",
+  "Set 6|375000": "COMBO SET DINNER 02 375000",
+  "Set 7|455000": "COMBO SET DINNER 01 455000",
+  "Set 8|455000": "COMBO SET DINNER 02 455000"
+ },
+ "needs": [
+  "BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA",
+  "BÁNH TÔM HỒ CHIÊN KHOAI LANG",
+  "BÒ LÚC LẮC KHOAI TÂY CHIÊN",
+  "BÒ NƯỚNG LÁ LỐT",
+  "CANH BÍ ĐAO NẤU THỊT BẰM",
+  "CANH BÍ ĐỎ ĐẬU PHỘNG",
+  "CANH CHUA CHAY",
+  "CANH CHUA CÁ BÔNG LAU",
+  "CANH CHUA CÁ LĂNG",
+  "CANH CHẢ CÁ NẤU MƯỚP ĐẮNG",
+  "CANH CUA TẬP TÀNG",
+  "CANH CÀ ĐẮNG CÁ CƠM",
+  "CANH CÁ THÁC LÁC MĂNG CHUA",
+  "CANH CẢI THỊT BẰM",
+  "CANH GÀ LÁ GIANG",
+  "CANH KHỔ QUA NHỒI THỊT",
+  "CANH LAGIM",
+  "CANH SƯỜN HEO NẤU MĂNG",
+  "CANH SƯỜN HEO NẤU ĐU ĐỦ",
+  "CANH TÔM TẬP TÀNG",
+  "CHÈ CHUỐI",
+  "CHÈ HẠT SEN LONG NHÃN",
+  "CHẢ CÁ HỒ LĂK",
+  "CHẢ GIÒ CHAY",
+  "CHẢ GIÒ TÔM THỊT",
+  "CLUB SANDWICH GÀ",
+  "COMBO SET DINNER 01 295000",
+  "COMBO SET DINNER 01 375000",
+  "COMBO SET DINNER 01 455000",
+  "COMBO SET DINNER 02 295000",
+  "COMBO SET DINNER 02 375000",
+  "COMBO SET DINNER 02 455000",
+  "COMBO SET LUNCH 01 245000",
+  "COMBO SET LUNCH 02 245000",
+  "COMBO SET MENU 01 195000",
+  "COMBO SET MENU 01 255000",
+  "COMBO SET MENU 02 195000",
+  "COMBO SET MENU 02 255000",
+  "CÀ TÍM KHO TỘ",
+  "CÀ TÍM NƯỚNG MỠ HÀNH",
+  "CÀ TÍM XÀO LÁ LỐT",
+  "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN",
+  "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC",
+  "CÁ DIÊU HỒNG SỐT CHANH DÂY",
+  "CÁ LĂNG KHO TỘ",
+  "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI",
+  "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI",
+  "CƠM CHIÊN GÀ XÉ HẠT SEN",
+  "CƠM CHIÊN HẢI SẢN HẠT SEN",
+  "CƠM CHIÊN RAU CỦ HẠT SEN",
+  "CƠM CHIÊN THỊT BÒ",
+  "CƠM CHIÊN THỊT HEO",
+  "CƠM LAM",
+  "CƠM TRẮNG",
+  "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH",
+  "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM",
+  "GỎI  BÒ BÓP THẤU",
+  "GỎI CUỐN TÔM THỊT",
+  "GỎI CÀ ĐẮNG CÁ CƠM",
+  "GỎI GÀ HOA CHUỐI",
+  "GỎI MÍT TRỘN",
+  "GỎI MĂNG RỪNG",
+  "GỎI MĂNG RỪNG TÔM THỊT",
+  "GỎI NGÓ SEN TÔM THỊT",
+  "GỎI ĐU ĐỦ CHAY",
+  "GỎI ĐU ĐỦ TÔM THỊT",
+  "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM",
+  "HEO XÀO LĂN",
+  "KEM SÔ CÔ LA",
+  "KEM VANI",
+  "KHAI VỊ CHAY HỒ LAK",
+  "KHAI VỊ Y LAK",
+  "KHOAI LANG CHIÊN",
+  "KHOAI TÂY CHIÊN",
+  "LÁ BÉP XÀO CÁ HỘP",
+  "LÁ BÉP XÀO TỎI",
+  "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA",
+  "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+  "LẨU CÁ THÁC LÁC NẤU MƯỚP ĐẮNG",
+  "LẨU GÀ LÁ GIANG/ LÁ É",
+  "LẨU NẤU CHAO",
+  "MIẾN XÀO HẢI SẢN",
+  "MIẾN XÀO THỊT BÒ",
+  "MIẾN XÀO THỊT GÀ",
+  "MÌ XÀO BÒ",
+  "MÌ XÀO HẢI SẢN",
+  "MÌ XÀO RAU CỦ",
+  "MÌ XÀO THỊT GÀ",
+  "MÌ XÀO THỊT HEO",
+  "MÌ Ý SỐT BÒ BẰM",
+  "MÌ Ý SỐT CÀ CHUA",
+  "MÍT NON KHO RỊU",
+  "NGÓ SEN TƯƠI HỒ LĂK XÀO",
+  "NGŨ QUẢ LUỘC + KHO QUẸT CHAY",
+  "NẤM KHO TỘ",
+  "RAU CỦ XÀO THẬP CẨM",
+  "RAU MUỐNG XÀO TỎI",
+  "RAU RỪNG LUỘC KHO QUẸT",
+  "RAU RỪNG XÀO TỎI",
+  "SALAD RAU XANH HỖN HỢP",
+  "SOUP BÍ ĐỎ",
+  "SƯỜN NƯỚNG BBQ CƠM LAM",
+  "SỮA CHUA",
+  "TEMPURA CỦ QUẢ",
+  "THỊT HEO KHO TỘ",
+  "TRÁI CÂY THEO MÙA",
+  "TRỨNG VỊT HỒ LAK CHIÊN",
+  "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+  "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN",
+  "TÔM KHO TỘ",
+  "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG",
+  "ĐẬU COVE XÀO TỎI",
+  "ĐẬU COVE XÀO/ LUỘC",
+  "ĐẬU HỦ CHIÊN SẢ",
+  "ĐẬU HỦ NHỒI SỐT CÀ CHUA",
+  "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ",
+  "ĐẬU RỒNG XÀO/ LUỘC",
+  "ĐỌT BÍ XÀO"
+ ]
+}

@@ -1,0 +1,50 @@
+/* ---------- guest ordering (added 04 Sep 2026) ---------- */
+.mitem{align-items:center}
+.mqty{display:flex;align-items:center;gap:6px;margin-inline-start:10px;flex:none}
+.mqty button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font:inherit;font-size:1rem;line-height:1;cursor:pointer}
+.mqty button:hover{border-color:var(--accent)}
+.mqty button[disabled]{opacity:.35;cursor:default}
+.mqty .n{min-width:1.4em;text-align:center;font-variant-numeric:tabular-nums}
+.mqty .n[data-zero=true]{color:var(--muted)}
+.mvar{margin-top:4px}
+.mvar select{font:inherit;font-size:.8rem;padding:3px 6px;border-radius:8px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);max-width:100%}
+.moff{font-size:.78rem;color:var(--muted);margin-inline-start:10px;flex:none}
+
+#obar{position:fixed;inset-inline:0;bottom:0;z-index:60;transform:translateY(110%);
+  transition:transform .18s ease;background:var(--card);border-top:1px solid var(--line);
+  box-shadow:0 -6px 24px rgba(0,0,0,.13)}
+#obar[data-show=true]{transform:none}
+#obar .in{max-width:var(--max);margin:0 auto;padding:10px 18px;display:flex;
+  align-items:center;gap:12px}
+#obar .sum{flex:1;min-width:0;font-size:.9rem}
+#obar .sum b{font-variant-numeric:tabular-nums}
+#obar button{font:inherit;padding:9px 18px;border-radius:10px;border:0;cursor:pointer;
+  background:var(--accent);color:var(--accent-ink)}
+#obar .clr{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 12px}
+
+#osheet{border:0;border-radius:14px;padding:0;max-width:460px;width:calc(100% - 28px);
+  background:var(--card);color:var(--ink)}
+#osheet::backdrop{background:rgba(0,0,0,.45)}
+#osheet .pad{padding:18px}
+#osheet h3{margin:0 0 4px}
+#osheet .sub{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+#osheet label{display:block;font-size:.8rem;color:var(--muted);margin:10px 0 3px}
+#osheet input,#osheet select,#osheet textarea{width:100%;font:inherit;padding:8px 10px;
+  border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+#osheet textarea{min-height:56px;resize:vertical}
+#osheet .lines{border:1px solid var(--line);border-radius:10px;padding:9px 11px;
+  font-size:.85rem;max-height:150px;overflow:auto;background:var(--bg)}
+#osheet .lines div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+#osheet .tot{display:flex;justify-content:space-between;font-weight:600;margin-top:9px;
+  padding-top:9px;border-top:1px solid var(--line)}
+#osheet .acts{display:flex;gap:8px;margin-top:16px}
+#osheet .acts button{flex:1;font:inherit;padding:10px;border-radius:10px;cursor:pointer;
+  border:0;background:var(--accent);color:var(--accent-ink)}
+#osheet .acts .no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+#omsg{margin-top:11px;font-size:.85rem;padding:9px 11px;border-radius:9px;display:none}
+#omsg[data-kind=err]{display:block;background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+#omsg[data-kind=ok]{display:block;background:color-mix(in srgb,var(--good) 14%,transparent);color:var(--good)}
+@media (max-width:520px){ #obar .in{padding:9px 12px;gap:8px} #obar .sum{font-size:.82rem} }
+.mone{font-size:.78rem;color:var(--muted)}

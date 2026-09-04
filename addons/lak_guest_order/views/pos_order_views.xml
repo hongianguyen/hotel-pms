@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reception reads the room, the name and the requested time here. -->
+    <record id="view_pos_order_form_guest" model="ir.ui.view">
+        <field name="name">pos.order.form.guest</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//group" position="after">
+                <group string="Guest page order"
+                       invisible="guest_channel != 'lak_guest_page'">
+                    <field name="guest_channel" invisible="1"/>
+                    <field name="guest_room"/>
+                    <field name="guest_name"/>
+                    <field name="guest_dine_at"/>
+                    <field name="guest_lang"/>
+                    <div colspan="2" class="text-muted">
+                        The room number was typed by the guest on a public
+                        page and is NOT verified. Check who is actually in
+                        that room before charging the folio.
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_pos_order_tree_guest" model="ir.ui.view">
+        <field name="name">pos.order.list.guest</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="guest_room" optional="show"/>
+                <field name="guest_dine_at" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_pos_order_filter_guest" model="ir.ui.view">
+        <field name="name">pos.order.search.guest</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <filter name="guest_page_orders" string="From the guest page"
+                        domain="[('guest_channel', '=', 'lak_guest_page')]"/>
+            </search>
+        </field>
+    </record>
+</odoo>

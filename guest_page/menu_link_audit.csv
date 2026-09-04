@@ -1,0 +1,87 @@
+page_item,prod_product,how
+Khai vị chay,KHAI VỊ CHAY HỒ LAK,contains
+Gỏi đu đủ chay,GỎI ĐU ĐỦ CHAY,exact
+Gỏi mít chay,GỎI MÍT TRỘN,curated
+Gỏi măng rừng chay,GỎI MĂNG RỪNG,contains
+Chả giò chay,CHẢ GIÒ CHAY,exact
+Đậu hủ chiên muối sả,ĐẬU HỦ CHIÊN SẢ,fuzzy
+Đậu hủ nhồi nhân sốt cà chua,ĐẬU HỦ NHỒI SỐT CÀ CHUA,fuzzy
+Nấm kho tộ,NẤM KHO TỘ,exact
+Mít non kho,MÍT NON KHO RỊU,contains
+Cà tím kho tộ,CÀ TÍM KHO TỘ,exact
+Ngũ quả luộc kho quẹt chay,NGŨ QUẢ LUỘC + KHO QUẸT CHAY,exact
+Cà tím xào lá lốt,CÀ TÍM XÀO LÁ LỐT,exact
+Đậu khuôn xào giá & rau củ,ĐẬU KHUÔN XÀO GIÁ & RAU CỦ,exact
+Canh chua chay,CANH CHUA CHAY,exact
+Canh bí đỏ đậu phộng,CANH BÍ ĐỎ ĐẬU PHỘNG,exact
+Canh lagim,CANH LAGIM,exact
+Lẩu nấu chao,LẨU NẤU CHAO,exact
+Khai vị Y Lak,KHAI VỊ Y LAK,exact
+Soup bí đỏ,SOUP BÍ ĐỎ,exact
+Salad rau xanh,SALAD RAU XANH HỖN HỢP,contains
+Gỏi cuốn tôm thịt vườn Lắk,GỎI CUỐN TÔM THỊT,contains
+Chả giò tôm thịt,CHẢ GIÒ TÔM THỊT,exact
+Gỏi cà đắng cá cơm,GỎI CÀ ĐẮNG CÁ CƠM,exact
+Gỏi bò bóp thấu,GỎI  BÒ BÓP THẤU,exact
+Gỏi măng rừng tôm thịt,GỎI MĂNG RỪNG TÔM THỊT,exact
+Gỏi gà hoa chuối,GỎI GÀ HOA CHUỐI,exact
+Gỏi ngó sen tôm thịt,GỎI NGÓ SEN TÔM THỊT,exact
+Gỏi đu đủ tôm thịt,GỎI ĐU ĐỦ TÔM THỊT,exact
+Cá rô phi chiên giòn chấm mắm xoài,CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI,exact
+Cá diêu hồng chiên sốt chanh dây,CÁ DIÊU HỒNG SỐT CHANH DÂY,fuzzy
+Cá diêu hồng nướng giấy bạc,CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC,exact
+Tép hồ Lắk ram mặn với khế,TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN,curated
+Chả cá hồ Lắk,CHẢ CÁ HỒ LĂK,exact
+Cá lăng kho tộ,CÁ LĂNG KHO TỘ,exact
+Cá bống kho tiêu,CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN,contains
+Tôm kho tộ,TÔM KHO TỘ,exact
+Cá lăng ướp nghệ nướng lá chuối,CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI,exact
+Heo nướng ống tre ăn kèm cơm lam,HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM,exact
+Sườn nướng BBQ cơm lam,SƯỜN NƯỚNG BBQ CƠM LAM,exact
+Bò nướng lá lốt,BÒ NƯỚNG LÁ LỐT,exact
+Gà nướng dùng kèm cơm lam,GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM,curated
+Gà hấp lá chanh,GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH,curated
+Gà ram gừng / chiên nước mắm,GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH,curated-variants
+Vịt quay hồ Lắk sốt tiêu đen,VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG,contains
+Thịt heo kho tộ,THỊT HEO KHO TỘ,exact
+Thịt heo đồng bào xào lăn,HEO XÀO LĂN,curated
+Rau muống / rau rừng / đậu rồng / đậu cove / lá bép xào tỏi,RAU MUỐNG XÀO TỎI + RAU RỪNG XÀO TỎI + ĐẬU RỒNG XÀO/ LUỘC + ĐẬU COVE XÀO TỎI + LÁ BÉP XÀO TỎI,curated-variants
+Rau muống / rau rừng / đậu rồng / đậu cove / lá bép luộc kho quẹt,RAU RỪNG LUỘC KHO QUẸT + ĐẬU RỒNG XÀO/ LUỘC + ĐẬU COVE XÀO/ LUỘC,curated-variants
+Lá bép xào cá hộp,LÁ BÉP XÀO CÁ HỘP,exact
+Ngó sen tươi hồ Lắk xào tỏi,NGÓ SEN TƯƠI HỒ LĂK XÀO,contains
+Rau củ xào thập cẩm,RAU CỦ XÀO THẬP CẨM,exact
+Đọt bí xào tỏi,ĐỌT BÍ XÀO,contains
+Cà tím nướng mỡ hành,CÀ TÍM NƯỚNG MỠ HÀNH,exact
+Trứng vịt hồ Lắk chiên hành / thịt băm,TRỨNG VỊT HỒ LAK CHIÊN + TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM,curated-variants
+Tempura củ quả,TEMPURA CỦ QUẢ,exact
+Tôm hồ Lắk chiên với khoai lang,BÁNH TÔM HỒ CHIÊN KHOAI LANG,curated
+Khoai lang / khoai tây chiên,KHOAI LANG CHIÊN + KHOAI TÂY CHIÊN,curated-variants
+Cơm trắng / cơm lam,CƠM TRẮNG + CƠM LAM,curated-variants
+Cơm chiên hải sản / gà / heo / bò hạt sen,CƠM CHIÊN HẢI SẢN HẠT SEN + CƠM CHIÊN GÀ XÉ HẠT SEN + CƠM CHIÊN THỊT HEO + CƠM CHIÊN THỊT BÒ,curated-variants
+Cơm chiên cá mặn / trứng tỏi / muối ớt,,absent
+"Cơm chiên rau củ, hạt sen",CƠM CHIÊN RAU CỦ HẠT SEN,fuzzy
+Miến xào bò / heo / gà / hải sản,MIẾN XÀO THỊT BÒ + MIẾN XÀO THỊT GÀ + MIẾN XÀO HẢI SẢN,curated-variants
+Mì xào bò / heo / gà / hải sản,MÌ XÀO BÒ + MÌ XÀO THỊT HEO + MÌ XÀO THỊT GÀ + MÌ XÀO HẢI SẢN,curated-variants
+Mì xào rau củ,MÌ XÀO RAU CỦ,exact
+Mì Ý sốt cà chua,MÌ Ý SỐT CÀ CHUA,exact
+Mì Ý sốt bò bằm,MÌ Ý SỐT BÒ BẰM,exact
+Bò lúc lắc khoai tây chiên,BÒ LÚC LẮC KHOAI TÂY CHIÊN,exact
+Club sandwich gà / heo,CLUB SANDWICH GÀ,curated-variants
+Canh cải thịt bằm,CANH CẢI THỊT BẰM,exact
+Canh cua / tôm tập tàng,CANH CUA TẬP TÀNG + CANH TÔM TẬP TÀNG,curated-variants
+Canh bí đao / khổ qua nhồi thịt,CANH BÍ ĐAO NẤU THỊT BẰM + CANH KHỔ QUA NHỒI THỊT,curated-variants
+Canh gà lá giang,CANH GÀ LÁ GIANG,exact
+Canh chua cá bông lau,CANH CHUA CÁ BÔNG LAU,exact
+Canh cà đắng cá cơm,CANH CÀ ĐẮNG CÁ CƠM,exact
+Canh sườn heo nấu đu đủ / măng,CANH SƯỜN HEO NẤU ĐU ĐỦ + CANH SƯỜN HEO NẤU MĂNG,curated-variants
+Canh chua chả cá thác lác / mướp đắng rừng,CANH CÁ THÁC LÁC MĂNG CHUA + CANH CHẢ CÁ NẤU MƯỚP ĐẮNG,curated-variants
+Canh chua cá lăng,CANH CHUA CÁ LĂNG,exact
+Lẩu cá lăng nấu măng chua,LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA,fuzzy
+Lẩu chả cá thác lác măng chua / mướp đắng,LẨU CÁ THÁC LÁC NẤU MƯỚP ĐẮNG + LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG,curated-variants
+Lẩu gà lá giang,LẨU GÀ LÁ GIANG/ LÁ É,contains
+Chè chuối,CHÈ CHUỐI,exact
+Chè hạt sen,CHÈ HẠT SEN LONG NHÃN,contains
+Sữa chua trái cây theo mùa,SỮA CHUA,curated
+Trái cây theo mùa,TRÁI CÂY THEO MÙA,exact
+Bánh chuối nướng dùng kèm kem vani,BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA,contains
+Kem sô cô la / vani,KEM SÔ CÔ LA + KEM VANI,curated-variants

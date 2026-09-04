@@ -1,0 +1,20 @@
+# Deploy config for the Lak Tented Camp guest ordering page.
+#
+#   npx wrangler deploy
+#
+# worker.js is GENERATED from index.html by build_worker.py -- edit the HTML,
+# rebuild, then deploy. ODOO_ORIGIN is a plain var, not a secret: it is only a
+# hostname, and it is useful to see it in the dashboard. The token that the
+# module checks (lak_guest_order.token) is NOT set here -- it belongs on the
+# Odoo side.
+
+name = "lak-guest-page"
+main = "worker.js"
+compatibility_date = "2026-09-04"
+workers_dev = true
+
+[vars]
+# Production. Under Attack mode came off the laktentedcamp.com zone on
+# 04 Sep 2026, so the Worker's subrequest is no longer challenged and this
+# hop is HTTPS end to end.
+ODOO_ORIGIN = "https://pms.laktentedcamp.com"
