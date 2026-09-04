@@ -32,6 +32,33 @@ different values and both are required.
 > treat 2xx as success or 4xx as auth-failure; read `success` in the body.
 > `_call()` in `models/aiosell_config.py` does exactly this.
 
+### Telling the three failures apart
+
+The two path values are checked in a fixed order, and each stage has its own
+message. Read the message, not the status — this is how you find out *which*
+value is wrong, and it is the only diagnostic the API gives you.
+
+| Message | HTTP | What it means |
+| --- | --- | --- |
+| `Partner is disabled!` | 400 | `partnerId` is unknown **or** switched off. Identical for a typo and a real disabled partner, and returned **before** the credentials are looked at — so it appears even with a perfectly good password. |
+| `Authentication Required!` | 400 | `partnerId` is good; the Basic credentials are not. |
+| `Access Denied - <hotelCode>` | 403 | Both are good, but that partner has no access to that property. |
+| a JSON body | 200 | Everything lines up. |
+
+Because the partner check runs first, a wrong `partnerId` masks every other
+problem. Resolve it before doubting anything else.
+
+**The public sandbox**, useful for a dry run before a property is onboarded:
+`partnerId=sample-pms`, `hotelCode=sandbox-pms` — a Bangalore property in
+**INR**, room codes `executive` (25) and `suite` (5), rate plans
+`{room}-{s,d}-{ep,cp}`. Ask Aiosell for the sandbox password; it is not
+written down here. Inventory, rates and restrictions pushed to it read back
+through `/data/{pms}` unchanged, which makes it a real round-trip test.
+
+Note the sandbox is INR while this PMS books in VND, so
+`action_import_mapping` will refuse it by design — that guard is doing its
+job, not failing. Exercise the sandbox through the mapping tables by hand.
+
 ### PMS → Aiosell
 
 | Purpose | Method | Path |
