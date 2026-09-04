@@ -169,6 +169,53 @@ class TestInbound(AiosellCase):
         self.assertEqual(updated, original, 'Same record, not a second one.')
         self.assertEqual(updated.checkout_date, self.today + timedelta(days=4))
 
+    def test_modify_without_contact_details_keeps_the_guest(self):
+        """A thin modify must not replace the guest with a nameless twin.
+
+        Aiosell's modify payloads routinely repeat only the guest's name; the
+        e-mail, phone and address came with the original book. Resolving that
+        from scratch created a second partner with no way to reach anyone and
+        pointed the reservation at it — seen against the live sandbox.
+        """
+        self._push()
+        guest = self._reservations().guest_id
+        self.assertEqual(guest.email, 'astrid@example.com')
+        # Counted, not asserted absolutely: this suite runs against a database
+        # that already holds guests of that name.
+        before = self.env['res.partner'].search_count(
+            [('name', '=', 'Astrid Haerens')])
+
+        self._push(action='modify',
+                   guest={'firstName': 'Astrid', 'lastName': 'Haerens'},
+                   checkout=str(self.today + timedelta(days=4)))
+
+        self.assertEqual(self._reservations().guest_id, guest)
+        self.assertEqual(
+            self.env['res.partner'].search_count(
+                [('name', '=', 'Astrid Haerens')]),
+            before, 'No duplicate partner was minted.')
+
+    def test_modify_with_a_new_email_moves_the_booking(self):
+        """A real change of guest still lands."""
+        self._push()
+        original = self._reservations().guest_id
+        self._push(action='modify',
+                   guest={'firstName': 'Bram', 'lastName': 'Peeters',
+                          'email': 'bram@example.com'})
+        moved = self._reservations().guest_id
+        self.assertNotEqual(moved, original)
+        self.assertEqual(moved.email, 'bram@example.com')
+
+    def test_modify_does_not_blank_the_channel_references(self):
+        """Fields the payload omits keep the value the book delivered."""
+        self._push()
+        self._push(action='modify',
+                   cmBookingId=None, channel=None,
+                   checkout=str(self.today + timedelta(days=4)))
+        reservation = self._reservations()
+        self.assertEqual(reservation.aiosell_cm_booking_id, 'AAABBBCCC')
+        self.assertEqual(reservation.aiosell_channel, 'Booking.com')
+
     def test_cancel_cancels(self):
         self._push()
         status, body = self._push(action='cancel')

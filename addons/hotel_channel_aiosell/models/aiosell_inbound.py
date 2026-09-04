@@ -132,7 +132,7 @@ class AiosellConfig(models.Model):
             return self._refuse(
                 log, existing, _('Booking %s carries no rooms.') % booking_id)
 
-        guest = self._find_or_create_guest(payload)
+        guest = self._find_or_create_guest(payload, existing)
         source = self._resolve_source(payload.get('channel'))
         prepaid = not payload.get('pah', False)
         agency = self._resolve_channel_agency(payload.get('channel'), prepaid)
@@ -198,7 +198,7 @@ class AiosellConfig(models.Model):
             return None
 
         occupancy = room.get('occupancy') or {}
-        return {
+        vals = {
             'guest_id': guest.id,
             'room_type_id': mapping.room_type_id.id,
             'checkin_date': checkin,
@@ -218,10 +218,16 @@ class AiosellConfig(models.Model):
             'ota_nightly_rate': self._nightly_from_prices(room, checkin, checkout),
             'aiosell_config_id': self.id,
             'aiosell_booking_id': str(payload.get('bookingId')),
-            'aiosell_cm_booking_id': payload.get('cmBookingId') or False,
-            'aiosell_channel': payload.get('channel') or False,
             'aiosell_payload': json.dumps(payload, indent=2)[:60000],
         }
+        # Only carried when the payload carries them: a modify that repeats
+        # just the stay dates would otherwise blank the channel manager's own
+        # reference and the channel name on an existing reservation.
+        if payload.get('cmBookingId'):
+            vals['aiosell_cm_booking_id'] = payload['cmBookingId']
+        if payload.get('channel'):
+            vals['aiosell_channel'] = payload['channel']
+        return vals
 
     def _nightly_from_prices(self, room, checkin, checkout):
         """Average nightly sell rate for a room.
@@ -356,12 +362,18 @@ class AiosellConfig(models.Model):
         # succeed; the message says what happened and the activity chases it.
         return {'success': True, 'message': message}
 
-    def _find_or_create_guest(self, payload):
+    def _find_or_create_guest(self, payload, existing=None):
         """Match the OTA guest to a partner, or make one.
 
         Matching is by e-mail only. OTAs hand out per-booking relay addresses,
         so this rarely merges anything, but a repeat guest booking direct with
         their real address will be recognised.
+
+        ``existing`` is the booking already held, if any. A modify often
+        repeats only the guest's name — the e-mail, phone and address came
+        with the original book — and resolving that from scratch would create
+        a second, contactless partner and hang the reservation on it, losing
+        the only way anyone has to reach the guest.
         """
         self.ensure_one()
         guest = payload.get('guest') or {}
@@ -383,6 +395,12 @@ class AiosellConfig(models.Model):
             match = Partner.search([('email', '=ilike', email)], limit=1)
             if match:
                 return match
+
+        # No e-mail to go on: keep whoever the booking already names rather
+        # than minting a nameless twin. A modify that does carry an e-mail
+        # falls through, so a genuine change of guest still lands.
+        if not email and existing is not None and existing.guest_id:
+            return existing.guest_id[:1]
 
         address = guest.get('address') or {}
         country = self.env['res.country']
