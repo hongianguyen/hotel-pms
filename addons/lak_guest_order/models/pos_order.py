@@ -41,16 +41,17 @@ class PosOrder(models.Model):
                              or line.product_id.display_name)
             for line in self.lines
         )
+        # Wording set by the owner, 04 Sep 2026. The order block below it is
+        # what reception needs to find the order on the till, so it stays.
         return _(
-            "New guest order %(ref)s\n\n"
+            "New order from in-house clients - Pls prepare food accordingly\n\n"
+            "Order:    %(ref)s\n"
             "Room:     %(room)s   (typed by the guest, NOT verified)\n"
             "Name:     %(name)s\n"
             "Dine in:  %(when)s\n"
             "Total:    %(total)s\n\n"
             "%(lines)s\n"
-            "%(note)s\n\n"
-            "It is sitting unpaid on the till. Open the POS, pick it from the "
-            "order list, fire the kitchen and take payment.",
+            "%(note)s",
             ref=self.tracking_number or self.pos_reference or self.name,
             room=self.guest_room or '-', name=self.guest_name or '-',
             when=self.guest_dine_at or '-',
@@ -90,7 +91,7 @@ class PosOrder(models.Model):
             if recipients:
                 try:
                     self.env['mail.mail'].sudo().create({
-                        'subject': _("Guest order - room %s",
+                        'subject': _("New order from in-house clients - room %s",
                                      order.guest_room or '?'),
                         'body_html': '<pre>%s</pre>' % escape(body),
                         'email_to': recipients,
