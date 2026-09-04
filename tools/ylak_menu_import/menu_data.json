@@ -1,0 +1,5134 @@
+{
+ "dishes": [
+  {
+   "name": "SOUP BÍ ĐỎ",
+   "name_vn": "SOUP BÍ ĐỎ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bí đỏ",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 6
+    }
+   ],
+   "standard_cost": 4752.0,
+   "sale_price": 95000,
+   "name_en": "Pumpkin soup",
+   "menu_section": "Khai vị",
+   "row": 5,
+   "cost_pct": 5.0
+  },
+  {
+   "name": "CHẢ GIÒ CHAY",
+   "name_vn": "CHẢ GIÒ CHAY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 9
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 10
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 11
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 23
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 24
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 25
+    }
+   ],
+   "standard_cost": 11998.8,
+   "sale_price": 105000,
+   "name_en": "Crispy spring rolls with tofu, taro, carrot",
+   "menu_section": "Chay",
+   "row": 8,
+   "cost_pct": 11.4
+  },
+  {
+   "name": "SALAD RAU XANH HỖN HỢP",
+   "name_vn": "SALAD RAU XANH HỖN HỢP",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Salad",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 14
+    },
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 15
+    },
+    {
+     "ingredient": "Dưa leo",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 16
+    },
+    {
+     "ingredient": "Salad",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 29
+    },
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 30
+    },
+    {
+     "ingredient": "Dưa leo",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 31
+    }
+   ],
+   "standard_cost": 22548.24,
+   "sale_price": 95000,
+   "name_en": "Mixed garden green salad",
+   "menu_section": "Khai vị",
+   "row": 13,
+   "cost_pct": 23.7
+  },
+  {
+   "name": "GỎI ĐU ĐỦ CHAY",
+   "name_vn": "GỎI ĐU ĐỦ CHAY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 19
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 20
+    },
+    {
+     "ingredient": "Đu đủ",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 21
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 22
+    },
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 35
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 36
+    },
+    {
+     "ingredient": "Đu đủ",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 37
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 38
+    }
+   ],
+   "standard_cost": 40249.44,
+   "sale_price": 135000,
+   "name_en": "Mixed green papaya salad",
+   "menu_section": "Chay",
+   "row": 18,
+   "cost_pct": 29.8
+  },
+  {
+   "name": "GỎI MÍT TRỘN",
+   "name_vn": "GỎI MÍT TRỘN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 2.0,
+     "row": 25
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 26
+    },
+    {
+     "ingredient": "MÍT NON",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 27
+    },
+    {
+     "ingredient": "Chanh trái bếp",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 28
+    },
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 2.0,
+     "row": 42
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 43
+    },
+    {
+     "ingredient": "MÍT NON",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 44
+    },
+    {
+     "ingredient": "Chanh trái bếp",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 45
+    }
+   ],
+   "standard_cost": 42768.0,
+   "sale_price": 135000,
+   "name_en": "Mixed green jackfruit salad",
+   "menu_section": "Chay",
+   "row": 24,
+   "cost_pct": 31.7
+  },
+  {
+   "name": "GỎI MĂNG RỪNG",
+   "name_vn": "GỎI MĂNG RỪNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 2.0,
+     "row": 31
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 32
+    },
+    {
+     "ingredient": "Măng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 33
+    },
+    {
+     "ingredient": "Chanh trái bếp",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 34
+    },
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 2.0,
+     "row": 49
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 50
+    },
+    {
+     "ingredient": "Măng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 51
+    },
+    {
+     "ingredient": "Chanh trái bếp",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 52
+    }
+   ],
+   "standard_cost": 72468.0,
+   "sale_price": 135000,
+   "name_en": "Mixed young bamboo salad",
+   "menu_section": "Chay",
+   "row": 30,
+   "cost_pct": 53.7
+  },
+  {
+   "name": "ĐẬU HỦ CHIÊN SẢ",
+   "name_vn": "ĐẬU HỦ CHIÊN SẢ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 2.0,
+     "row": 37
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 2.0,
+     "row": 56
+    }
+   ],
+   "standard_cost": 14256.0,
+   "sale_price": 75000,
+   "name_en": "Stuffed tofu with salt and lemongrass",
+   "menu_section": "Chay",
+   "row": 36,
+   "cost_pct": 19.0
+  },
+  {
+   "name": "ĐẬU HỦ NHỒI SỐT CÀ CHUA",
+   "name_vn": "ĐẬU HỦ NHỒI SỐT CÀ CHUA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 3.0,
+     "row": 40
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 3.0,
+     "row": 60
+    }
+   ],
+   "standard_cost": 21384.0,
+   "sale_price": 95000,
+   "name_en": "Tofu stuffed with mushroom, carrot",
+   "menu_section": "Chay",
+   "row": 39,
+   "cost_pct": 22.5
+  },
+  {
+   "name": "NẤM KHO TỘ",
+   "name_vn": "NẤM KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Nấm rơm",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 43
+    },
+    {
+     "ingredient": "Nấm rơm",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 64
+    }
+   ],
+   "standard_cost": 85536.0,
+   "sale_price": 155000,
+   "name_en": "Caramel mushroom in claypot",
+   "menu_section": "Chay",
+   "row": 42,
+   "cost_pct": 55.2
+  },
+  {
+   "name": "MÍT NON KHO RỊU",
+   "name_vn": "MÍT NON KHO RỊU",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "MÍT NON",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 46
+    },
+    {
+     "ingredient": "MÍT NON",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 68
+    }
+   ],
+   "standard_cost": 17820.0,
+   "sale_price": 135000,
+   "name_en": "Caramel young jackfruit in claypot",
+   "menu_section": "Chay",
+   "row": 45,
+   "cost_pct": 13.2
+  },
+  {
+   "name": "CÀ TÍM KHO TỘ",
+   "name_vn": "CÀ TÍM KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà tím",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 49
+    },
+    {
+     "ingredient": "Cà tím",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 72
+    }
+   ],
+   "standard_cost": 23760.0,
+   "sale_price": 95000,
+   "name_en": "Caramelized eggplant in claypot",
+   "menu_section": "Chay",
+   "row": 48,
+   "cost_pct": 25.0
+  },
+  {
+   "name": "NGŨ QUẢ LUỘC + KHO QUẸT CHAY",
+   "name_vn": "NGŨ QUẢ LUỘC + KHO QUẸT CHAY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu bắp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 52
+    },
+    {
+     "ingredient": "Bông cải xanh",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 53
+    },
+    {
+     "ingredient": "Bông cải trắng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 54
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 55
+    },
+    {
+     "ingredient": "Khoai tây",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 56
+    },
+    {
+     "ingredient": "Đậu bắp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 76
+    },
+    {
+     "ingredient": "Bông cải xanh",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 77
+    },
+    {
+     "ingredient": "Bông cải trắng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 78
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 79
+    },
+    {
+     "ingredient": "Khoai tây",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 80
+    }
+   ],
+   "standard_cost": 78883.2,
+   "sale_price": 135000,
+   "name_en": "Mixed five fruit with vegetarian sauce",
+   "menu_section": "Chay",
+   "row": 51,
+   "cost_pct": 58.4
+  },
+  {
+   "name": "CÀ TÍM XÀO LÁ LỐT",
+   "name_vn": "CÀ TÍM XÀO LÁ LỐT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà tím",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 59
+    },
+    {
+     "ingredient": "Cà tím",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 84
+    }
+   ],
+   "standard_cost": 23760.0,
+   "sale_price": 95000,
+   "name_en": "Stir fried eggplant with Lot leaf",
+   "menu_section": "Chay",
+   "row": 58,
+   "cost_pct": 25.0
+  },
+  {
+   "name": "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ",
+   "name_vn": "ĐẬU KHUÔN XÀO GIÁ & RAU CỦ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 2.0,
+     "row": 62
+    },
+    {
+     "ingredient": "Bông cải xanh",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 63
+    },
+    {
+     "ingredient": "Bông cải trắng",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 64
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 65
+    },
+    {
+     "ingredient": "Giá",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 66
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 2.0,
+     "row": 88
+    },
+    {
+     "ingredient": "Bông cải xanh",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 89
+    },
+    {
+     "ingredient": "Bông cải trắng",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 90
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 91
+    },
+    {
+     "ingredient": "Giá",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 92
+    }
+   ],
+   "standard_cost": 53697.6,
+   "sale_price": 95000,
+   "name_en": "Stir fried tofu with bean sprouts",
+   "menu_section": "Chay",
+   "row": 61,
+   "cost_pct": 56.5
+  },
+  {
+   "name": "CANH CHUA CHAY",
+   "name_vn": "CANH CHUA CHAY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 69
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 70
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 96
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 97
+    }
+   ],
+   "standard_cost": 36828.0,
+   "sale_price": 135000,
+   "name_en": "Tofu, tomato, pineapple, okra, bean sprouts",
+   "menu_section": "Chay",
+   "row": 68,
+   "cost_pct": 27.3
+  },
+  {
+   "name": "CANH BÍ ĐỎ ĐẬU PHỘNG",
+   "name_vn": "CANH BÍ ĐỎ ĐẬU PHỘNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bí đỏ",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 73
+    },
+    {
+     "ingredient": "Đậu phộng",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 74
+    },
+    {
+     "ingredient": "Bí đỏ",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 101
+    },
+    {
+     "ingredient": "Đậu phộng",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 102
+    }
+   ],
+   "standard_cost": 32968.76,
+   "sale_price": 135000,
+   "name_en": "Pumpkin soup with peanut",
+   "menu_section": "Chay",
+   "row": 72,
+   "cost_pct": 24.4
+  },
+  {
+   "name": "CANH LAGIM",
+   "name_vn": "CANH LAGIM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bí đao",
+     "unit": "kg",
+     "qty": 0.15,
+     "row": 77
+    },
+    {
+     "ingredient": "Khoai tây",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 78
+    },
+    {
+     "ingredient": "Bí đỏ",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 79
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 80
+    },
+    {
+     "ingredient": "Bí đao",
+     "unit": "kg",
+     "qty": 0.15,
+     "row": 106
+    },
+    {
+     "ingredient": "Khoai tây",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 107
+    },
+    {
+     "ingredient": "Bí đỏ",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 108
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 109
+    }
+   ],
+   "standard_cost": 34927.2,
+   "sale_price": 135000,
+   "name_en": "Pumpkin, carrot, potato, squash",
+   "menu_section": "Chay",
+   "row": 76,
+   "cost_pct": 25.9
+  },
+  {
+   "name": "LẨU CHAY THẬP CẨM",
+   "name_vn": "LẨU CHAY THẬP CẨM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 3.0,
+     "row": 83
+    },
+    {
+     "ingredient": "Nấm rơm",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 84
+    },
+    {
+     "ingredient": "Nấm bào ngư",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 85
+    },
+    {
+     "ingredient": "Nấm đùi gà",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 86
+    },
+    {
+     "ingredient": "Mồng tơi",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 87
+    },
+    {
+     "ingredient": "Khoai sọ",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 88
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 89
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 90
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 3.0,
+     "row": 113
+    },
+    {
+     "ingredient": "Nấm rơm",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 114
+    },
+    {
+     "ingredient": "Nấm bào ngư",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 115
+    },
+    {
+     "ingredient": "Nấm đùi gà",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 116
+    },
+    {
+     "ingredient": "Mồng tơi",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 117
+    },
+    {
+     "ingredient": "Khoai sọ",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 118
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 119
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 120
+    }
+   ],
+   "standard_cost": 260983.8,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 82
+  },
+  {
+   "name": "CƠM TRẮNG",
+   "name_vn": "CƠM TRẮNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 93
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 124
+    }
+   ],
+   "standard_cost": 9408.96,
+   "sale_price": 30000,
+   "name_en": "Steamed rice / sticky rice in bamboo",
+   "menu_section": "Cơm & Mì",
+   "row": 92,
+   "cost_pct": 31.4
+  },
+  {
+   "name": "KHAI VỊ Y LAK",
+   "name_vn": "KHAI VỊ Y LAK",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chả cá",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 96
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 97
+    },
+    {
+     "ingredient": "Thịt nạc vai",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 98
+    },
+    {
+     "ingredient": "Cà đắng",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 99
+    },
+    {
+     "ingredient": "Cá cơm khô",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 100
+    },
+    {
+     "ingredient": "Thịt bò xay",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 101
+    },
+    {
+     "ingredient": "Chả cá",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 129
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 130
+    },
+    {
+     "ingredient": "Thịt nạc vai",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 131
+    },
+    {
+     "ingredient": "Cà đắng",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 132
+    },
+    {
+     "ingredient": "Cá cơm khô",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 133
+    },
+    {
+     "ingredient": "Thịt bò xay",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 134
+    }
+   ],
+   "standard_cost": 189945.91,
+   "sale_price": 185000,
+   "name_en": "Y Lak appetizer platter",
+   "menu_section": "Khai vị",
+   "row": 95,
+   "cost_pct": 102.7
+  },
+  {
+   "name": "GỎI CUỐN TÔM THỊT",
+   "name_vn": "GỎI CUỐN TÔM THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 104
+    },
+    {
+     "ingredient": "Salad",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 105
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 106
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 138
+    },
+    {
+     "ingredient": "Salad",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 139
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 140
+    }
+   ],
+   "standard_cost": 61007.76,
+   "sale_price": 135000,
+   "name_en": "Lak's garden summer rolls",
+   "menu_section": "Khai vị",
+   "row": 103,
+   "cost_pct": 45.2
+  },
+  {
+   "name": "CHẢ GIÒ TÔM THỊT",
+   "name_vn": "CHẢ GIÒ TÔM THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt nạc vai",
+     "unit": "kg",
+     "qty": 0.03,
+     "row": 109
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 110
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 111
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 112
+    },
+    {
+     "ingredient": "Thịt nạc vai",
+     "unit": "kg",
+     "qty": 0.03,
+     "row": 144
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 145
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 146
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 147
+    }
+   ],
+   "standard_cost": 35956.34,
+   "sale_price": 135000,
+   "name_en": "Crispy spring rolls with pork & shrimp",
+   "menu_section": "Khai vị",
+   "row": 108,
+   "cost_pct": 26.6
+  },
+  {
+   "name": "BÒ NƯỚNG LÁ LỐT",
+   "name_vn": "BÒ NƯỚNG LÁ LỐT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt bò xay",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 115
+    },
+    {
+     "ingredient": "Thịt bò xay",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 151
+    }
+   ],
+   "standard_cost": 98522.6,
+   "sale_price": 165000,
+   "name_en": "Grilled beef wrapped in wild betel leaf",
+   "menu_section": "Cá & Thịt",
+   "row": 114,
+   "cost_pct": 59.7
+  },
+  {
+   "name": "GÀ NƯỚNG LÁ CHANH",
+   "name_vn": "GÀ NƯỚNG LÁ CHANH",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "kg",
+     "qty": 0.7,
+     "row": 118
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "kg",
+     "qty": 0.7,
+     "row": 155
+    }
+   ],
+   "standard_cost": 191268.0,
+   "sale_price": 275000,
+   "name_en": "Steamed chicken with lemon leaf (half)",
+   "menu_section": "Cá & Thịt",
+   "row": 117,
+   "cost_pct": 69.6
+  },
+  {
+   "name": "CHẢ CÁ HỒ LĂK",
+   "name_vn": "CHẢ CÁ HỒ LĂK",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chả cá",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 121
+    },
+    {
+     "ingredient": "Chả cá",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 289
+    },
+    {
+     "ingredient": "Chả cá",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 159
+    }
+   ],
+   "standard_cost": 178200.0,
+   "sale_price": 195000,
+   "name_en": "Deep-fried Lak lake fishcake",
+   "menu_section": "Cá & Thịt",
+   "row": 120,
+   "cost_pct": 91.4
+  },
+  {
+   "name": "GỎI  BÒ BÓP THẤU",
+   "name_vn": "GỎI  BÒ BÓP THẤU",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt bò thăn",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 124
+    },
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "kg",
+     "qty": 0.3,
+     "row": 125
+    },
+    {
+     "ingredient": "Thịt bò thăn",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 163
+    },
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "kg",
+     "qty": 0.3,
+     "row": 164
+    }
+   ],
+   "standard_cost": 137926.8,
+   "sale_price": 165000,
+   "name_en": "Beef salad with Vietnamese herbs",
+   "menu_section": "Khai vị",
+   "row": 123,
+   "cost_pct": 83.6
+  },
+  {
+   "name": "GỎI GÀ HOA CHUỐI",
+   "name_vn": "GỎI GÀ HOA CHUỐI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 128
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 129
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 130
+    },
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 131
+    },
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 168
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 169
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 170
+    },
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 171
+    }
+   ],
+   "standard_cost": 86343.84,
+   "sale_price": 165000,
+   "name_en": "Banana flower salad with chicken",
+   "menu_section": "Khai vị",
+   "row": 127,
+   "cost_pct": 52.3
+  },
+  {
+   "name": "GỎI ĐU ĐỦ TÔM THỊT",
+   "name_vn": "GỎI ĐU ĐỦ TÔM THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 134
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 135
+    },
+    {
+     "ingredient": "Đu đủ",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 136
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 137
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 138
+    },
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 175
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 176
+    },
+    {
+     "ingredient": "Đu đủ",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 177
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 178
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 179
+    }
+   ],
+   "standard_cost": 103989.6,
+   "sale_price": 165000,
+   "name_en": "Papaya salad with pork & shrimp",
+   "menu_section": "Khai vị",
+   "row": 133,
+   "cost_pct": 63.0
+  },
+  {
+   "name": "GỎI CÀ ĐẮNG CÁ CƠM",
+   "name_vn": "GỎI CÀ ĐẮNG CÁ CƠM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá cơm khô",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 141
+    },
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 1.0,
+     "row": 142
+    },
+    {
+     "ingredient": "Cà đắng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 143
+    },
+    {
+     "ingredient": "Cá cơm khô",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 183
+    },
+    {
+     "ingredient": "Bánh tráng mè",
+     "unit": "cái",
+     "qty": 1.0,
+     "row": 184
+    },
+    {
+     "ingredient": "Cà đắng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 185
+    }
+   ],
+   "standard_cost": 46332.0,
+   "sale_price": 135000,
+   "name_en": "Wild eggplant salad with dry anchovy",
+   "menu_section": "Khai vị",
+   "row": 140,
+   "cost_pct": 34.3
+  },
+  {
+   "name": "GỎI RAU MUỐNG TÉP RAM HỒ LĂK",
+   "name_vn": "GỎI RAU MUỐNG TÉP RAM HỒ LĂK",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Tép",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 146
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 1.0,
+     "row": 147
+    },
+    {
+     "ingredient": "Tép",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 189
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 1.0,
+     "row": 190
+    }
+   ],
+   "standard_cost": 99792.0,
+   "sale_price": 165000,
+   "name_en": "Morning glory salad with Lak lake shrimp",
+   "menu_section": "Khai vị",
+   "row": 145,
+   "cost_pct": 60.5
+  },
+  {
+   "name": "GỎI MĂNG RỪNG TÔM THỊT",
+   "name_vn": "GỎI MĂNG RỪNG TÔM THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Măng rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 150
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 151
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 152
+    },
+    {
+     "ingredient": "Măng rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 194
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 195
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 196
+    }
+   ],
+   "standard_cost": 128985.12,
+   "sale_price": 165000,
+   "name_en": "Young bamboo salad with pork & shrimp",
+   "menu_section": "Khai vị",
+   "row": 149,
+   "cost_pct": 78.2
+  },
+  {
+   "name": "CANH TÔM TẬP TÀNG",
+   "name_vn": "CANH TÔM TẬP TÀNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Rau tập tàng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 155
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 156
+    },
+    {
+     "ingredient": "Rau tập tàng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 201
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 202
+    }
+   ],
+   "standard_cost": 56311.2,
+   "sale_price": 135000,
+   "name_en": "Mixed garden vegetable soup with shrimp",
+   "menu_section": "Canh",
+   "row": 154,
+   "cost_pct": 41.7
+  },
+  {
+   "name": "CANH CUA TẬP TÀNG",
+   "name_vn": "CANH CUA TẬP TÀNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Rau tập tàng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 159
+    },
+    {
+     "ingredient": "Cua xay",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 160
+    },
+    {
+     "ingredient": "Rau tập tàng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 206
+    },
+    {
+     "ingredient": "Cua xay",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 207
+    }
+   ],
+   "standard_cost": 50371.2,
+   "sale_price": 135000,
+   "name_en": "Mixed garden vegetable soup with field crab",
+   "menu_section": "Canh",
+   "row": 158,
+   "cost_pct": 37.3
+  },
+  {
+   "name": "CANH SƯỜN HEO & ĐU ĐỦ",
+   "name_vn": "CANH SƯỜN HEO & ĐU ĐỦ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Sườn heo",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 163
+    },
+    {
+     "ingredient": "Sườn heo",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 211
+    }
+   ],
+   "standard_cost": 102054.7,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 162
+  },
+  {
+   "name": "CANH SƯỜN HEO & MĂNG RỪNG",
+   "name_vn": "CANH SƯỜN HEO & MĂNG RỪNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Sườn heo",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 166
+    },
+    {
+     "ingredient": "Măng rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 167
+    },
+    {
+     "ingredient": "Sườn heo",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 215
+    },
+    {
+     "ingredient": "Măng rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 216
+    }
+   ],
+   "standard_cost": 88341.88,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 165
+  },
+  {
+   "name": "CANH BÍ ĐAO THỊT BẰM",
+   "name_vn": "CANH BÍ ĐAO THỊT BẰM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bí đao",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 170
+    },
+    {
+     "ingredient": "Thịt heo xay",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 171
+    },
+    {
+     "ingredient": "Bí đao",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 220
+    },
+    {
+     "ingredient": "Thịt heo xay",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 221
+    }
+   ],
+   "standard_cost": 89575.2,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 169
+  },
+  {
+   "name": "CANH KHỔ QUA NHỒI THỊT",
+   "name_vn": "CANH KHỔ QUA NHỒI THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "khổ qua",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 174
+    },
+    {
+     "ingredient": "Thịt heo xay",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 175
+    },
+    {
+     "ingredient": "khổ qua",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 225
+    },
+    {
+     "ingredient": "Thịt heo xay",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 226
+    }
+   ],
+   "standard_cost": 72824.4,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 173
+  },
+  {
+   "name": "CANH CẢI THỊT BẰM",
+   "name_vn": "CANH CẢI THỊT BẰM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 178
+    },
+    {
+     "ingredient": "Thit bằm",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 179
+    }
+   ],
+   "standard_cost": 18176.4,
+   "sale_price": 135000,
+   "name_en": "Mustard leaf soup with ground pork",
+   "menu_section": "Canh",
+   "row": 177,
+   "cost_pct": 13.5
+  },
+  {
+   "name": "CANH GÀ LÁ GIANG",
+   "name_vn": "CANH GÀ LÁ GIANG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.35,
+     "row": 182
+    }
+   ],
+   "standard_cost": 47817.0,
+   "sale_price": 185000,
+   "name_en": "Chicken soup with sour-sop creeper leaf",
+   "menu_section": "Canh",
+   "row": 181,
+   "cost_pct": 25.8
+  },
+  {
+   "name": "CANH CHUA CÁ LĂNG",
+   "name_vn": "CANH CHUA CÁ LĂNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 185
+    },
+    {
+     "ingredient": "Cá Lăng",
+     "unit": "Kg",
+     "qty": 0.4,
+     "row": 186
+    }
+   ],
+   "standard_cost": 104544.0,
+   "sale_price": 195000,
+   "name_en": "Sweet and sour Hemibagrus catfish soup",
+   "menu_section": "Canh",
+   "row": 184,
+   "cost_pct": 53.6
+  },
+  {
+   "name": "CANH CHUA CÁ BÔNG LAU",
+   "name_vn": "CANH CHUA CÁ BÔNG LAU",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 189
+    },
+    {
+     "ingredient": "Cá Bông Lau",
+     "unit": "Kg",
+     "qty": 0.4,
+     "row": 190
+    }
+   ],
+   "standard_cost": 34554.96,
+   "sale_price": 165000,
+   "name_en": "Sweet and sour catfish soup",
+   "menu_section": "Canh",
+   "row": 188,
+   "cost_pct": 20.9
+  },
+  {
+   "name": "CANH CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+   "name_vn": "CANH CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chả cá",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 193
+    },
+    {
+     "ingredient": "Mướp đắng",
+     "unit": "kg",
+     "qty": 0.4,
+     "row": 194
+    }
+   ],
+   "standard_cost": 41580.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 192
+  },
+  {
+   "name": "CANH CÁ THÁC LÁC MĂNG CHUA",
+   "name_vn": "CANH CÁ THÁC LÁC MĂNG CHUA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chả cá",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 197
+    },
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 198
+    }
+   ],
+   "standard_cost": 53460.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 196
+  },
+  {
+   "name": "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA",
+   "name_vn": "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 201
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 202
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 0.2,
+     "row": 203
+    },
+    {
+     "ingredient": "Rau rừng",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 204
+    },
+    {
+     "ingredient": "Cải thảo",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 205
+    },
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 206
+    },
+    {
+     "ingredient": "Cá Lăng",
+     "unit": "Kg",
+     "qty": 0.4,
+     "row": 207
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 208
+    },
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 209
+    }
+   ],
+   "standard_cost": 156449.7,
+   "sale_price": 385000,
+   "name_en": "Sour hotpot with catfish and bamboo shoot",
+   "menu_section": "Lẩu",
+   "row": 200,
+   "cost_pct": 40.6
+  },
+  {
+   "name": "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+   "name_vn": "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 212
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 213
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 0.2,
+     "row": 214
+    },
+    {
+     "ingredient": "Rau rừng",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 215
+    },
+    {
+     "ingredient": "Cải thảo",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 216
+    },
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 217
+    },
+    {
+     "ingredient": "Chả cá",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 218
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 219
+    },
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 220
+    }
+   ],
+   "standard_cost": 145757.7,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 211
+  },
+  {
+   "name": "LẨU GÀ LÁ GIANG/ LÁ É",
+   "name_vn": "LẨU GÀ LÁ GIANG/ LÁ É",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 223
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 224
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 0.2,
+     "row": 225
+    },
+    {
+     "ingredient": "Rau rừng",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 226
+    },
+    {
+     "ingredient": "Cải thảo",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 227
+    },
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 228
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.7,
+     "row": 229
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 230
+    },
+    {
+     "ingredient": "Măng chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 231
+    }
+   ],
+   "standard_cost": 152291.7,
+   "sale_price": 385000,
+   "name_en": "Braised chicken and sour-sop creeper leaf hotpot",
+   "menu_section": "Lẩu",
+   "row": 222,
+   "cost_pct": 39.6
+  },
+  {
+   "name": "VỊT NẤU CHAO",
+   "name_vn": "VỊT NẤU CHAO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Vịt nguyên con",
+     "unit": "con",
+     "qty": 0.5,
+     "row": 234
+    },
+    {
+     "ingredient": "Chao hủ",
+     "unit": "hủ",
+     "qty": 0.5,
+     "row": 235
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 236
+    },
+    {
+     "ingredient": "Cải thảo",
+     "unit": "kg",
+     "qty": 0.3,
+     "row": 237
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0,
+     "row": 238
+    }
+   ],
+   "standard_cost": 137825.05,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 233
+  },
+  {
+   "name": "CANH CÀ ĐẮNG CÁ CƠM",
+   "name_vn": "CANH CÀ ĐẮNG CÁ CƠM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá cơm",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 241
+    },
+    {
+     "ingredient": "Cà đắng",
+     "unit": "kg",
+     "qty": 0.3,
+     "row": 242
+    }
+   ],
+   "standard_cost": 21265.2,
+   "sale_price": 165000,
+   "name_en": "Wild eggplant soup with anchovies",
+   "menu_section": "Canh",
+   "row": 240,
+   "cost_pct": 12.9
+  },
+  {
+   "name": "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN",
+   "name_vn": "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá bống",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 245
+    }
+   ],
+   "standard_cost": 42768.0,
+   "sale_price": 195000,
+   "name_en": "Caramelized gobies with black pepper",
+   "menu_section": "Cá & Thịt",
+   "row": 244,
+   "cost_pct": 21.9
+  },
+  {
+   "name": "THỊT HEO KHO TỘ",
+   "name_vn": "THỊT HEO KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt nạc heo",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 248
+    }
+   ],
+   "standard_cost": 45537.69,
+   "sale_price": 165000,
+   "name_en": "Caramelized pork belly",
+   "menu_section": "Cá & Thịt",
+   "row": 247,
+   "cost_pct": 27.6
+  },
+  {
+   "name": "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN",
+   "name_vn": "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Tép",
+     "unit": "kg",
+     "qty": 0.3,
+     "row": 251
+    }
+   ],
+   "standard_cost": 64152.0,
+   "sale_price": 185000,
+   "name_en": "Stir fried Lak lake shrimp with star fruit",
+   "menu_section": "Cá & Thịt",
+   "row": 250,
+   "cost_pct": 34.7
+  },
+  {
+   "name": "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM",
+   "name_vn": "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Ống cơm lam",
+     "unit": "Ống",
+     "qty": 1.0,
+     "row": 254
+    },
+    {
+     "ingredient": "Gạo nếp",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 255
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.7,
+     "row": 256
+    }
+   ],
+   "standard_cost": 113168.88,
+   "sale_price": 275000,
+   "name_en": "M'Nong charcoal chicken with sticky rice (half)",
+   "menu_section": "Cá & Thịt",
+   "row": 253,
+   "cost_pct": 41.2
+  },
+  {
+   "name": "CÁ DIÊU HỒNG SỐT CHANH DÂY",
+   "name_vn": "CÁ DIÊU HỒNG SỐT CHANH DÂY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá Diêu hồng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 259
+    },
+    {
+     "ingredient": "Chanh dây",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 260
+    }
+   ],
+   "standard_cost": 47520.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 258
+  },
+  {
+   "name": "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC",
+   "name_vn": "CÁ DIÊU HỒNG NƯỚNG GIẤY BẠC",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá Diêu hồng",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 263
+    }
+   ],
+   "standard_cost": 45144.0,
+   "sale_price": 165000,
+   "name_en": "Red tilapia baked in foil",
+   "menu_section": "Cá & Thịt",
+   "row": 262,
+   "cost_pct": 27.4
+  },
+  {
+   "name": "TÔM KHO TỘ",
+   "name_vn": "TÔM KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 266
+    }
+   ],
+   "standard_cost": 54945.0,
+   "sale_price": 195000,
+   "name_en": "Caramelized shrimps with black pepper",
+   "menu_section": "Cá & Thịt",
+   "row": 265,
+   "cost_pct": 28.2
+  },
+  {
+   "name": "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI",
+   "name_vn": "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá rô phi",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 269
+    },
+    {
+     "ingredient": "Xoài",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 270
+    }
+   ],
+   "standard_cost": 41342.4,
+   "sale_price": 165000,
+   "name_en": "Crispy tilapia with green mango",
+   "menu_section": "Cá & Thịt",
+   "row": 268,
+   "cost_pct": 25.1
+  },
+  {
+   "name": "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM",
+   "name_vn": "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Ống tre",
+     "unit": "Ống",
+     "qty": 2.0,
+     "row": 273
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 274
+    },
+    {
+     "ingredient": "Gạo nếp",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 275
+    }
+   ],
+   "standard_cost": 79722.72,
+   "sale_price": 195000,
+   "name_en": "Charcoal pork in bamboo with sticky rice",
+   "menu_section": "Cá & Thịt",
+   "row": 272,
+   "cost_pct": 40.9
+  },
+  {
+   "name": "SƯỜN NƯỚNG BBQ CƠM LAM",
+   "name_vn": "SƯỜN NƯỚNG BBQ CƠM LAM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Ống cơm lam",
+     "unit": "Ống",
+     "qty": 1.0,
+     "row": 278
+    },
+    {
+     "ingredient": "Gạo nếp",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 279
+    },
+    {
+     "ingredient": "Sườn que",
+     "unit": "Kg",
+     "qty": 0.4,
+     "row": 280
+    }
+   ],
+   "standard_cost": 58796.76,
+   "sale_price": 215000,
+   "name_en": "Pork ribs with bbq sauce and sticky rice",
+   "menu_section": "Cá & Thịt",
+   "row": 277,
+   "cost_pct": 27.3
+  },
+  {
+   "name": "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI",
+   "name_vn": "CÁ LĂNG ƯỚP NGHỆ NƯỚNG LÁ CHUỐI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá Lăng",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 283
+    }
+   ],
+   "standard_cost": 124740.0,
+   "sale_price": 215000,
+   "name_en": "Hemibagrus catfish in banana leaf",
+   "menu_section": "Cá & Thịt",
+   "row": 282,
+   "cost_pct": 58.0
+  },
+  {
+   "name": "CÁ LĂNG KHO TỘ",
+   "name_vn": "CÁ LĂNG KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá Lăng",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 286
+    }
+   ],
+   "standard_cost": 124740.0,
+   "sale_price": 215000,
+   "name_en": "Caramelized Hemibagrus catfish",
+   "menu_section": "Cá & Thịt",
+   "row": 285,
+   "cost_pct": 58.0
+  },
+  {
+   "name": "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG",
+   "name_vn": "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Vịt nguyên con",
+     "unit": "Con",
+     "qty": 1.0,
+     "row": 292
+    },
+    {
+     "ingredient": "Gạo nếp",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 293
+    },
+    {
+     "ingredient": "Ống lồ ô",
+     "unit": "Ống",
+     "qty": 1.0,
+     "row": 294
+    }
+   ],
+   "standard_cost": 186000.32,
+   "sale_price": 395000,
+   "name_en": "Roast duck with black pepper and honey",
+   "menu_section": "Cá & Thịt",
+   "row": 291,
+   "cost_pct": 47.1
+  },
+  {
+   "name": "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH",
+   "name_vn": "GÀ CUỘN SẢ NƯỚNG SỐT CAY/ GÀ RAM GỪNG/ GÀ CHIÊN NƯỚC MẮM/ HẤP LÁ CHANH",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.7,
+     "row": 297
+    }
+   ],
+   "standard_cost": 95634.0,
+   "sale_price": 275000,
+   "name_en": "Chicken with ginger / fried with fish sauce (half)",
+   "menu_section": "Cá & Thịt",
+   "row": 296,
+   "cost_pct": 34.8
+  },
+  {
+   "name": "HEO XÀO LĂN",
+   "name_vn": "HEO XÀO LĂN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt heo ba chỉ",
+     "unit": "Kg",
+     "qty": 0.35,
+     "row": 300
+    }
+   ],
+   "standard_cost": 65640.96,
+   "sale_price": 185000,
+   "name_en": "Stir fried local pork with lemongrass",
+   "menu_section": "Cá & Thịt",
+   "row": 299,
+   "cost_pct": 35.5
+  },
+  {
+   "name": "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+   "name_vn": "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+     "unit": "quả",
+     "qty": 3.0,
+     "row": 303
+    },
+    {
+     "ingredient": "Thịt heo xay",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 304
+    }
+   ],
+   "standard_cost": 15384.6,
+   "sale_price": 45000.0,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 302
+  },
+  {
+   "name": "RAU CỦ XÀO THẬP CẨM",
+   "name_vn": "RAU CỦ XÀO THẬP CẨM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 307
+    },
+    {
+     "ingredient": "Sú lơ trắng",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 308
+    },
+    {
+     "ingredient": "Sú lơ xanh",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 309
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 310
+    }
+   ],
+   "standard_cost": 32076.0,
+   "sale_price": 95000,
+   "name_en": "Sauteed mixed vegetable",
+   "menu_section": "Rau",
+   "row": 306,
+   "cost_pct": 33.8
+  },
+  {
+   "name": "RAU RỪNG XÀO TỎI",
+   "name_vn": "RAU RỪNG XÀO TỎI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Rau rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 313
+    }
+   ],
+   "standard_cost": 24948.0,
+   "sale_price": 95000,
+   "name_en": "Sauteed wild vegetable with garlic",
+   "menu_section": "Rau",
+   "row": 312,
+   "cost_pct": 26.3
+  },
+  {
+   "name": "RAU RỪNG LUỘC KHO QUẸT",
+   "name_vn": "RAU RỪNG LUỘC KHO QUẸT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Tôm khô",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 316
+    },
+    {
+     "ingredient": "Rau rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 317
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 318
+    }
+   ],
+   "standard_cost": 33450.91,
+   "sale_price": 115000,
+   "name_en": "Steamed wild vegetable with caramelized sauce",
+   "menu_section": "Rau",
+   "row": 315,
+   "cost_pct": 29.1
+  },
+  {
+   "name": "RAU MUỐNG XÀO TỎI",
+   "name_vn": "RAU MUỐNG XÀO TỎI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 1.0,
+     "row": 321
+    }
+   ],
+   "standard_cost": 17820.0,
+   "sale_price": 95000,
+   "name_en": "Sauteed morning glory with garlic",
+   "menu_section": "Rau",
+   "row": 320,
+   "cost_pct": 18.8
+  },
+  {
+   "name": "ĐẬU COVE XÀO TỎI",
+   "name_vn": "ĐẬU COVE XÀO TỎI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu cove",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 324
+    }
+   ],
+   "standard_cost": 17820.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 323
+  },
+  {
+   "name": "ĐẬU RỒNG XÀO TỎI",
+   "name_vn": "ĐẬU RỒNG XÀO TỎI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu rồng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 327
+    }
+   ],
+   "standard_cost": 14850.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 326
+  },
+  {
+   "name": "LÁ BÉP XÀO TỎI",
+   "name_vn": "LÁ BÉP XÀO TỎI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Lá Bép",
+     "unit": "Kg",
+     "qty": 0.35,
+     "row": 330
+    }
+   ],
+   "standard_cost": 45738.0,
+   "sale_price": 95000,
+   "name_en": "Sauteed bep leaf with garlic",
+   "menu_section": "Rau",
+   "row": 329,
+   "cost_pct": 48.1
+  },
+  {
+   "name": "LÁ BÉP XÀO CÁ HỘP",
+   "name_vn": "LÁ BÉP XÀO CÁ HỘP",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Lá Bép",
+     "unit": "Kg",
+     "qty": 0.35,
+     "row": 333
+    },
+    {
+     "ingredient": "Cá hộp",
+     "unit": "hộp",
+     "qty": 1.0,
+     "row": 334
+    }
+   ],
+   "standard_cost": 67834.8,
+   "sale_price": 115000,
+   "name_en": "Sauteed bep leaves with canned fish",
+   "menu_section": "Rau",
+   "row": 332,
+   "cost_pct": 59.0
+  },
+  {
+   "name": "RAU CỦ LUỘC KHO QUẸT",
+   "name_vn": "RAU CỦ LUỘC KHO QUẸT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu bắp",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 337
+    },
+    {
+     "ingredient": "Bầu",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 338
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 339
+    },
+    {
+     "ingredient": "Tôm khô",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 340
+    },
+    {
+     "ingredient": "Khoai tây",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 341
+    },
+    {
+     "ingredient": "Bông cải xanh",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 342
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 343
+    }
+   ],
+   "standard_cost": 47231.71,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 336
+  },
+  {
+   "name": "NGÓ SEN TƯƠI HỒ LAK XÀO",
+   "name_vn": "NGÓ SEN TƯƠI HỒ LAK XÀO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Ngó sen",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 346
+    }
+   ],
+   "standard_cost": 20790.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 345
+  },
+  {
+   "name": "ĐỌT BÍ XÀO",
+   "name_vn": "ĐỌT BÍ XÀO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đọt bí",
+     "unit": "Kg",
+     "qty": 1.0,
+     "row": 349
+    }
+   ],
+   "standard_cost": 53460.0,
+   "sale_price": 95000,
+   "name_en": "Sauteed pumpkin shoots with garlic",
+   "menu_section": "Rau",
+   "row": 348,
+   "cost_pct": 56.3
+  },
+  {
+   "name": "MĂNG  XÀO LÁ QUẾ",
+   "name_vn": "MĂNG  XÀO LÁ QUẾ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Măng rừng",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 352
+    }
+   ],
+   "standard_cost": 23760.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 351
+  },
+  {
+   "name": "CÀ TÍM NƯỚNG MỠ HÀNH",
+   "name_vn": "CÀ TÍM NƯỚNG MỠ HÀNH",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà tím",
+     "unit": "Kg",
+     "qty": 0.5,
+     "row": 355
+    }
+   ],
+   "standard_cost": 11880.0,
+   "sale_price": 95000,
+   "name_en": "Charcoal eggplant with onion oil",
+   "menu_section": "Rau",
+   "row": 354,
+   "cost_pct": 12.5
+  },
+  {
+   "name": "MÌ XÀO BÒ",
+   "name_vn": "MÌ XÀO BÒ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 2.0,
+     "row": 358
+    },
+    {
+     "ingredient": "Thịt bò bắp",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 359
+    }
+   ],
+   "standard_cost": 43395.0,
+   "sale_price": 155000,
+   "name_en": "Stir-fried egg noodles with beef",
+   "menu_section": "Cơm & Mì",
+   "row": 357,
+   "cost_pct": 28.0
+  },
+  {
+   "name": "MIẾN XÀO NỒI ĐẤT",
+   "name_vn": "MIẾN XÀO NỒI ĐẤT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Sú lơ xanh",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 362
+    },
+    {
+     "ingredient": "Miến dong",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 363
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 364
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 365
+    },
+    {
+     "ingredient": "Sú lơ trắng",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 366
+    },
+    {
+     "ingredient": "Thịt nạc heo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 367
+    }
+   ],
+   "standard_cost": 43857.55,
+   "sale_price": 155000,
+   "name_en": "Stir-fried vermicelli with meat and vegetables",
+   "menu_section": "Cơm & Mì",
+   "row": 361,
+   "cost_pct": 28.3
+  },
+  {
+   "name": "CƠM CHIÊN GÀ XÉ HẠT SEN",
+   "name_vn": "CƠM CHIÊN GÀ XÉ HẠT SEN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 370
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 371
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 372
+    },
+    {
+     "ingredient": "Trứng gà",
+     "unit": "Trái",
+     "qty": 1.0,
+     "row": 373
+    }
+   ],
+   "standard_cost": 47569.54,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 369
+  },
+  {
+   "name": "CƠM CHIÊN HẢI SẢN HẠT SEN",
+   "name_vn": "CƠM CHIÊN HẢI SẢN HẠT SEN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Trứng gà",
+     "unit": "Trái",
+     "qty": 1.0,
+     "row": 376
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 377
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 378
+    },
+    {
+     "ingredient": "Mực",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 379
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 380
+    }
+   ],
+   "standard_cost": 45549.94,
+   "sale_price": 155000,
+   "name_en": "Seafood fried rice with lotus seeds",
+   "menu_section": "Cơm & Mì",
+   "row": 375,
+   "cost_pct": 29.4
+  },
+  {
+   "name": "CƠM CHIÊN RAU CỦ HẠT SEN",
+   "name_vn": "CƠM CHIÊN RAU CỦ HẠT SEN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Trứng gà",
+     "unit": "Trái",
+     "qty": 1.0,
+     "row": 383
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 384
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 385
+    }
+   ],
+   "standard_cost": 13414.54,
+   "sale_price": 135000,
+   "name_en": "Vegetable fried rice with lotus seeds",
+   "menu_section": "Cơm & Mì",
+   "row": 382,
+   "cost_pct": 9.9
+  },
+  {
+   "name": "MÌ XÀO RAU CỦ",
+   "name_vn": "MÌ XÀO RAU CỦ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 2.0,
+     "row": 388
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 389
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 390
+    },
+    {
+     "ingredient": "Sú lơ trắng",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 391
+    }
+   ],
+   "standard_cost": 18209.4,
+   "sale_price": 135000,
+   "name_en": "Stir-fried egg noodles with vegetables",
+   "menu_section": "Cơm & Mì",
+   "row": 387,
+   "cost_pct": 13.5
+  },
+  {
+   "name": "MÌ Ý SỐT CÀ CHUA",
+   "name_vn": "MÌ Ý SỐT CÀ CHUA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 394
+    },
+    {
+     "ingredient": "Mỳ Ý",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 395
+    }
+   ],
+   "standard_cost": 29700.0,
+   "sale_price": 135000,
+   "name_en": "Pomodoro spaghetti",
+   "menu_section": "Cơm & Mì",
+   "row": 393,
+   "cost_pct": 22.0
+  },
+  {
+   "name": "MÌ Ý SỐT BÒ BẰM",
+   "name_vn": "MÌ Ý SỐT BÒ BẰM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà chua",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 398
+    },
+    {
+     "ingredient": "Mỳ Ý",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 399
+    },
+    {
+     "ingredient": "Hành tây",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 400
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 401
+    },
+    {
+     "ingredient": "Thịt bò xay",
+     "unit": "kg",
+     "qty": 0.05,
+     "row": 402
+    }
+   ],
+   "standard_cost": 44213.12,
+   "sale_price": 155000,
+   "name_en": "Spaghetti bolognaise",
+   "menu_section": "Cơm & Mì",
+   "row": 397,
+   "cost_pct": 28.5
+  },
+  {
+   "name": "BÒ LÚC LẮC / BEEFSTEAK & KHOAI TÂY CHIÊN",
+   "name_vn": "BÒ LÚC LẮC / BEEFSTEAK & KHOAI TÂY CHIÊN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bò thăn",
+     "unit": "Kg",
+     "qty": 0.2,
+     "row": 405
+    },
+    {
+     "ingredient": "Khoai tây Siêu Thị",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 406
+    },
+    {
+     "ingredient": "Hành tây",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 407
+    }
+   ],
+   "standard_cost": 79370.28,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 404
+  },
+  {
+   "name": "TEMPURA CHỦ QUẢ",
+   "name_vn": "TEMPURA CHỦ QUẢ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 410
+    },
+    {
+     "ingredient": "Cà tím",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 411
+    },
+    {
+     "ingredient": "Đậu bắp",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 412
+    },
+    {
+     "ingredient": "Hành tây",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 413
+    },
+    {
+     "ingredient": "Bột mỳ đa dụng",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 414
+    },
+    {
+     "ingredient": "Bột chiên giòn",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 415
+    }
+   ],
+   "standard_cost": 17473.72,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 409
+  },
+  {
+   "name": "BÁNH TÔM HỒ CHIÊN KHOAI LANG",
+   "name_vn": "BÁNH TÔM HỒ CHIÊN KHOAI LANG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Tép",
+     "unit": "Kg",
+     "qty": 0.15,
+     "row": 418
+    },
+    {
+     "ingredient": "Khoai lang",
+     "unit": "Kg",
+     "qty": 0.4,
+     "row": 419
+    }
+   ],
+   "standard_cost": 43956.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 417
+  },
+  {
+   "name": "BÒ NHÚNG ME",
+   "name_vn": "BÒ NHÚNG ME",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bò thăn",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 422
+    }
+   ],
+   "standard_cost": 107989.2,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 421
+  },
+  {
+   "name": "CLUP SANDWICH GÀ",
+   "name_vn": "CLUP SANDWICH GÀ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 425
+    },
+    {
+     "ingredient": "Sandwich",
+     "unit": "miếng",
+     "qty": 3.0,
+     "row": 426
+    }
+   ],
+   "standard_cost": 49988.4,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 424
+  },
+  {
+   "name": "KEM CHOCOLATE",
+   "name_vn": "KEM CHOCOLATE",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Kem chocolate",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 429
+    }
+   ],
+   "standard_cost": 16866.74,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 428
+  },
+  {
+   "name": "KEM VANI",
+   "name_vn": "KEM VANI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Kem vani",
+     "unit": "kg",
+     "qty": 0.2,
+     "row": 432
+    }
+   ],
+   "standard_cost": 16866.74,
+   "sale_price": 65000,
+   "name_en": "Vanilla ice cream",
+   "menu_section": "Tráng miệng",
+   "row": 431,
+   "cost_pct": 25.9
+  },
+  {
+   "name": "SỮA CHUA",
+   "name_vn": "SỮA CHUA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Sữa chua",
+     "unit": "hủ",
+     "qty": 0.2,
+     "row": 435
+    }
+   ],
+   "standard_cost": 16866.74,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 434
+  },
+  {
+   "name": "CHÈ CHUỐI",
+   "name_vn": "CHÈ CHUỐI",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chuối",
+     "unit": "Kg",
+     "qty": 0.1,
+     "row": 438
+    },
+    {
+     "ingredient": "Đường phèn",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 439
+    }
+   ],
+   "standard_cost": 3044.71,
+   "sale_price": 35000,
+   "name_en": "Banana sweet custard",
+   "menu_section": "Tráng miệng",
+   "row": 437,
+   "cost_pct": 8.7
+  },
+  {
+   "name": "CHÈ HẠT SEN LONG NHÃN",
+   "name_vn": "CHÈ HẠT SEN LONG NHÃN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường phèn",
+     "unit": "Kg",
+     "qty": 0.01,
+     "row": 442
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 443
+    },
+    {
+     "ingredient": "Long nhãn",
+     "unit": "kg",
+     "qty": 0.01,
+     "row": 444
+    }
+   ],
+   "standard_cost": 10899.42,
+   "sale_price": 35000,
+   "name_en": "Lotus seeds sweet custard",
+   "menu_section": "Tráng miệng",
+   "row": 441,
+   "cost_pct": 31.1
+  },
+  {
+   "name": "BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA",
+   "name_vn": "BÁNH CHUỐI NƯỚNG DÙNG KÈM KEM VANILLA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Kem vani",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 447
+    },
+    {
+     "ingredient": "Chuối",
+     "unit": "kg",
+     "qty": 0.03,
+     "row": 448
+    }
+   ],
+   "standard_cost": 9146.17,
+   "sale_price": 75000,
+   "name_en": "Baked banana cake with vanilla ice cream",
+   "menu_section": "Tráng miệng",
+   "row": 446,
+   "cost_pct": 12.2
+  },
+  {
+   "name": "TRÁI CÂY THEO MÙA",
+   "name_vn": "TRÁI CÂY THEO MÙA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thanh long",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 451
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 452
+    },
+    {
+     "ingredient": "Dưa hấu",
+     "unit": "Kg",
+     "qty": 0.3,
+     "row": 453
+    }
+   ],
+   "standard_cost": 24948.0,
+   "sale_price": 75000,
+   "name_en": "Seasonal fruit platter",
+   "menu_section": "Tráng miệng",
+   "row": 450,
+   "cost_pct": 33.3
+  },
+  {
+   "name": "CÀ PHÊ ĐEN",
+   "name_vn": "CÀ PHÊ ĐEN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà phê",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 456
+    },
+    {
+     "ingredient": "Đường cát",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 457
+    }
+   ],
+   "standard_cost": 12411.93,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 455
+  },
+  {
+   "name": "CÀ PHÊ SỮA",
+   "name_vn": "CÀ PHÊ SỮA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà phê",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 460
+    },
+    {
+     "ingredient": "Sữa đặc",
+     "unit": "kg",
+     "qty": 0.03,
+     "row": 461
+    }
+   ],
+   "standard_cost": 13252.8,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 459
+  },
+  {
+   "name": "CACAO SỮA",
+   "name_vn": "CACAO SỮA",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cacao",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 464
+    },
+    {
+     "ingredient": "Sữa tươi",
+     "unit": "lit",
+     "qty": 0.2,
+     "row": 465
+    },
+    {
+     "ingredient": "Sữa đặc",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 466
+    }
+   ],
+   "standard_cost": 18216.0,
+   "sale_price": 45000.0,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 463
+  },
+  {
+   "name": "TRÀ GỪNG MẬT ONG",
+   "name_vn": "TRÀ GỪNG MẬT ONG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mật ong",
+     "unit": "lit",
+     "qty": 0.04,
+     "row": 469
+    },
+    {
+     "ingredient": "Chanh",
+     "unit": "kg",
+     "qty": 0.03,
+     "row": 470
+    }
+   ],
+   "standard_cost": 7116.12,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 468
+  },
+  {
+   "name": "NƯỚC CHANH",
+   "name_vn": "NƯỚC CHANH",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 473
+    },
+    {
+     "ingredient": "Chanh",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 474
+    }
+   ],
+   "standard_cost": 3222.95,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 472
+  },
+  {
+   "name": "NƯỚC CAM",
+   "name_vn": "NƯỚC CAM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 477
+    },
+    {
+     "ingredient": "Cam",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 478
+    }
+   ],
+   "standard_cost": 16192.84,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 476
+  },
+  {
+   "name": "NƯỚC THƠM",
+   "name_vn": "NƯỚC THƠM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 481
+    },
+    {
+     "ingredient": "Thơm trái",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 482
+    }
+   ],
+   "standard_cost": 16192.84,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 480
+  },
+  {
+   "name": "NƯỚC DƯA HẤU",
+   "name_vn": "NƯỚC DƯA HẤU",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Dưa hấu",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 485
+    }
+   ],
+   "standard_cost": 8910.0,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 484
+  },
+  {
+   "name": "NƯỚC CAROT",
+   "name_vn": "NƯỚC CAROT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 488
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "kg",
+     "qty": 0.5,
+     "row": 489
+    }
+   ],
+   "standard_cost": 10846.84,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 487
+  },
+  {
+   "name": "NƯỚC CHANH DÂY",
+   "name_vn": "NƯỚC CHANH DÂY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.04,
+     "row": 492
+    },
+    {
+     "ingredient": "Chanh dây",
+     "unit": "kg",
+     "qty": 0.1,
+     "row": 493
+    }
+   ],
+   "standard_cost": 3718.84,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 491
+  },
+  {
+   "name": "NƯỚC CAM CÀ RỐT",
+   "name_vn": "NƯỚC CAM CÀ RỐT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cam",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 496
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 497
+    },
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 498
+    }
+   ],
+   "standard_cost": 13184.13,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 495
+  },
+  {
+   "name": "NƯỚC CAM CHANH DÂY",
+   "name_vn": "NƯỚC CAM CHANH DÂY",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cam",
+     "unit": "Kg",
+     "qty": 0.25,
+     "row": 501
+    },
+    {
+     "ingredient": "Chanh dây",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 502
+    },
+    {
+     "ingredient": "Đường",
+     "unit": "Kg",
+     "qty": 0.03,
+     "row": 503
+    }
+   ],
+   "standard_cost": 9620.13,
+   "sale_price": null,
+   "name_en": null,
+   "menu_section": "Chưa phân loại",
+   "row": 500
+  },
+  {
+   "name": "KHAI VỊ CHAY HỒ LAK",
+   "name_vn": "KHAI VỊ CHAY HỒ LAK",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 1.0,
+     "row": 11
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 12
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 13
+    },
+    {
+     "ingredient": "Bắp trái",
+     "unit": "trái",
+     "qty": 0.3,
+     "row": 14
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "bó",
+     "qty": 0.1,
+     "row": 15
+    },
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.02,
+     "row": 16
+    },
+    {
+     "ingredient": "Đu đủ",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 17
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.05,
+     "row": 18
+    }
+   ],
+   "standard_cost": 11749.32,
+   "sale_price": 185000,
+   "name_en": "Vegetarian appetizer platter",
+   "menu_section": "Chay",
+   "row": 10,
+   "cost_pct": 6.4
+  },
+  {
+   "name": "TRÀ XANH",
+   "name_vn": "TRÀ XANH",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Trà xanh",
+     "unit": "kg",
+     "qty": 0.001
+    }
+   ],
+   "standard_cost": 65.78,
+   "sale_price": 25000.0,
+   "menu_section": "Đồ uống",
+   "kind": "drink",
+   "source": "extra_cost"
+  },
+  {
+   "name": "POL REMY DEMI ( SPARLING WINE - FRANCE)",
+   "name_vn": "POL REMY DEMI ( SPARLING WINE - FRANCE)",
+   "portion_unit": "chai",
+   "components": [
+    {
+     "ingredient": "Pol remy demi",
+     "unit": "Chai 750ml",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 433400.0,
+   "sale_price": 875000.0,
+   "menu_section": "Rượu vang",
+   "kind": "wine",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CHATEAU FONCROSE SAUVIGNON BLANC",
+   "name_vn": "CHATEAU FONCROSE SAUVIGNON BLANC",
+   "portion_unit": "chai",
+   "components": [
+    {
+     "ingredient": "Chateau Foncrose sauvignon blanc",
+     "unit": "Chai 750ml",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 363000.0,
+   "sale_price": 895000.0,
+   "menu_section": "Rượu vang",
+   "kind": "wine",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CHATEAU FONCROSE CABERNET SAUVIGNON",
+   "name_vn": "CHATEAU FONCROSE CABERNET SAUVIGNON",
+   "portion_unit": "chai",
+   "components": [
+    {
+     "ingredient": "Chateau Foncrose cabernet blanc",
+     "unit": "Chai 750ml",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 363000.0,
+   "sale_price": 895000.0,
+   "menu_section": "Rượu vang",
+   "kind": "wine",
+   "source": "extra_cost"
+  },
+  {
+   "name": "TARAPACA COSHECHA SAUVIGNON BLANC",
+   "name_vn": "TARAPACA COSHECHA SAUVIGNON BLANC",
+   "portion_unit": "chai",
+   "components": [
+    {
+     "ingredient": "Tarapaca coshecha sauvignon blanc",
+     "unit": "Chai 750ml",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 326590.0,
+   "sale_price": 765000.0,
+   "menu_section": "Rượu vang",
+   "kind": "wine",
+   "source": "extra_cost"
+  },
+  {
+   "name": "TARAPACA COSHECHA CABERNET SAUVIGNON",
+   "name_vn": "TARAPACA COSHECHA CABERNET SAUVIGNON",
+   "portion_unit": "chai",
+   "components": [
+    {
+     "ingredient": "Tarapaca coshecha cabernet  sauvignon",
+     "unit": "Chai 750ml",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 326590.0,
+   "sale_price": 765000.0,
+   "menu_section": "Rượu vang",
+   "kind": "wine",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MẬT ONG",
+   "name_vn": "MẬT ONG",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mật ong",
+     "unit": "chai 350ml",
+     "qty": 0.35
+    }
+   ],
+   "standard_cost": 58212.0,
+   "sale_price": 135000.0,
+   "menu_section": "Hàng bán lẻ",
+   "kind": "retail",
+   "source": "extra_cost"
+  },
+  {
+   "name": "BỘT CACAO",
+   "name_vn": "BỘT CACAO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bột Cacao",
+     "unit": "kg",
+     "qty": 0.5
+    }
+   ],
+   "standard_cost": 71280.0,
+   "sale_price": 200000.0,
+   "menu_section": "Hàng bán lẻ",
+   "kind": "retail",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CÀ PHÊ BỘT",
+   "name_vn": "CÀ PHÊ BỘT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cà phê bột",
+     "unit": "kg",
+     "qty": 0.5
+    }
+   ],
+   "standard_cost": 71280.0,
+   "sale_price": 250000.0,
+   "menu_section": "Hàng bán lẻ",
+   "kind": "retail",
+   "source": "extra_cost"
+  },
+  {
+   "name": "LẨU NẤU CHAO",
+   "name_vn": "LẨU NẤU CHAO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Chao hủ",
+     "unit": "hủ",
+     "qty": 0.5
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "kg",
+     "qty": 0.5
+    },
+    {
+     "ingredient": "Cải thảo",
+     "unit": "kg",
+     "qty": 0.3
+    },
+    {
+     "ingredient": "Mồng tơi",
+     "unit": "Kg",
+     "qty": 0.3
+    },
+    {
+     "ingredient": "Hoa chuối",
+     "unit": "Kg",
+     "qty": 0.3
+    },
+    {
+     "ingredient": "Rau muống",
+     "unit": "Kg",
+     "qty": 0.3
+    },
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 3.0
+    }
+   ],
+   "standard_cost": 83889.85,
+   "sale_price": 375000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "GỎI NGÓ SEN TÔM THỊT",
+   "name_vn": "GỎI NGÓ SEN TÔM THỊT",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bánh phồng tôm",
+     "unit": "Kg",
+     "qty": 0.03
+    },
+    {
+     "ingredient": "Thịt ba chỉ heo",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Ngó sen",
+     "unit": "Kg",
+     "qty": 0.3
+    },
+    {
+     "ingredient": "Tôm",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt bếp",
+     "unit": "Kg",
+     "qty": 0.1
+    }
+   ],
+   "standard_cost": 58053.6,
+   "sale_price": 165000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CƠM LAM",
+   "name_vn": "CƠM LAM",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Ống cơm lam",
+     "unit": "Ống",
+     "qty": 1.0
+    },
+    {
+     "ingredient": "Gạo nếp",
+     "unit": "Kg",
+     "qty": 0.2
+    }
+   ],
+   "standard_cost": 17534.88,
+   "sale_price": 30000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CÁ BÔNG LAU KHO TỘ",
+   "name_vn": "CÁ BÔNG LAU KHO TỘ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cá Bông Lau",
+     "unit": "kg",
+     "qty": 0.5
+    }
+   ],
+   "standard_cost": 37253.7,
+   "sale_price": 165000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MIẾN XÀO THỊT BÒ",
+   "name_vn": "MIẾN XÀO THỊT BÒ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Miến dong",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Thịt bò thăn",
+     "unit": "Kg",
+     "qty": 0.1
+    }
+   ],
+   "standard_cost": 55883.52,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MIẾN XÀO HẢI SẢN",
+   "name_vn": "MIẾN XÀO HẢI SẢN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Miến dong",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "Kg",
+     "qty": 0.05
+    },
+    {
+     "ingredient": "Mực ống",
+     "unit": "Kg",
+     "qty": 0.05
+    }
+   ],
+   "standard_cost": 52022.52,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MIẾN XÀO RAU CỦ",
+   "name_vn": "MIẾN XÀO RAU CỦ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Miến dong",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    }
+   ],
+   "standard_cost": 19887.12,
+   "sale_price": 135000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MIẾN XÀO THỊT GÀ",
+   "name_vn": "MIẾN XÀO THỊT GÀ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Miến dong",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.25
+    }
+   ],
+   "standard_cost": 54042.12,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MÌ XÀO THỊT GÀ",
+   "name_vn": "MÌ XÀO THỊT GÀ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 2.0
+    },
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Gà nguyên con",
+     "unit": "Kg",
+     "qty": 0.25
+    }
+   ],
+   "standard_cost": 48919.2,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MÌ XÀO THỊT HEO",
+   "name_vn": "MÌ XÀO THỊT HEO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 2.0
+    },
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Thịt nạc heo",
+     "unit": "Kg",
+     "qty": 0.1
+    }
+   ],
+   "standard_cost": 29943.43,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "MÌ XÀO HẢI SẢN",
+   "name_vn": "MÌ XÀO HẢI SẢN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Mì gói",
+     "unit": "gói",
+     "qty": 2.0
+    },
+    {
+     "ingredient": "Cải ngọt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Đậu ve",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Tôm biển",
+     "unit": "Kg",
+     "qty": 0.05
+    },
+    {
+     "ingredient": "Mực ống",
+     "unit": "Kg",
+     "qty": 0.05
+    }
+   ],
+   "standard_cost": 46899.6,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CƠM CHIÊN THỊT BÒ",
+   "name_vn": "CƠM CHIÊN THỊT BÒ",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt bò thăn",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02
+    },
+    {
+     "ingredient": "Trứng gà",
+     "unit": "Trái",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 49410.94,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CƠM CHIÊN THỊT HEO",
+   "name_vn": "CƠM CHIÊN THỊT HEO",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Thịt nạc heo",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Gạo",
+     "unit": "Kg",
+     "qty": 0.1
+    },
+    {
+     "ingredient": "Hạt sen",
+     "unit": "Kg",
+     "qty": 0.02
+    },
+    {
+     "ingredient": "Trứng gà",
+     "unit": "Trái",
+     "qty": 1.0
+    }
+   ],
+   "standard_cost": 28593.77,
+   "sale_price": 155000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "KHOAI LANG CHIÊN",
+   "name_vn": "KHOAI LANG CHIÊN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "KHOAI LANG CHIÊN",
+     "unit": "kg",
+     "qty": 0.4
+    }
+   ],
+   "standard_cost": 11880.0,
+   "sale_price": 65000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "KHOAI TÂY CHIÊN",
+   "name_vn": "KHOAI TÂY CHIÊN",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Khoai tây Siêu Thị",
+     "unit": "kg",
+     "qty": 0.2
+    }
+   ],
+   "standard_cost": 12260.16,
+   "sale_price": 65000.0,
+   "menu_section": "Món thêm",
+   "kind": "dish",
+   "source": "extra_cost"
+  },
+  {
+   "name": "CUỐN DIẾP & RAM BẮP",
+   "name_vn": "CUỐN DIẾP & RAM BẮP",
+   "portion_unit": "phần",
+   "components": [
+    {
+     "ingredient": "Bắp trái",
+     "unit": "trái",
+     "qty": 0.2
+    },
+    {
+     "ingredient": "Đậu khuôn",
+     "unit": "miếng",
+     "qty": 0.5
+    },
+    {
+     "ingredient": "Cà rốt",
+     "unit": "Kg",
+     "qty": 0.05
+    },
+    {
+     "ingredient": "Khoai môn",
+     "unit": "Kg",
+     "qty": 0.05
+    }
+   ],
+   "standard_cost": 5167.8,
+   "sale_price": null,
+   "menu_section": "Set menu",
+   "kind": "set_only",
+   "source": "extra_cost"
+  }
+ ],
+ "ingredients": {
+  "Bí đỏ": {
+   "name": "Bí đỏ",
+   "uom": "Kg",
+   "raw_cost": 21600.0,
+   "standard_cost": 23760.0
+  },
+  "Đậu khuôn": {
+   "name": "Đậu khuôn",
+   "uom": "miếng",
+   "raw_cost": 3240.0,
+   "standard_cost": 3564.0
+  },
+  "Cà rốt": {
+   "name": "Cà rốt",
+   "uom": "Kg",
+   "raw_cost": 17280.0,
+   "standard_cost": 19008.0
+  },
+  "Khoai môn": {
+   "name": "Khoai môn",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Salad": {
+   "name": "Salad",
+   "uom": "Kg",
+   "raw_cost": 34560.0,
+   "standard_cost": 38016.0
+  },
+  "Cà chua": {
+   "name": "Cà chua",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Dưa leo": {
+   "name": "Dưa leo",
+   "uom": "Kg",
+   "raw_cost": 14040.0,
+   "standard_cost": 15444.0
+  },
+  "Bánh phồng tôm": {
+   "name": "Bánh phồng tôm",
+   "uom": "Kg",
+   "raw_cost": 92880.0,
+   "standard_cost": 102168.0
+  },
+  "Đu đủ": {
+   "name": "Đu đủ",
+   "uom": "Kg",
+   "raw_cost": 19440.0,
+   "standard_cost": 21384.0
+  },
+  "Cà rốt bếp": {
+   "name": "Cà rốt bếp",
+   "uom": "Kg",
+   "raw_cost": 16200.0,
+   "standard_cost": 17820.0
+  },
+  "Bánh tráng mè": {
+   "name": "Bánh tráng mè",
+   "uom": "cái",
+   "raw_cost": 3672.0,
+   "standard_cost": 4039.2
+  },
+  "Chanh trái bếp": {
+   "name": "Chanh trái bếp",
+   "uom": "Kg",
+   "raw_cost": 15120.0,
+   "standard_cost": 16632.0
+  },
+  "Măng": {
+   "name": "Măng",
+   "uom": "Kg",
+   "raw_cost": 43200.0,
+   "standard_cost": 47520.0
+  },
+  "Nấm rơm": {
+   "name": "Nấm rơm",
+   "uom": "kg",
+   "raw_cost": 194400.0,
+   "standard_cost": 213840.0
+  },
+  "Cà tím": {
+   "name": "Cà tím",
+   "uom": "kg",
+   "raw_cost": 21600.0,
+   "standard_cost": 23760.0
+  },
+  "Đậu bắp": {
+   "name": "Đậu bắp",
+   "uom": "Kg",
+   "raw_cost": 54000.0,
+   "standard_cost": 59400.0
+  },
+  "Bông cải xanh": {
+   "name": "Bông cải xanh",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Bông cải trắng": {
+   "name": "Bông cải trắng",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Khoai tây": {
+   "name": "Khoai tây",
+   "uom": "Kg",
+   "raw_cost": 37800.0,
+   "standard_cost": 41580.0
+  },
+  "Giá": {
+   "name": "Giá",
+   "uom": "Kg",
+   "raw_cost": 15120.0,
+   "standard_cost": 16632.0
+  },
+  "Thơm trái": {
+   "name": "Thơm trái",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Đậu phộng": {
+   "name": "Đậu phộng",
+   "uom": "kg",
+   "raw_cost": 83716.0,
+   "standard_cost": 92087.6
+  },
+  "Bí đao": {
+   "name": "Bí đao",
+   "uom": "kg",
+   "raw_cost": 29160.0,
+   "standard_cost": 32076.0
+  },
+  "Nấm bào ngư": {
+   "name": "Nấm bào ngư",
+   "uom": "Kg",
+   "raw_cost": 64800.0,
+   "standard_cost": 71280.0
+  },
+  "Nấm đùi gà": {
+   "name": "Nấm đùi gà",
+   "uom": "Kg",
+   "raw_cost": 97200.0,
+   "standard_cost": 106920.0
+  },
+  "Mồng tơi": {
+   "name": "Mồng tơi",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Khoai sọ": {
+   "name": "Khoai sọ",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Rau muống": {
+   "name": "Rau muống",
+   "uom": "Kg",
+   "raw_cost": 16200.0,
+   "standard_cost": 17820.0
+  },
+  "Mì gói": {
+   "name": "Mì gói",
+   "uom": "gói",
+   "raw_cost": 3363.0,
+   "standard_cost": 3699.3
+  },
+  "Gạo": {
+   "name": "Gạo",
+   "uom": "Kg",
+   "raw_cost": 21384.0,
+   "standard_cost": 23522.4
+  },
+  "Chả cá": {
+   "name": "Chả cá",
+   "uom": "kg",
+   "raw_cost": 270000.0,
+   "standard_cost": 297000.0
+  },
+  "Gà nguyên con": {
+   "name": "Gà nguyên con",
+   "uom": "Kg",
+   "raw_cost": 124200.0,
+   "standard_cost": 136620.0
+  },
+  "Thịt nạc vai": {
+   "name": "Thịt nạc vai",
+   "uom": "Kg",
+   "raw_cost": 137993.0,
+   "standard_cost": 151792.3
+  },
+  "Cà đắng": {
+   "name": "Cà đắng",
+   "uom": "Kg",
+   "raw_cost": 19440.0,
+   "standard_cost": 21384.0
+  },
+  "Cá cơm khô": {
+   "name": "Cá cơm khô",
+   "uom": "Kg",
+   "raw_cost": 135000.0,
+   "standard_cost": 148500.0
+  },
+  "Thịt bò xay": {
+   "name": "Thịt bò xay",
+   "uom": "Kg",
+   "raw_cost": 223915.0,
+   "standard_cost": 246306.5
+  },
+  "Thịt ba chỉ heo": {
+   "name": "Thịt ba chỉ heo",
+   "uom": "Kg",
+   "raw_cost": 170496.0,
+   "standard_cost": 187545.6
+  },
+  "Tôm": {
+   "name": "Tôm",
+   "uom": "Kg",
+   "raw_cost": 199800.0,
+   "standard_cost": 219780.0
+  },
+  "Tôm biển": {
+   "name": "Tôm biển",
+   "uom": "kg",
+   "raw_cost": 199800.0,
+   "standard_cost": 219780.0
+  },
+  "Thịt bò thăn": {
+   "name": "Thịt bò thăn",
+   "uom": "Kg",
+   "raw_cost": 327240.0,
+   "standard_cost": 359964.0
+  },
+  "Hoa chuối": {
+   "name": "Hoa chuối",
+   "uom": "kg",
+   "raw_cost": 45360.0,
+   "standard_cost": 49896.0
+  },
+  "Tép": {
+   "name": "Tép",
+   "uom": "Kg",
+   "raw_cost": 194400.0,
+   "standard_cost": 213840.0
+  },
+  "Măng rừng": {
+   "name": "Măng rừng",
+   "uom": "Kg",
+   "raw_cost": 43200.0,
+   "standard_cost": 47520.0
+  },
+  "Rau tập tàng": {
+   "name": "Rau tập tàng",
+   "uom": "Kg",
+   "raw_cost": 28080.0,
+   "standard_cost": 30888.0
+  },
+  "Cua xay": {
+   "name": "Cua xay",
+   "uom": "Kg",
+   "raw_cost": 86400.0,
+   "standard_cost": 95040.0
+  },
+  "Thịt heo xay": {
+   "name": "Thịt heo xay",
+   "uom": "Kg",
+   "raw_cost": 130680.0,
+   "standard_cost": 143748.0
+  },
+  "Cải ngọt": {
+   "name": "Cải ngọt",
+   "uom": "Kg",
+   "raw_cost": 17280.0,
+   "standard_cost": 19008.0
+  },
+  "Thit bằm": {
+   "name": "Thit bằm",
+   "uom": "Kg",
+   "raw_cost": 130680.0,
+   "standard_cost": 143748.0
+  },
+  "Măng chua": {
+   "name": "Măng chua",
+   "uom": "Kg",
+   "raw_cost": 43200.0,
+   "standard_cost": 47520.0
+  },
+  "Cá Bông Lau": {
+   "name": "Cá Bông Lau",
+   "uom": "Kg",
+   "raw_cost": 67734.0,
+   "standard_cost": 74507.4
+  },
+  "Mướp đắng": {
+   "name": "Mướp đắng",
+   "uom": "kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Rau rừng": {
+   "name": "Rau rừng",
+   "uom": "kg",
+   "raw_cost": 45360.0,
+   "standard_cost": 49896.0
+  },
+  "Cải thảo": {
+   "name": "Cải thảo",
+   "uom": "kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Cá Lăng": {
+   "name": "Cá Lăng",
+   "uom": "Kg",
+   "raw_cost": 226800.0,
+   "standard_cost": 249480.0
+  },
+  "Vịt nguyên con": {
+   "name": "Vịt nguyên con",
+   "uom": "con",
+   "raw_cost": 151200.0,
+   "standard_cost": 166320.0
+  },
+  "Chao hủ": {
+   "name": "Chao hủ",
+   "uom": "hủ",
+   "raw_cost": 36013.0,
+   "standard_cost": 39614.3
+  },
+  "Cá cơm": {
+   "name": "Cá cơm",
+   "uom": "kg",
+   "raw_cost": 135000.0,
+   "standard_cost": 148500.0
+  },
+  "Cá bống": {
+   "name": "Cá bống",
+   "uom": "Kg",
+   "raw_cost": 194400.0,
+   "standard_cost": 213840.0
+  },
+  "Thịt nạc heo": {
+   "name": "Thịt nạc heo",
+   "uom": "Kg",
+   "raw_cost": 137993.0,
+   "standard_cost": 151792.3
+  },
+  "Gạo nếp": {
+   "name": "Gạo nếp",
+   "uom": "Kg",
+   "raw_cost": 20304.0,
+   "standard_cost": 22334.4
+  },
+  "Chanh dây": {
+   "name": "Chanh dây",
+   "uom": "Kg",
+   "raw_cost": 21600.0,
+   "standard_cost": 23760.0
+  },
+  "Cá rô phi": {
+   "name": "Cá rô phi",
+   "uom": "kg",
+   "raw_cost": 64800.0,
+   "standard_cost": 71280.0
+  },
+  "Xoài": {
+   "name": "Xoài",
+   "uom": "kg",
+   "raw_cost": 25920.0,
+   "standard_cost": 28512.0
+  },
+  "Ống tre": {
+   "name": "Ống tre",
+   "uom": "Ống",
+   "raw_cost": 11880.0,
+   "standard_cost": 13068.0
+  },
+  "Sườn que": {
+   "name": "Sườn que",
+   "uom": "Kg",
+   "raw_cost": 93777.0,
+   "standard_cost": 103154.7
+  },
+  "Ống lồ ô": {
+   "name": "Ống lồ ô",
+   "uom": "Ống",
+   "raw_cost": 11800.0,
+   "standard_cost": 12980.0
+  },
+  "Thịt heo ba chỉ": {
+   "name": "Thịt heo ba chỉ",
+   "uom": "Kg",
+   "raw_cost": 170496.0,
+   "standard_cost": 187545.6
+  },
+  "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM": {
+   "name": "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+   "uom": "quả",
+   "raw_cost": 2484.0,
+   "standard_cost": 2732.4
+  },
+  "Đậu ve": {
+   "name": "Đậu ve",
+   "uom": "Kg",
+   "raw_cost": 32400.0,
+   "standard_cost": 35640.0
+  },
+  "Sú lơ trắng": {
+   "name": "Sú lơ trắng",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Sú lơ xanh": {
+   "name": "Sú lơ xanh",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Tôm khô": {
+   "name": "Tôm khô",
+   "uom": "Kg",
+   "raw_cost": 432000.0,
+   "standard_cost": 475200.0
+  },
+  "Đậu cove": {
+   "name": "Đậu cove",
+   "uom": "kg",
+   "raw_cost": 32400.0,
+   "standard_cost": 35640.0
+  },
+  "Đậu rồng": {
+   "name": "Đậu rồng",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Bầu": {
+   "name": "Bầu",
+   "uom": "kg",
+   "raw_cost": 18360.0,
+   "standard_cost": 20196.0
+  },
+  "Ngó sen": {
+   "name": "Ngó sen",
+   "uom": "Kg",
+   "raw_cost": 37800.0,
+   "standard_cost": 41580.0
+  },
+  "Đọt bí": {
+   "name": "Đọt bí",
+   "uom": "Kg",
+   "raw_cost": 48600.0,
+   "standard_cost": 53460.0
+  },
+  "Thịt bò bắp": {
+   "name": "Thịt bò bắp",
+   "uom": "kg",
+   "raw_cost": 327240.0,
+   "standard_cost": 359964.0
+  },
+  "Miến dong": {
+   "name": "Miến dong",
+   "uom": "Kg",
+   "raw_cost": 113832.0,
+   "standard_cost": 125215.2
+  },
+  "Hạt sen": {
+   "name": "Hạt sen",
+   "uom": "Kg",
+   "raw_cost": 303032.0,
+   "standard_cost": 333335.2
+  },
+  "Trứng gà": {
+   "name": "Trứng gà",
+   "uom": "Trái",
+   "raw_cost": 3996.0,
+   "standard_cost": 4395.6
+  },
+  "Mực": {
+   "name": "Mực",
+   "uom": "Kg",
+   "raw_cost": 384480.0,
+   "standard_cost": 422928.0
+  },
+  "Mỳ Ý": {
+   "name": "Mỳ Ý",
+   "uom": "Kg",
+   "raw_cost": 162000.0,
+   "standard_cost": 178200.0
+  },
+  "Hành tây": {
+   "name": "Hành tây",
+   "uom": "Kg",
+   "raw_cost": 22680.0,
+   "standard_cost": 24948.0
+  },
+  "Bò thăn": {
+   "name": "Bò thăn",
+   "uom": "Kg",
+   "raw_cost": 327240.0,
+   "standard_cost": 359964.0
+  },
+  "Bột mỳ đa dụng": {
+   "name": "Bột mỳ đa dụng",
+   "uom": "Kg",
+   "raw_cost": 33480.0,
+   "standard_cost": 36828.0
+  },
+  "Bột chiên giòn": {
+   "name": "Bột chiên giòn",
+   "uom": "Kg",
+   "raw_cost": 53104.0,
+   "standard_cost": 58414.4
+  },
+  "Khoai lang": {
+   "name": "Khoai lang",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Sandwich": {
+   "name": "Sandwich",
+   "uom": "miếng",
+   "raw_cost": 6868.0,
+   "standard_cost": 7554.8
+  },
+  "Kem chocolate": {
+   "name": "Kem chocolate",
+   "uom": "kg",
+   "raw_cost": 76667.0,
+   "standard_cost": 84333.7
+  },
+  "Kem vani": {
+   "name": "Kem vani",
+   "uom": "kg",
+   "raw_cost": 76667.0,
+   "standard_cost": 84333.7
+  },
+  "Sữa chua": {
+   "name": "Sữa chua",
+   "uom": "hủ",
+   "raw_cost": 76667.0,
+   "standard_cost": 84333.7
+  },
+  "Chuối": {
+   "name": "Chuối",
+   "uom": "Kg",
+   "raw_cost": 21600.0,
+   "standard_cost": 23760.0
+  },
+  "Đường phèn": {
+   "name": "Đường phèn",
+   "uom": "Kg",
+   "raw_cost": 60792.0,
+   "standard_cost": 66871.2
+  },
+  "Long nhãn": {
+   "name": "Long nhãn",
+   "uom": "kg",
+   "raw_cost": 324000.0,
+   "standard_cost": 356400.0
+  },
+  "Thanh long": {
+   "name": "Thanh long",
+   "uom": "Kg",
+   "raw_cost": 32400.0,
+   "standard_cost": 35640.0
+  },
+  "Dưa hấu": {
+   "name": "Dưa hấu",
+   "uom": "Kg",
+   "raw_cost": 16200.0,
+   "standard_cost": 17820.0
+  },
+  "Cà phê": {
+   "name": "Cà phê",
+   "uom": "Kg",
+   "raw_cost": 259200.0,
+   "standard_cost": 285120.0
+  },
+  "Đường cát": {
+   "name": "Đường cát",
+   "uom": "Kg",
+   "raw_cost": 30519.0,
+   "standard_cost": 33570.9
+  },
+  "Sữa đặc": {
+   "name": "Sữa đặc",
+   "uom": "kg",
+   "raw_cost": 56000.0,
+   "standard_cost": 61600.0
+  },
+  "Cacao": {
+   "name": "Cacao",
+   "uom": "Kg",
+   "raw_cost": 129600.0,
+   "standard_cost": 142560.0
+  },
+  "Sữa tươi": {
+   "name": "Sữa tươi",
+   "uom": "lit",
+   "raw_cost": 42000.0,
+   "standard_cost": 46200.0
+  },
+  "Mật ong": {
+   "name": "Mật ong",
+   "uom": "lit",
+   "raw_cost": 151200.0,
+   "standard_cost": 166320.0
+  },
+  "Chanh": {
+   "name": "Chanh",
+   "uom": "kg",
+   "raw_cost": 14040.0,
+   "standard_cost": 15444.0
+  },
+  "Đường": {
+   "name": "Đường",
+   "uom": "Kg",
+   "raw_cost": 30519.0,
+   "standard_cost": 33570.9
+  },
+  "Cam": {
+   "name": "Cam",
+   "uom": "kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Bắp trái": {
+   "name": "Bắp trái",
+   "uom": "trái",
+   "raw_cost": 4320.0,
+   "standard_cost": 4752.0
+  },
+  "MÍT NON": {
+   "name": "MÍT NON",
+   "uom": "Kg",
+   "raw_cost": 16200.0,
+   "standard_cost": 17820.0
+  },
+  "Sườn heo": {
+   "name": "Sườn heo",
+   "uom": "Kg",
+   "raw_cost": 92777.0,
+   "standard_cost": 102054.7
+  },
+  "khổ qua": {
+   "name": "khổ qua",
+   "uom": "Kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  },
+  "Ống cơm lam": {
+   "name": "Ống cơm lam",
+   "uom": "Ống",
+   "raw_cost": 11880.0,
+   "standard_cost": 13068.0
+  },
+  "Cá Diêu hồng": {
+   "name": "Cá Diêu hồng",
+   "uom": "Kg",
+   "raw_cost": 82080.0,
+   "standard_cost": 90288.0
+  },
+  "Lá Bép": {
+   "name": "Lá Bép",
+   "uom": "Kg",
+   "raw_cost": 118800.0,
+   "standard_cost": 130680.0
+  },
+  "Cá hộp": {
+   "name": "Cá hộp",
+   "uom": "hộp",
+   "raw_cost": 20088.0,
+   "standard_cost": 22096.8
+  },
+  "Khoai tây Siêu Thị": {
+   "name": "Khoai tây Siêu Thị",
+   "uom": "Kg",
+   "raw_cost": 55728.0,
+   "standard_cost": 61300.8
+  },
+  "Trà xanh": {
+   "name": "Trà xanh",
+   "uom": "kg",
+   "raw_cost": 59800.0,
+   "standard_cost": 65780.0
+  },
+  "Pol remy demi": {
+   "name": "Pol remy demi",
+   "uom": "Chai 750ml",
+   "raw_cost": 394000.0,
+   "standard_cost": 433400.0
+  },
+  "Chateau Foncrose sauvignon blanc": {
+   "name": "Chateau Foncrose sauvignon blanc",
+   "uom": "Chai 750ml",
+   "raw_cost": 330000.0,
+   "standard_cost": 363000.0
+  },
+  "Chateau Foncrose cabernet blanc": {
+   "name": "Chateau Foncrose cabernet blanc",
+   "uom": "Chai 750ml",
+   "raw_cost": 330000.0,
+   "standard_cost": 363000.0
+  },
+  "Tarapaca coshecha sauvignon blanc": {
+   "name": "Tarapaca coshecha sauvignon blanc",
+   "uom": "Chai 750ml",
+   "raw_cost": 296900.0,
+   "standard_cost": 326590.0
+  },
+  "Tarapaca coshecha cabernet  sauvignon": {
+   "name": "Tarapaca coshecha cabernet  sauvignon",
+   "uom": "Chai 750ml",
+   "raw_cost": 296900.0,
+   "standard_cost": 326590.0
+  },
+  "Bột Cacao": {
+   "name": "Bột Cacao",
+   "uom": "kg",
+   "raw_cost": 129600.0,
+   "standard_cost": 142560.0
+  },
+  "Cà phê bột": {
+   "name": "Cà phê bột",
+   "uom": "kg",
+   "raw_cost": 129600.0,
+   "standard_cost": 142560.0
+  },
+  "Mực ống": {
+   "name": "Mực ống",
+   "uom": "Kg",
+   "raw_cost": 384480.0,
+   "standard_cost": 422928.0
+  },
+  "KHOAI LANG CHIÊN": {
+   "name": "KHOAI LANG CHIÊN",
+   "uom": "kg",
+   "raw_cost": 27000.0,
+   "standard_cost": 29700.0
+  }
+ },
+ "spice_uplift": 0.1,
+ "prep_items": [],
+ "non_menu_dishes": [],
+ "nested": []
+}

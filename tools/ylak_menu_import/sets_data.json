@@ -1,0 +1,466 @@
+{
+ "sets": [
+  {
+   "tier": "SET LUNCH 245.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 245000.0,
+   "courses": [
+    "GỎI GÀ HOA CHUỐI",
+    "TÉP HỒ LAK RAM VỚI KHẾ/ RAM MẶN",
+    "LÁ BÉP XÀO TỎI",
+    "CANH GÀ LÁ GIANG",
+    "CƠM TRẮNG",
+    "CHÈ HẠT SEN LONG NHÃN"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET LUNCH 245.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 245000.0,
+   "courses": [
+    "GỎI ĐU ĐỦ TÔM THỊT",
+    "HEO XÀO LĂN",
+    "TRỨNG VỊT HỒ LAK CHIÊN THỊT BẰM",
+    "CANH CÀ ĐẮNG CÁ CƠM",
+    "CƠM TRẮNG",
+    "CHÈ CHUỐI"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 295.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 295000.0,
+   "courses": [
+    "GỎI CÀ ĐẮNG CÁ CƠM",
+    "BÒ NƯỚNG LÁ LỐT",
+    "CÁ RÔ PHI CHIÊN GIÒN CHẤM MẮM XOÀI",
+    "RAU RỪNG XÀO TỎI",
+    "CANH TÔM TẬP TÀNG",
+    "CƠM TRẮNG",
+    "CHÈ HẠT SEN LONG NHÃN"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 295.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 295000.0,
+   "courses": [
+    "GỎI RAU MUỐNG TÉP RAM HỒ LĂK",
+    "CHẢ CÁ HỒ LĂK",
+    "THỊT HEO KHO TỘ",
+    "RAU RỪNG LUỘC KHO QUẸT",
+    "CANH CUA TẬP TÀNG",
+    "CƠM TRẮNG",
+    "CHÈ CHUỐI"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 375.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 375000.0,
+   "courses": [
+    "GỎI CÀ ĐẮNG CÁ CƠM",
+    "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM",
+    "CÁ BỐNG KHO TIÊU/ CHIÊN GIÒN",
+    "RAU RỪNG LUỘC KHO QUẸT",
+    "CANH CÁ THÁC LÁC MĂNG CHUA",
+    "CƠM TRẮNG",
+    "CHÈ HẠT SEN LONG NHÃN"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 375.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 375000.0,
+   "courses": [
+    "GỎI RAU MUỐNG TÉP RAM HỒ LĂK",
+    "HEO NƯỚNG ỐNG TRE ĂN KÈM CƠM LAM",
+    "LẨU GÀ LÁ GIANG/ LÁ É",
+    "CHÈ CHUỐI"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 455.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 455000.0,
+   "courses": [
+    "KHAI VỊ Y LAK",
+    "GÀ ĐỒNG BÀO NƯỚNG DÙNG KÈM CƠM LAM",
+    "LẨU CÁ LĂNG ĐỒNG NẤU MĂNG CHUA",
+    "SỮA CHUA"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET DINNER 455.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 455000.0,
+   "courses": [
+    "KHAI VỊ Y LAK",
+    "VỊT QUAY HỒ LAK SỐT TIÊU ĐEN VÀ MẬT ONG",
+    "LẨU CÁ THÁC LÁC MƯỚP ĐẮNG RỪNG",
+    "TRÁI CÂY THEO MÙA"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET MENU 195.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 195000.0,
+   "courses": [
+    "CUỐN DIẾP & RAM BẮP",
+    "CHẢ GIÒ CHAY",
+    "CÀ TÍM KHO TỘ",
+    "RAU CỦ XÀO THẬP CẨM",
+    "CANH BÍ ĐỎ ĐẬU PHỘNG",
+    "CHÈ HẠT SEN LONG NHÃN"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET MENU 195.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 195000.0,
+   "courses": [
+    "GỎI RAU MUỐNG TÉP RAM HỒ LĂK",
+    "NẤM KHO TỘ",
+    "CÀ TÍM NƯỚNG MỠ HÀNH",
+    "ĐẬU COVE XÀO TỎI",
+    "CANH CHUA CHAY",
+    "CHÈ CHUỐI"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET MENU 255.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 1",
+   "price": 255000.0,
+   "courses": [
+    "GỎI MÍT TRỘN",
+    "ĐẬU HỦ CHIÊN SẢ",
+    "NẤM KHO TỘ"
+   ],
+   "incomplete": false
+  },
+  {
+   "tier": "SET MENU 255.000/ 1 PAX ( MINIMUM 2PAX)",
+   "variant": "SET 2",
+   "price": 255000.0,
+   "courses": [
+    "KHAI VỊ CHAY HỒ LAK",
+    "LẨU CHAY THẬP CẨM"
+   ],
+   "incomplete": false
+  }
+ ],
+ "unresolved_courses": [],
+ "buffet": {
+  "pax": 20,
+  "lines": [
+   {
+    "ingredient": "Dưa hấu",
+    "uom": "Kg",
+    "qty_20pax": 3.0,
+    "qty_per_pax": 0.15,
+    "unit_cost": 16200.0,
+    "line_cost_20pax": 48600.0
+   },
+   {
+    "ingredient": "Trái cây theo mùa",
+    "uom": "Kg",
+    "qty_20pax": 2.0,
+    "qty_per_pax": 0.1,
+    "unit_cost": 50000.0,
+    "line_cost_20pax": 100000.0
+   },
+   {
+    "ingredient": "Chanh dây",
+    "uom": "Kg",
+    "qty_20pax": 1.5,
+    "qty_per_pax": 0.075,
+    "unit_cost": 21600.0,
+    "line_cost_20pax": 32400.0
+   },
+   {
+    "ingredient": "Chanh",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 14040.0,
+    "line_cost_20pax": 7020.0
+   },
+   {
+    "ingredient": "Cà phê",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 259200.0,
+    "line_cost_20pax": 259200.0
+   },
+   {
+    "ingredient": "Đường cát trắng",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 30519.0,
+    "line_cost_20pax": 9155.699999999999
+   },
+   {
+    "ingredient": "Sữa tươi",
+    "uom": "lit",
+    "qty_20pax": 0.7,
+    "qty_per_pax": 0.034999999999999996,
+    "unit_cost": 42000.0,
+    "line_cost_20pax": 29399.999999999996
+   },
+   {
+    "ingredient": "Sữa đặc",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 56000.0,
+    "line_cost_20pax": 16800.0
+   },
+   {
+    "ingredient": "Sữa đậu nành",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 26000.0,
+    "line_cost_20pax": 26000.0
+   },
+   {
+    "ingredient": "Ngũ cốc sosola",
+    "uom": "Kg",
+    "qty_20pax": 0.6,
+    "qty_per_pax": 0.03,
+    "unit_cost": 86832.0,
+    "line_cost_20pax": 52099.2
+   },
+   {
+    "ingredient": "Ngũ cốc bắp",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 112320.0,
+    "line_cost_20pax": 56160.0
+   },
+   {
+    "ingredient": "Sữa chua",
+    "uom": "Kg",
+    "qty_20pax": 15.0,
+    "qty_per_pax": 0.75,
+    "unit_cost": 6763.0,
+    "line_cost_20pax": 101445.0
+   },
+   {
+    "ingredient": "Phở/ Hủ tiếu",
+    "uom": "Kg",
+    "qty_20pax": 2.0,
+    "qty_per_pax": 0.1,
+    "unit_cost": 21600.0,
+    "line_cost_20pax": 43200.0
+   },
+   {
+    "ingredient": "Gà nguyên con",
+    "uom": "Kg",
+    "qty_20pax": 1.7,
+    "qty_per_pax": 0.08499999999999999,
+    "unit_cost": 124200.0,
+    "line_cost_20pax": 211140.0
+   },
+   {
+    "ingredient": "Trứng gà",
+    "uom": "Kg",
+    "qty_20pax": 25.0,
+    "qty_per_pax": 1.25,
+    "unit_cost": 3996.0,
+    "line_cost_20pax": 99900.0
+   },
+   {
+    "ingredient": "Bánh ướt/ bánh hỏi",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 36720.0,
+    "line_cost_20pax": 36720.0
+   },
+   {
+    "ingredient": "Chả lụa",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 162000.0,
+    "line_cost_20pax": 162000.0
+   },
+   {
+    "ingredient": "Xúc xích",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 99787.0,
+    "line_cost_20pax": 29936.1
+   },
+   {
+    "ingredient": "Bánh mì ổ",
+    "uom": "Kg",
+    "qty_20pax": 8.0,
+    "qty_per_pax": 0.4,
+    "unit_cost": 5400.0,
+    "line_cost_20pax": 43200.0
+   },
+   {
+    "ingredient": "Sandwich",
+    "uom": "Cây",
+    "qty_20pax": 3.0,
+    "qty_per_pax": 0.15,
+    "unit_cost": 68680.0,
+    "line_cost_20pax": 206040.0
+   },
+   {
+    "ingredient": "Bánh waffe/ pancake",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 122040.0,
+    "line_cost_20pax": 122040.0
+   },
+   {
+    "ingredient": "Dưa leo",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 14040.0,
+    "line_cost_20pax": 7020.0
+   },
+   {
+    "ingredient": "Cà chua",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 27000.0,
+    "line_cost_20pax": 13500.0
+   },
+   {
+    "ingredient": "Bơ vỉ anchor",
+    "uom": "cục",
+    "qty_20pax": 20.0,
+    "qty_per_pax": 1.0,
+    "unit_cost": 5076.0,
+    "line_cost_20pax": 101520.0
+   },
+   {
+    "ingredient": "Mứt thanh long",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 32400.0,
+    "line_cost_20pax": 9720.0
+   },
+   {
+    "ingredient": "Mứt thơm",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 27000.0,
+    "line_cost_20pax": 8100.0
+   },
+   {
+    "ingredient": "Chanh bếp",
+    "uom": "Kg",
+    "qty_20pax": 0.2,
+    "qty_per_pax": 0.01,
+    "unit_cost": 14040.0,
+    "line_cost_20pax": 2808.0
+   },
+   {
+    "ingredient": "Nếp",
+    "uom": "Kg",
+    "qty_20pax": 1.0,
+    "qty_per_pax": 0.05,
+    "unit_cost": 20304.0,
+    "line_cost_20pax": 20304.0
+   },
+   {
+    "ingredient": "Đậu phộng/ đậu xanh",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 83716.0,
+    "line_cost_20pax": 25114.8
+   },
+   {
+    "ingredient": "Khoai lang/ Bắp",
+    "uom": "Kg",
+    "qty_20pax": 1.5,
+    "qty_per_pax": 0.075,
+    "unit_cost": 27000.0,
+    "line_cost_20pax": 40500.0
+   },
+   {
+    "ingredient": "Hành tây",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 22680.0,
+    "line_cost_20pax": 6804.0
+   },
+   {
+    "ingredient": "Phô mai chedar",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 616270.0,
+    "line_cost_20pax": 308135.0
+   },
+   {
+    "ingredient": "Giá",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 15120.0,
+    "line_cost_20pax": 4536.0
+   },
+   {
+    "ingredient": "Salad",
+    "uom": "Kg",
+    "qty_20pax": 0.5,
+    "qty_per_pax": 0.025,
+    "unit_cost": 34560.0,
+    "line_cost_20pax": 17280.0
+   },
+   {
+    "ingredient": "Thịt nguội",
+    "uom": "Kg",
+    "qty_20pax": 0.4,
+    "qty_per_pax": 0.02,
+    "unit_cost": 165404.0,
+    "line_cost_20pax": 66161.6
+   },
+   {
+    "ingredient": "Ớt chuông",
+    "uom": "Kg",
+    "qty_20pax": 0.3,
+    "qty_per_pax": 0.015,
+    "unit_cost": 43200.0,
+    "line_cost_20pax": 12960.0
+   },
+   {
+    "ingredient": "Mật ong",
+    "uom": "lit",
+    "qty_20pax": 0.2,
+    "qty_per_pax": 0.01,
+    "unit_cost": 151200.0,
+    "line_cost_20pax": 30240.0
+   }
+  ],
+  "total_cost_20pax": 2367159.4,
+  "cost_per_pax": 118357.97
+ }
+}
