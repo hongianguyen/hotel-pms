@@ -105,10 +105,23 @@ class TestClient(AiosellCase):
             'hotel_id': 'aio-test-hotel', 'hotel_name': 'Test',
             'currency': 'INR', 'rooms': [],
         }
-        with self._patch(_Response(200, body)), \
-                self.assertRaises(UserError) as caught:
-            self.config.action_import_mapping()
+        # Caught by hand, not with assertRaises: that wraps the call in a
+        # savepoint it rolls back, which would hide whether the currency was
+        # recorded before the refusal.
+        with self._patch(_Response(200, body)):
+            with self.assertRaises(UserError) as caught:
+                self.config.action_import_mapping()
         self.assertIn('INR', str(caught.exception))
+
+        with self._patch(_Response(200, body)):
+            try:
+                self.config.action_import_mapping()
+            except UserError:
+                pass
+        self.assertEqual(
+            self.config.property_currency, 'INR',
+            'The refusal must still leave a record of what Aiosell holds; '
+            'the error message is gone as soon as the user navigates away.')
 
     def test_import_mapping_creates_and_matches_codes(self):
         body = {

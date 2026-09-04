@@ -209,6 +209,26 @@ class AiosellConfig(models.Model):
         with self.env.registry.cursor() as cr:
             return self.env(cr=cr)['aiosell.sync.log'].create(vals)
 
+    def _record_property_currency(self, currency):
+        """Remember the currency Aiosell holds, even when we refuse to sync.
+
+        The mismatch check below raises, and a UserError rolls the request
+        back — taking a plain ``self.property_currency = ...`` with it. So the
+        one field that tells the owner what Aiosell actually holds would stay
+        blank in exactly the case they need it: the error message would be the
+        only record, and it is gone the moment they navigate away. Same
+        rollback trap as ``_write_sync_log``, same answer.
+        """
+        self.ensure_one()
+        if not currency:
+            return
+        if odoo_module.current_test:
+            self.property_currency = currency
+            return
+        with self.env.registry.cursor() as cr:
+            self.with_env(self.env(cr=cr)).property_currency = currency
+        self.invalidate_recordset(['property_currency'])
+
     def _call(self, path, payload=None, method='POST', operation=None):
         """One API call, logged. Returns the decoded body.
 
@@ -377,7 +397,7 @@ class AiosellConfig(models.Model):
             raise UserError(_('Unexpected property_details response from Aiosell.'))
 
         currency = (data.get('currency') or '').upper()
-        self.property_currency = currency
+        self._record_property_currency(currency)
         company_currency = self.company_id.currency_id.name
         if currency and currency != company_currency:
             raise UserError(_(
