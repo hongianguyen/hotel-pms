@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, tools, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.mail import email_normalize
 from datetime import timedelta
 
 
@@ -491,16 +492,24 @@ class HotelReservation(models.Model):
     def _get_confirmation_template(self):
         """Confirmation template + recipient email for this reservation.
 
-        Corporate/agency bookings notify the booker at the sending company;
-        direct bookings notify the guest.
+        Corporate/agency bookings notify the booker at the sending company,
+        but only when there is a usable booker address to notify. Everything
+        else — direct bookings, and agency bookings whose booker email is
+        missing or malformed — falls back to the guest.
+
+        The template carries the address (its ``email_to`` renders either
+        ``booker_email`` or ``guest_id.email``), so the choice of recipient
+        IS the choice of template; the returned address is what the send
+        paths gate on and what the preview wizard pre-fills.
         """
         self.ensure_one()
-        if self.agency_id:
+        booker_email = email_normalize(self.booker_email)
+        if self.agency_id and booker_email:
             return (
                 self.env.ref(
                     'hotel_frontdesk.mail_template_reservation_confirmation_corporate',
                     raise_if_not_found=False),
-                self.booker_email,
+                booker_email,
             )
         return (
             self.env.ref(

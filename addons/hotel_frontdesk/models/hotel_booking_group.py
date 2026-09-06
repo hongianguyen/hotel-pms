@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.mail import email_normalize
 
 
 class HotelBookingGroup(models.Model):
@@ -229,16 +230,19 @@ class HotelBookingGroup(models.Model):
     def _get_confirmation_template(self):
         """Confirmation template + recipient email for this group.
 
-        Corporate/agency groups notify the booker at the sending company;
-        direct groups notify the group leader.
+        Corporate/agency groups notify the booker at the sending company,
+        but only when there is a usable booker address to notify. Everything
+        else — direct groups, and agency groups whose booker email is missing
+        or malformed — falls back to the group leader.
         """
         self.ensure_one()
-        if self.agency_id:
+        booker_email = email_normalize(self.booker_email)
+        if self.agency_id and booker_email:
             return (
                 self.env.ref(
                     'hotel_frontdesk.mail_template_group_booking_confirmation_corporate',
                     raise_if_not_found=False),
-                self.booker_email,
+                booker_email,
             )
         return (
             self.env.ref(
@@ -257,10 +261,9 @@ class HotelBookingGroup(models.Model):
         for group in self:
             template, recipient = group._get_confirmation_template()
             if not recipient:
-                if group.agency_id:
-                    raise UserError(_(
-                        'No email address set on the booker or agency %s.'
-                    ) % group.agency_id.name)
+                # An agency group with no booker address has already fallen
+                # back to the leader, so the only way to get here is a leader
+                # with no address of their own.
                 raise UserError(_('Group leader %s has no email address.')
                                 % group.guest_id.name)
             group._send_confirmation_email()
