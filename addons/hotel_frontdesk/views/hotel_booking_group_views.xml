@@ -88,18 +88,7 @@
                             <field name="guest_id"/>
                             <field name="source_id"/>
                             <field name="rate_plan_id"/>
-                            <field name="agency_vat"
-                                   placeholder="Search by tax code, e.g. 0101248141"/>
                             <field name="agency_id"/>
-                            <field name="vn_registry_found" invisible="1"/>
-                            <field name="vn_registry_name" invisible="not vn_registry_found"/>
-                            <field name="vn_registry_address" invisible="not vn_registry_found"/>
-                            <field name="vn_registry_status" invisible="not vn_registry_found"/>
-                            <button name="action_create_agency_from_registry"
-                                    type="object" class="btn-primary"
-                                    string="Use This Company"
-                                    invisible="not vn_registry_found"
-                                    help="Put this company on file and select it for this booking."/>
                             <field name="booker_id" invisible="not agency_id"
                                    required="agency_id"/>
                             <field name="booker_email" invisible="not agency_id"/>

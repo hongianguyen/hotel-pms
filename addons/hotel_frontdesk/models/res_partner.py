@@ -24,7 +24,12 @@ VN_NSN_LEN = 9
 MIN_PHONE_MATCH_DIGITS = 8
 
 DEFAULT_TAXCODE_API_URL = 'https://api.vietqr.io/v2/business/'
-DEFAULT_TAXCODE_API_TIMEOUT = 6.0
+# Generous on purpose. A tax code the service already knows comes back in
+# ~0.3s, but one it does not is referred upstream to the GDT and has been
+# measured at 1.3-9.3s. That slow path is exactly the "no such company"
+# answer the user is waiting for, so a tight timeout would report every
+# unknown tax code as a lookup failure.
+DEFAULT_TAXCODE_API_TIMEOUT = 15.0
 
 
 class ResPartner(models.Model):
@@ -258,3 +263,82 @@ class ResPartner(models.Model):
         vals = self._vn_registry_partner_vals(data)
         vals.update(extra_vals or {})
         return self.create(vals)
+
+    # ── Filling a new company in from its tax code ───────────────────────
+
+    @api.onchange('vat')
+    def _onchange_vat_fill_from_registry(self):
+        """Fill a company in from the Vietnamese business registry.
+
+        Typing a tax code on a company is the fastest way to create it:
+        the registered name, address and country arrive from the registry
+        rather than being keyed in by hand.
+
+        Only blank fields are filled. A value already typed is never
+        overwritten — if it disagrees with the registry the difference is
+        reported instead, so reception decides which is right.
+        """
+        self.ensure_one()
+        if not self.is_company:
+            return
+        vat = self._vn_normalize_vat(self.vat)
+        if not vat or not VN_TAX_CODE_RE.match(vat):
+            # Half-typed or non-Vietnamese: say nothing rather than nag on
+            # every keystroke.
+            return
+
+        # A tax code identifies a company uniquely, so a second record under
+        # the same one is a duplicate in the making.
+        duplicate = self.search([
+            ('vat', '=', vat), ('id', '!=', self._origin.id or 0),
+        ], limit=1)
+        if duplicate:
+            return {'warning': {
+                'title': _('This company is already on file'),
+                'message': _(
+                    '%(name)s already uses tax code %(vat)s. Use that record '
+                    'rather than creating a second one.',
+                    name=duplicate.display_name, vat=vat,
+                ),
+            }}
+
+        try:
+            data = self._vn_lookup_tax_code(vat)
+        except UserError as err:
+            # An unreachable registry must not stop anyone creating a company.
+            return {'warning': {
+                'title': _('Tax registry lookup failed'),
+                'message': err.args[0] if err.args else _('Unknown error.'),
+            }}
+
+        if not data:
+            return {'warning': {
+                'title': _('Tax code not found'),
+                'message': _(
+                    'The Vietnamese business registry does not recognise tax '
+                    'code %s. Please check the number, or fill the company in '
+                    'by hand.'
+                ) % vat,
+            }}
+
+        vals = self._vn_registry_partner_vals(data)
+        kept = []
+        for field, value in vals.items():
+            if not value or field == 'vat':
+                continue
+            current = self[field]
+            if not current:
+                self[field] = value
+            elif field == 'name' and current != value:
+                # The name is the one field people type before the tax code.
+                kept.append(value)
+
+        if kept:
+            return {'warning': {
+                'title': _('Registered under a different name'),
+                'message': _(
+                    'The registry lists tax code %(vat)s as "%(official)s". '
+                    'The name you entered has been kept.',
+                    vat=vat, official=kept[0],
+                ),
+            }}

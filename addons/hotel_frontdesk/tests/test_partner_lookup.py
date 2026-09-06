@@ -147,102 +147,91 @@ class TestPartnerLookup(TransactionCase):
         res = self.Reservation.new({'guest_phone': '0900000003'})
         self.assertEqual(res.guest_phone, '0900000003')
 
-    # ── Finding a company by tax code ────────────────────────────────────
+    # ── Filling a company in from its tax code ───────────────────────────
 
-    def test_known_tax_code_never_reaches_the_registry(self):
-        res = self.Reservation.new({'agency_vat': '0100112437'})
+    def test_known_tax_code_warns_instead_of_duplicating(self):
+        """A tax code identifies a company; a second record is a duplicate."""
+        company = self.Partner.new({'is_company': True, 'vat': '0100112437'})
         with patch(LOOKUP_PATH) as get:
-            res._onchange_agency_vat()
-        self.assertEqual(res.agency_id, self.agency)
+            result = company._onchange_vat_fill_from_registry()
+
+        self.assertTrue(result and result.get('warning'))
+        self.assertIn(self.agency.name, result['warning']['message'])
         get.assert_not_called()
 
-    def test_tax_code_ignores_spacing(self):
-        res = self.Reservation.new({'agency_vat': '0100 112 437'})
-        with patch(LOOKUP_PATH):
-            res._onchange_agency_vat()
-        self.assertEqual(res.agency_id, self.agency)
-
-    def test_unknown_tax_code_previews_the_registry_without_creating(self):
-        res = self.Reservation.new({'agency_vat': '0101248141'})
+    def test_new_tax_code_fills_the_company_in(self):
+        company = self.Partner.new({'is_company': True, 'vat': '0101248141'})
         with patch(LOOKUP_PATH, return_value=FakeResponse(FPT_PAYLOAD)):
-            res._onchange_agency_vat()
+            company._onchange_vat_fill_from_registry()
 
-        self.assertTrue(res.vn_registry_found)
-        self.assertEqual(res.vn_registry_name, 'CÔNG TY CỔ PHẦN FPT')
-        self.assertEqual(res.vn_registry_status, 'NNT đang hoạt động')
-        self.assertFalse(
-            self.Partner.search([('vat', '=', '0101248141')]),
-            'previewing must not put the company on file',
-        )
+        self.assertEqual(company.name, 'CÔNG TY CỔ PHẦN FPT')
+        self.assertIn('Phạm Văn Bạch', company.street)
+        self.assertEqual(company.country_id, self.env.ref('base.vn'))
+        self.assertIn('FPT CORPORATION', company.comment,
+                      'the international name should be kept')
+        self.assertIn('NNT đang hoạt động', company.comment,
+                      'the tax status should be kept')
+
+    def test_lookup_never_overwrites_a_name_already_typed(self):
+        """Reception's own input wins; the difference is reported instead."""
+        company = self.Partner.new({
+            'is_company': True, 'name': 'FPT (as we know them)',
+            'vat': '0101248141',
+        })
+        with patch(LOOKUP_PATH, return_value=FakeResponse(FPT_PAYLOAD)):
+            result = company._onchange_vat_fill_from_registry()
+
+        self.assertEqual(company.name, 'FPT (as we know them)')
+        self.assertTrue(result and result.get('warning'))
+        self.assertIn('CÔNG TY CỔ PHẦN FPT', result['warning']['message'])
+        self.assertIn('Phạm Văn Bạch', company.street,
+                      'blank fields should still be filled')
+
+    def test_individuals_are_left_alone(self):
+        """A personal tax ID is not a company lookup."""
+        person = self.Partner.new({'is_company': False, 'vat': '079123456789'})
+        with patch(LOOKUP_PATH) as get:
+            person._onchange_vat_fill_from_registry()
+        get.assert_not_called()
 
     def test_malformed_tax_code_is_not_sent_to_the_registry(self):
-        res = self.Reservation.new({'agency_vat': '123'})
+        company = self.Partner.new({'is_company': True, 'vat': '123'})
         with patch(LOOKUP_PATH) as get:
-            res._onchange_agency_vat()
+            company._onchange_vat_fill_from_registry()
         get.assert_not_called()
-        self.assertFalse(res.vn_registry_found)
 
-    def test_registry_not_found_warns_and_previews_nothing(self):
+    def test_tax_code_spacing_is_ignored(self):
+        company = self.Partner.new({'is_company': True, 'vat': '0101 248 141'})
+        with patch(LOOKUP_PATH,
+                   return_value=FakeResponse(FPT_PAYLOAD)) as get:
+            company._onchange_vat_fill_from_registry()
+        get.assert_called_once()
+        self.assertEqual(company.name, 'CÔNG TY CỔ PHẦN FPT')
+
+    def test_registry_not_found_warns_and_fills_nothing(self):
         """Code 51 arrives as HTTP 200 — the body decides, not the status."""
-        res = self.Reservation.new({'agency_vat': '0000000000'})
+        company = self.Partner.new({'is_company': True, 'vat': '0000000000'})
         with patch(LOOKUP_PATH, return_value=FakeResponse(NOT_FOUND_PAYLOAD)):
-            result = res._onchange_agency_vat()
+            result = company._onchange_vat_fill_from_registry()
 
         self.assertTrue(result and result.get('warning'))
-        self.assertFalse(res.vn_registry_found)
+        self.assertFalse(company.name)
 
-    def test_rate_limiting_warns_instead_of_blocking_the_booking(self):
-        res = self.Reservation.new({'agency_vat': '0101248141'})
+    def test_rate_limiting_warns_instead_of_blocking_the_company(self):
+        company = self.Partner.new({'is_company': True, 'vat': '0101248141'})
         with patch(LOOKUP_PATH, return_value=FakeResponse(None, 429)):
-            result = res._onchange_agency_vat()
+            result = company._onchange_vat_fill_from_registry()
 
         self.assertTrue(result and result.get('warning'),
-                        'a 429 must not stop reception taking the booking')
-        self.assertFalse(res.vn_registry_found)
+                        'a 429 must not stop anyone creating the company')
 
     def test_registry_timeout_warns_instead_of_blocking(self):
-        res = self.Reservation.new({'agency_vat': '0101248141'})
+        company = self.Partner.new({'is_company': True, 'vat': '0101248141'})
         with patch(LOOKUP_PATH, side_effect=requests.exceptions.Timeout()):
-            result = res._onchange_agency_vat()
+            result = company._onchange_vat_fill_from_registry()
         self.assertTrue(result and result.get('warning'))
 
-    # ── Putting a registry company on file ───────────────────────────────
-
-    def test_create_from_registry_fills_the_company_in(self):
-        res = self.Reservation.new({'agency_vat': '0101248141'})
-        with patch(LOOKUP_PATH, return_value=FakeResponse(FPT_PAYLOAD)):
-            res._onchange_agency_vat()
-            res.action_create_agency_from_registry()
-
-        partner = res.agency_id
-        self.assertTrue(partner, 'the company was not selected')
-        self.assertEqual(partner.vat, '0101248141')
-        self.assertEqual(partner.name, 'CÔNG TY CỔ PHẦN FPT')
-        self.assertIn('Phạm Văn Bạch', partner.street)
-        self.assertTrue(partner.is_company)
-        self.assertTrue(
-            partner.is_hotel_agency,
-            'without is_hotel_agency the new company fails the agency domain',
-        )
-        self.assertIn('FPT CORPORATION', partner.comment,
-                      'the international name should be kept')
-        self.assertFalse(res.vn_registry_found,
-                         'the preview should clear once the company is on file')
-
-    def test_create_from_registry_reuses_a_company_added_meanwhile(self):
-        """Another user got there first: reuse, never duplicate the tax code."""
-        res = self.Reservation.new({'agency_vat': '0101248141'})
-        with patch(LOOKUP_PATH, return_value=FakeResponse(FPT_PAYLOAD)):
-            res._onchange_agency_vat()
-            meanwhile = self.Partner.create({
-                'name': 'FPT (added by a colleague)', 'is_company': True,
-                'is_hotel_agency': True, 'vat': '0101248141',
-            })
-            res.action_create_agency_from_registry()
-
-        self.assertEqual(res.agency_id, meanwhile)
-        self.assertEqual(
-            self.Partner.search_count([('vat', '=', '0101248141')]), 1)
+    # ── The lookup helpers themselves ────────────────────────────────────
 
     def test_lookup_rejects_a_bad_tax_code_before_spending_a_call(self):
         with patch(LOOKUP_PATH) as get:
@@ -258,6 +247,29 @@ class TestPartnerLookup(TransactionCase):
                 self.Partner._vn_lookup_tax_code(code)
                 get.assert_called_once()
 
+    def test_find_or_create_reuses_a_company_already_on_file(self):
+        with patch(LOOKUP_PATH) as get:
+            found = self.Partner._vn_find_or_create_by_vat('0100112437')
+        self.assertEqual(found, self.agency)
+        get.assert_not_called()
+
+    def test_find_or_create_puts_a_registry_company_on_file(self):
+        with patch(LOOKUP_PATH, return_value=FakeResponse(FPT_PAYLOAD)):
+            created = self.Partner._vn_find_or_create_by_vat(
+                '0101248141', extra_vals={'is_hotel_agency': True})
+
+        self.assertEqual(created.vat, '0101248141')
+        self.assertTrue(created.is_company)
+        self.assertTrue(
+            created.is_hotel_agency,
+            'without is_hotel_agency the company fails the agency domain',
+        )
+
+    def test_find_or_create_returns_nothing_for_an_unknown_code(self):
+        with patch(LOOKUP_PATH, return_value=FakeResponse(NOT_FOUND_PAYLOAD)):
+            self.assertFalse(
+                self.Partner._vn_find_or_create_by_vat('0000000000'))
+
     # ── Group bookings get the same behaviour ────────────────────────────
 
     def test_group_booking_finds_the_guest_by_phone_too(self):
@@ -265,8 +277,3 @@ class TestPartnerLookup(TransactionCase):
         group._onchange_guest_phone()
         self.assertEqual(group.guest_id, self.guest)
 
-    def test_group_booking_finds_the_company_by_tax_code_too(self):
-        group = self.env['hotel.booking.group'].new({'agency_vat': '0100112437'})
-        with patch(LOOKUP_PATH):
-            group._onchange_agency_vat()
-        self.assertEqual(group.agency_id, self.agency)

@@ -9,6 +9,11 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <!-- Typing a tax code on a company fills its name and address
+                 in from the Vietnamese business registry. -->
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="placeholder">e.g. 0101248141 — fills in from the tax registry</attribute>
+            </xpath>
             <xpath expr="//field[@name='category_id'][1]" position="after">
                 <field name="is_hotel_agency" invisible="not is_company"/>
                 <field name="hotel_agency_type" invisible="not is_hotel_agency"/>
