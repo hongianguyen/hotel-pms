@@ -7,7 +7,7 @@ from odoo.tools.mail import email_normalize
 class HotelBookingGroup(models.Model):
     _name = 'hotel.booking.group'
     _description = 'Hotel Group Booking'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'hotel.partner.lookup.mixin']
     _order = 'checkin_date desc, id desc'
     _rec_name = 'name'
 

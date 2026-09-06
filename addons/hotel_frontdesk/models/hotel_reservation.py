@@ -8,7 +8,7 @@ from datetime import timedelta
 class HotelReservation(models.Model):
     _name = 'hotel.reservation'
     _description = 'Hotel Reservation'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'hotel.partner.lookup.mixin']
     _order = 'checkin_date desc, id desc'
     _rec_name = 'reservation_number'
 
@@ -19,7 +19,6 @@ class HotelReservation(models.Model):
         'res.partner', string='Guest', required=True, tracking=True,
         domain="[('is_company', '=', False)]",
     )
-    guest_phone = fields.Char(related='guest_id.phone', string='Phone')
     guest_email = fields.Char(related='guest_id.email', string='Email')
 
     room_type_id = fields.Many2one(
