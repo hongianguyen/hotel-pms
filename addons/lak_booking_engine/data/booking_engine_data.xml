@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: an upgrade must never switch a live engine off, or back on. -->
+    <data noupdate="1">
+        <record id="param_enabled" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.enabled</field>
+            <field name="value">0</field>
+        </record>
+        <!-- Comma-separated origins allowed to call the API from a browser. -->
+        <record id="param_allowed_origins" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.allowed_origins</field>
+            <field name="value">https://www.laktentedcamp.com,https://laktentedcamp.com,https://pms.laktentedcamp.com</field>
+        </record>
+    </data>
+</odoo>

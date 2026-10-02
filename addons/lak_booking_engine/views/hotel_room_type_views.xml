@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_room_type_form_booking_engine" model="ir.ui.view">
+        <field name="name">hotel.room.type.form.booking.engine</field>
+        <field name="model">hotel.room.type</field>
+        <field name="inherit_id" ref="hotel_core.view_hotel_room_type_form"/>
+        <field name="arch" type="xml">
+            <field name="is_roh" position="after">
+                <field name="website_bookable" invisible="is_roh"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_hotel_room_type_list_booking_engine" model="ir.ui.view">
+        <field name="name">hotel.room.type.list.booking.engine</field>
+        <field name="model">hotel.room.type</field>
+        <field name="inherit_id" ref="hotel_core.view_hotel_room_type_list"/>
+        <field name="arch" type="xml">
+            <field name="is_roh" position="after">
+                <field name="website_bookable" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>
