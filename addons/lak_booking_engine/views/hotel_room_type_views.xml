@@ -8,6 +8,46 @@
             <field name="is_roh" position="after">
                 <field name="website_bookable" invisible="is_roh"/>
             </field>
+            <xpath expr="//notebook" position="inside">
+                <page string="Website" name="website" invisible="is_roh">
+                    <group>
+                        <group>
+                            <field name="web_summary"/>
+                            <field name="web_beds"/>
+                        </group>
+                        <group>
+                            <field name="web_size"/>
+                            <field name="web_view"/>
+                        </group>
+                    </group>
+                    <label for="web_description"/>
+                    <field name="web_description"/>
+                    <label for="web_facilities"/>
+                    <field name="web_facilities" placeholder="One facility per line"/>
+                    <label for="web_image_ids" string="Photos (lowest sequence is the cover)"/>
+                    <field name="web_image_ids" mode="kanban" context="{'default_room_type_id': id}">
+                        <kanban>
+                            <field name="id"/>
+                            <field name="sequence"/>
+                            <field name="name"/>
+                            <templates>
+                                <t t-name="card" class="p-0">
+                                    <field name="image_512" widget="image" class="w-100"
+                                           options="{'img_class': 'w-100 object-fit-cover', 'size': [0, 140]}"/>
+                                    <div class="p-1 small text-truncate"><field name="name"/></div>
+                                </t>
+                            </templates>
+                        </kanban>
+                        <form>
+                            <group>
+                                <field name="image_1920" widget="image" options="{'preview_image': 'image_512'}"/>
+                                <field name="name"/>
+                                <field name="sequence"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 

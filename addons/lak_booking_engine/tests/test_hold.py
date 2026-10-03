@@ -222,6 +222,9 @@ class TestHoldApi(HttpCase):
         cls.env['hotel.room'].create({'name': 'ZZH-01', 'room_type_id': cls.room_type.id})
         cls.Param.set_param('lak_booking_engine.enabled', '1')
         cls.Param.set_param('lak_booking_engine.turnstile_secret', ' ')
+        # Real unpaid holds on the database must not trip the caps here.
+        for key in ('max_pending_per_ip', 'max_pending_per_email', 'max_pending_rooms'):
+            cls.Param.set_param('lak_booking_engine.%s' % key, '1000')
 
     def _offer(self):
         result = self.env['lak.booking.quote'].search_offers(
@@ -256,7 +259,7 @@ class TestHoldApi(HttpCase):
         # and leaves nothing behind.
         before = self.env['hotel.reservation'].search_count([('room_type_id', '=', self.room_type.id)])
         again = self._post(dict(self._body_from(data)))
-        self.assertEqual(again.status_code, 409)
+        self.assertEqual(again.status_code, 409, again.text)
         after = self.env['hotel.reservation'].search_count([('room_type_id', '=', self.room_type.id)])
         self.assertEqual(before, after)
 
@@ -281,3 +284,42 @@ class TestHoldApi(HttpCase):
         resp = self.url_open('/book')
         self.assertEqual(resp.status_code, 200)
         self.assertIn('/api/book/hold', resp.text)
+
+
+@tagged('post_install', '-at_install')
+class TestRoomContentApi(HttpCase):
+
+    # 1x1 PNG
+    PIXEL = ('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQ'
+             'DwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.env['ir.config_parameter'].sudo().set_param('lak_booking_engine.enabled', '1')
+        cls.room_type = cls.env['hotel.room.type'].create({
+            'name': 'ZZ Photo Tent', 'capacity': 2, 'base_rate': 1000000.0,
+            'web_summary': 'A tent by the lake.',
+            'web_description': '<p>Nice.</p><script>alert(1)</script>',
+            'web_facilities': 'Balcony\n- Hot shower\n\n',
+            'web_beds': '1 king bed',
+        })
+        cls.image = cls.env['lak.room.type.image'].create({
+            'room_type_id': cls.room_type.id, 'image_1920': cls.PIXEL})
+
+    def test_rooms_endpoint_carries_content(self):
+        rooms = self.url_open('/api/book/rooms').json()['rooms']
+        room = next(r for r in rooms if r['room_type_id'] == self.room_type.id)
+        self.assertEqual(room['summary'], 'A tent by the lake.')
+        self.assertEqual(room['facilities'], ['Balcony', 'Hot shower'])
+        self.assertNotIn('<script', room['description_html'])
+        self.assertEqual(len(room['photos']), 1)
+        self.assertTrue(room['photos'][0]['medium'].startswith('/api/book/photo/%d/1024' % self.image.id))
+
+    def test_photo_route(self):
+        resp = self.url_open('/api/book/photo/%d/512' % self.image.id)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.headers['Content-Type'].startswith('image/'))
+        self.assertEqual(self.url_open('/api/book/photo/%d/77' % self.image.id).status_code, 404)
+        self.room_type.website_bookable = False
+        self.assertEqual(self.url_open('/api/book/photo/%d/512' % self.image.id).status_code, 404)

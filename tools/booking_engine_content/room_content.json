@@ -1,0 +1,71 @@
+{
+  "_source": "www.laktentedcamp.com/room/* pages, copied 03 Oct 2026. Prices on those pages are NOT copied: the PMS rate is the price.",
+  "Lake View Tent": {
+    "pages": [
+      "lakeview-tent-double-one-king-bed",
+      "lakeview-tent-twin-two-single-beds"
+    ],
+    "summary": "A tented lodge in its own green bower, with a private balcony looking over Lak Lake.",
+    "description": "<p>Nestled in its green bower, each tent combines rusticity and elegance. Every one offers a splendid view of the lake and its surroundings, for an authentic immersion in a protected environment without compromising on comfort.</p><p>Choose one king-size bed (1.8 m) or two single beds (1.2 m) that can be joined into one big bed. The tent is 32 m² including a private balcony, with an en-suite bathroom and WC, and a private lockable gate for comfort and security.</p>",
+    "facilities": "Private gate with lock and green pergola\nPrivate balcony with handcrafted table and chairs\nWooden interior furniture\nDrinking water refilled, tea, coffee and ice box\nWardrobe, trunks, flashlight, umbrella, slippers, hair dryer\nFan and air conditioning\nEn-suite bathroom and WC with hot shower, towels, shampoo, bath gel and soap\nToothbrush and comb on request\nFree Wi-Fi, parking and boat transfer",
+    "beds": "1 king bed or 2 single beds",
+    "size": "32 m² incl. balcony",
+    "view": "Lake, mountains, garden",
+    "photos": [
+      "lakeview-tent-twin-two-single-beds/01",
+      "lakeview-tent-double-one-king-bed/01",
+      "lakeview-tent-twin-two-single-beds/03",
+      "lakeview-tent-double-one-king-bed/04",
+      "lakeview-tent-twin-two-single-beds/02",
+      "lakeview-tent-double-one-king-bed/05",
+      "lakeview-tent-twin-two-single-beds/05",
+      "lakeview-tent-twin-two-single-beds/09",
+      "lakeview-tent-double-one-king-bed/06",
+      "lakeview-tent-twin-two-single-beds/08",
+      "lakeview-tent-double-one-king-bed/03"
+    ]
+  },
+  "Lake Front Wooden Bungalow": {
+    "pages": [
+      "lakefront-bungalow-one-king-bed"
+    ],
+    "summary": "A two-storey wooden bungalow right on the lake front, with a living lounge and a bathtub by the window.",
+    "description": "<p>Named after the ethnic villages around Lak Lake, each wooden bungalow tells its own story of local culture and art, in a prime spot on the water. Spacious and stylishly furnished, they charm couples, honeymooners and families alike.</p><p>Upstairs is the bedroom with a 1.8 m master bed (an extra bed is possible) and an en-suite bathroom. Downstairs is the living lounge with a sofa and bench, and a bathtub by the window. The mini-bar with fruit and drinks is free and refilled daily.</p>",
+    "facilities": "Upper floor: master bedroom and bathroom\nLower floor: living lounge, sofa, mini-bar, bathtub\nFree mini-bar with fruit and drinks, refilled daily\nWooden interior furniture\nDrinking water refilled, tea, coffee and ice box\nWardrobe, trunks, flashlight, umbrella, slippers, hair dryer\nCeiling fan and air conditioning\nEn-suite bathroom and WC with hot shower, towels, shampoo, bath gel and soap\nToothbrush and comb on request\nFree Wi-Fi, parking and boat transfer",
+    "beds": "1 king bed, extra bed on request",
+    "size": "2 floors × 50 m², incl. balcony",
+    "view": "Lake, mountains, garden",
+    "photos": [
+      "lakefront-bungalow-one-king-bed/08",
+      "lakefront-bungalow-one-king-bed/01",
+      "lakefront-bungalow-one-king-bed/02",
+      "lakefront-bungalow-one-king-bed/07",
+      "lakefront-bungalow-one-king-bed/06",
+      "lakefront-bungalow-one-king-bed/03",
+      "lakefront-bungalow-one-king-bed/04",
+      "lakefront-bungalow-one-king-bed/05"
+    ]
+  },
+  "KPAN-Bungalow on the Lake": {
+    "pages": [
+      "kpan-tiny-house"
+    ],
+    "summary": "A wooden tiny house inspired by the K'pan long bench of the local ethnic community, with a large terrace over the lake.",
+    "description": "<p>Thoughtfully designed and inspired by the traditional K'pan long wooden bench of the local ethnic community, this room embodies oneness with nature through eco-efficient design, natural light and mindful energy use.</p><p>Flexible, minimal bedding (twin or triple) suits couples, families or friends, and the prime lake view opens onto the calm water and the surrounding nature reserve. Private bathroom and a large terrace overlooking the lake.</p>",
+    "facilities": "Large private terrace over the lake\nWooden interior furniture\nDrinking water refilled, tea, coffee and ice box\nHangers, flashlight, umbrella, slippers, hair dryer\nFan and air conditioning\nEn-suite bathroom and WC with hot shower, towels, shampoo, bath gel and soap\nToothbrush and comb on request\nFree Wi-Fi, parking and boat transfer",
+    "beds": "Twin or flexible triple",
+    "size": "35 m² incl. terrace",
+    "view": "Lake, mountains, garden",
+    "photos": [
+      "kpan-tiny-house/02",
+      "kpan-tiny-house/03",
+      "kpan-tiny-house/08",
+      "kpan-tiny-house/06",
+      "kpan-tiny-house/01",
+      "kpan-tiny-house/04",
+      "kpan-tiny-house/09",
+      "kpan-tiny-house/05"
+    ]
+  },
+  "_photos": "Paths are <page-slug>/<NN> in the folder fetch_photos.py writes; first photo is the cover."
+}

@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_lak_booking_hold_reception,lak.booking.hold reception,model_lak_booking_hold,hotel_core.group_hotel_reception,1,1,0,0
 access_lak_booking_hold_admin,lak.booking.hold admin,model_lak_booking_hold,hotel_core.group_hotel_admin,1,1,0,0
+access_lak_room_type_image_reception,lak.room.type.image reception,model_lak_room_type_image,hotel_core.group_hotel_reception,1,0,0,0
+access_lak_room_type_image_admin,lak.room.type.image admin,model_lak_room_type_image,hotel_core.group_hotel_admin,1,1,1,1

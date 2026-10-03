@@ -5,80 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Book Lak Tented Camp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1f2a24; --muted:#6b756f; --line:#dfe5e1; --bg:#f6f8f6; --card:#fff; --accent:#2f6b4f; --warn:#b4541a; }
-  * { box-sizing: border-box; }
-  body { margin:0; font:16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
-  main { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
-  h1 { font-size:1.6rem; margin:0 0 4px; }
-  .sub { color:var(--muted); margin:0 0 24px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
-  label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
-  input, textarea { width:100%; font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; }
-  button { font:inherit; font-weight:600; padding:11px 18px; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
-  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
-  button:disabled { opacity:.5; cursor:wait; }
-  .offer { display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
-  .offer h3 { margin:0; font-size:1.1rem; }
-  .price { font-size:1.25rem; font-weight:700; white-space:nowrap; }
-  .small { font-size:.85rem; color:var(--muted); }
-  .left { color:var(--warn); font-weight:600; font-size:.85rem; }
+  :root {
+    --ink:#1e2b24; --muted:#66716a; --line:#e3e6df; --bg:#f7f5ef; --card:#fffdf8;
+    --accent:#2f6b4f; --accent-ink:#fff; --accent-soft:#e6f0e9; --warn:#a4501a; --chip:#f0ede4;
+    --serif:'Fraunces', Georgia, serif; --sans:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.55 var(--sans); color:var(--ink); background:var(--bg); }
+  img { display:block; max-width:100%; }
+  button { font:inherit; cursor:pointer; }
+
+  /* Hero */
+  .hero { position:relative; min-height:300px; display:flex; align-items:flex-end; color:#fff;
+          background:#2b3a31 center/cover no-repeat; }
+  .hero::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.65) 100%); }
+  .hero-inner { position:relative; z-index:1; width:100%; max-width:1040px; margin:0 auto; padding:56px 16px 92px; }
+  .hero h1 { font:600 clamp(2rem, 5vw, 3rem)/1.1 var(--serif); margin:0 0 6px; letter-spacing:-.01em; }
+  .hero p { margin:0; opacity:.95; font-size:1.05rem; }
+  .hero h1, .hero p { text-shadow:0 1px 12px rgba(0,0,0,.55); }
+
+  main { max-width:1040px; margin:0 auto; padding:0 16px 80px; }
+
+  /* Search bar */
+  .search { position:relative; z-index:2; margin-top:-56px; background:var(--card); border-radius:16px;
+            box-shadow:0 10px 30px rgba(30,43,36,.12); padding:16px; display:grid; gap:12px;
+            grid-template-columns:repeat(4, minmax(0,1fr)) auto; align-items:end; }
+  .search label { display:block; font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:4px; }
+  .search > div { min-width:0; }
+  input, textarea { width:100%; min-width:0; font:inherit; color:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+  input:focus, textarea:focus { outline:2px solid var(--accent); outline-offset:1px; border-color:transparent; }
+  .btn { font-weight:600; padding:12px 20px; border:0; border-radius:10px; background:var(--accent); color:var(--accent-ink); white-space:nowrap; }
+  .btn:disabled { opacity:.55; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  .btn.link { background:none; color:var(--accent); padding:4px 0; align-self:flex-start; }
+  @media (max-width:760px) { .search { grid-template-columns:1fr 1fr; } .search .btn { grid-column:1/-1; } }
+
+  .status { margin:28px 0 12px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .status h2 { font:600 1.5rem/1.2 var(--serif); margin:0; }
+  .status span { color:var(--muted); }
   .err { color:#a12a2a; margin:12px 0 0; }
+
+  /* Room cards */
+  .room { display:grid; grid-template-columns:minmax(0, 1.15fr) minmax(0, 1fr); background:var(--card);
+          border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:20px; }
+  @media (max-width:760px) { .room { grid-template-columns:1fr; } }
+  .gallery { position:relative; background:#ddd; min-height:260px; }
+  .slides { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
+  .slides::-webkit-scrollbar { display:none; }
+  .slides img { flex:0 0 100%; width:100%; height:100%; min-height:260px; max-height:420px; object-fit:cover; scroll-snap-align:start; cursor:zoom-in; }
+  .gallery .nav { position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%;
+                  border:0; background:rgba(255,255,255,.88); color:var(--ink); font-size:20px; line-height:1; box-shadow:0 2px 8px rgba(0,0,0,.2); }
+  .gallery .prev { left:10px; } .gallery .next { right:10px; }
+  .gallery .count { position:absolute; right:10px; bottom:10px; background:rgba(0,0,0,.55); color:#fff; font-size:.8rem; padding:2px 10px; border-radius:999px; }
+  .nophoto { display:flex; align-items:center; justify-content:center; height:100%; min-height:260px; color:var(--muted); background:var(--chip); }
+
+  .body { padding:22px 22px 20px; display:flex; flex-direction:column; gap:12px; }
+  .body h3 { font:600 1.45rem/1.2 var(--serif); margin:0; }
+  .summary { margin:0; color:var(--muted); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { background:var(--chip); border-radius:999px; padding:3px 10px; font-size:.82rem; }
+  .details { display:none; border-top:1px solid var(--line); padding-top:12px; font-size:.95rem; }
+  .details.open { display:block; }
+  .details p { margin:0 0 10px; }
+  .details ul { margin:6px 0 0; padding-left:18px; columns:2 220px; column-gap:24px; }
+  .details li { margin-bottom:4px; break-inside:avoid; }
+  .buy { margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;
+         border-top:1px solid var(--line); padding-top:14px; }
+  .price { font:600 1.5rem/1.1 var(--serif); }
+  .per { font-size:.85rem; color:var(--muted); }
+  .left { color:var(--warn); font-weight:600; font-size:.85rem; }
+  .unavailable { color:var(--muted); font-size:.9rem; }
+
+  /* Guest + confirmation panels */
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; margin:24px 0; }
+  .panel h2 { font:600 1.4rem/1.2 var(--serif); margin:0 0 6px; }
+  .picked { display:flex; gap:14px; align-items:center; background:var(--accent-soft); border-radius:12px; padding:10px; margin:10px 0 16px; }
+  .picked img { width:96px; height:72px; object-fit:cover; border-radius:8px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+  .grid label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
+  .small { font-size:.88rem; color:var(--muted); }
   table { width:100%; border-collapse:collapse; }
-  td { padding:8px 0; border-bottom:1px solid var(--line); vertical-align:top; }
-  td:first-child { color:var(--muted); width:42%; padding-right:12px; }
-  .copy { font-weight:700; letter-spacing:.03em; }
-  .qr { text-align:center; margin:16px 0 0; }
-  .qr img { width:240px; max-width:100%; }
-  .badge { display:inline-block; padding:2px 10px; border-radius:999px; background:#fdf1d8; color:#7a5200; font-size:.85rem; font-weight:600; }
+  td { padding:9px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:first-child { color:var(--muted); width:40%; padding-right:12px; }
+  .copy { font-weight:600; letter-spacing:.02em; }
+  .pay { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:24px; align-items:start; }
+  @media (max-width:760px) { .pay { grid-template-columns:1fr; } }
+  .qr { text-align:center; } .qr img { width:240px; margin:0 auto; }
+  .badge { display:inline-block; vertical-align:middle; margin-left:8px; padding:2px 10px; border-radius:999px; background:#fdf1d8; color:#7a5200; font:600 .8rem var(--sans); }
   .badge.ok { background:#dcf1e4; color:#1e5a3a; }
-  .hidden { display:none; }
+  .hidden { display:none !important; }
+
+  /* Lightbox */
+  .lightbox { position:fixed; inset:0; z-index:50; background:rgba(12,16,14,.94); display:flex; align-items:center; justify-content:center; }
+  .lightbox img { max-width:94vw; max-height:86vh; object-fit:contain; border-radius:4px; }
+  .lightbox button { position:absolute; border:0; background:rgba(255,255,255,.14); color:#fff; width:46px; height:46px; border-radius:50%; font-size:22px; }
+  .lightbox .close { top:16px; right:16px; } .lightbox .prev { left:16px; } .lightbox .next { right:16px; }
+  .lightbox .cap { position:absolute; bottom:16px; left:0; right:0; text-align:center; color:#ddd; font-size:.9rem; }
 </style>
 </head>
 <body>
+<header class="hero" id="hero">
+  <div class="hero-inner">
+    <h1>Lak Tented Camp</h1>
+    <p>Tents, bungalows and wooden houses on the shore of Lak Lake, Central Highlands</p>
+  </div>
+</header>
+
 <main>
-  <h1>Book your stay</h1>
-  <p class="sub">Lak Tented Camp · prices in VND per stay</p>
-
-  <section class="card" id="search">
-    <div class="grid">
-      <div><label for="checkin">Check-in</label><input type="date" id="checkin"></div>
-      <div><label for="checkout">Check-out</label><input type="date" id="checkout"></div>
-      <div><label for="adults">Adults</label><input type="number" id="adults" min="1" max="20" value="2"></div>
-      <div><label for="children">Children</label><input type="number" id="children" min="0" max="10" value="0"></div>
-    </div>
-    <p style="margin:16px 0 0"><button id="searchBtn">Search</button></p>
-    <p class="err" id="searchErr"></p>
+  <section class="search" aria-label="Search availability">
+    <div><label for="checkin">Check-in</label><input type="date" id="checkin"></div>
+    <div><label for="checkout">Check-out</label><input type="date" id="checkout"></div>
+    <div><label for="adults">Adults</label><input type="number" id="adults" min="1" max="20" value="2"></div>
+    <div><label for="children">Children</label><input type="number" id="children" min="0" max="10" value="0"></div>
+    <button class="btn" id="searchBtn">Check availability</button>
   </section>
+  <p class="err" id="searchErr"></p>
 
-  <section id="offers"></section>
+  <div class="status" id="status"><h2>Our rooms</h2><span>Choose your dates to see prices</span></div>
+  <section id="rooms"></section>
 
-  <section class="card hidden" id="guest">
-    <h2 style="margin-top:0;font-size:1.2rem">Your details</h2>
-    <p class="small" id="chosen"></p>
+  <section class="panel hidden" id="guest">
+    <h2>Your details</h2>
+    <div class="picked" id="picked"></div>
     <div class="grid">
       <div style="grid-column:1/-1"><label for="gname">Full name</label><input id="gname" autocomplete="name"></div>
       <div><label for="gemail">Email</label><input id="gemail" type="email" autocomplete="email"></div>
       <div><label for="gphone">Phone (optional)</label><input id="gphone" type="tel" autocomplete="tel"></div>
-      <div style="grid-column:1/-1"><label for="gnote">Requests (optional)</label><textarea id="gnote" rows="2"></textarea></div>
+      <div style="grid-column:1/-1"><label for="gnote">Special requests (optional)</label><textarea id="gnote" rows="2"></textarea></div>
     </div>
-    <p class="small">Payment: bank transfer of the full amount. Your room is held while we wait for it.</p>
+    <p class="small">Payment is by bank transfer of the full amount. We hold your room while the transfer arrives.</p>
     <div id="turnstile"></div>
-    <p style="margin:16px 0 0"><button id="bookBtn">Book and get payment details</button>
-       <button class="ghost" id="backBtn">Back</button></p>
+    <p style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0">
+      <button class="btn" id="bookBtn">Book and get payment details</button>
+      <button class="btn ghost" id="backBtn">Back to rooms</button></p>
     <p class="err" id="bookErr"></p>
   </section>
 
-  <section class="card hidden" id="done"></section>
+  <section class="panel hidden" id="done"></section>
 </main>
+
+<div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <img id="lbImg" alt="">
+  <button class="close" id="lbClose" aria-label="Close">×</button>
+  <button class="prev" id="lbPrev" aria-label="Previous photo">‹</button>
+  <button class="next" id="lbNext" aria-label="Next photo">›</button>
+  <div class="cap" id="lbCap"></div>
+</div>
 
 <script>
 const SITEKEY = '__TURNSTILE_SITEKEY__';
 const $ = (id) => document.getElementById(id);
 const vnd = (n) => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + ' ₫';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let chosen = null, turnstileToken = '';
+let rooms = [], search = null, chosen = null, turnstileToken = '';
 
 (function initDates() {
   const d = new Date(); d.setDate(d.getDate() + 14);
@@ -93,43 +176,151 @@ if (SITEKEY) {
   document.head.appendChild(s);
 }
 
+/* ---------- rendering ---------- */
+function galleryHtml(room, idx) {
+  if (!room.photos.length) return `<div class="gallery"><div class="nophoto">Photos coming soon</div></div>`;
+  const imgs = room.photos.map((p, i) => `<img src="${esc(p.medium)}" alt="${esc(room.name)} photo ${i + 1}" loading="${idx === 0 && i === 0 ? 'eager' : 'lazy'}" data-room="${idx}" data-photo="${i}">`).join('');
+  const nav = room.photos.length > 1 ? `<button class="nav prev" aria-label="Previous photo">‹</button><button class="nav next" aria-label="Next photo">›</button>` : '';
+  return `<div class="gallery"><div class="slides">${imgs}</div>${nav}<span class="count">1 / ${room.photos.length}</span></div>`;
+}
+
+function chips(room) {
+  const items = [room.beds, room.size, room.view, `Up to ${room.capacity} guest${room.capacity > 1 ? "s" : ""}`].filter(Boolean);
+  return `<div class="chips">${items.map((c) => `<span class="chip">${esc(c)}</span>`).join('')}</div>`;
+}
+
+function detailsHtml(room) {
+  const fac = room.facilities.length ? `<strong>Facilities</strong><ul>${room.facilities.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` : '';
+  // description_html comes from Odoo's sanitised HTML field
+  return `<div class="details">${room.description_html || ''}${fac}</div>`;
+}
+
+function render() {
+  const offerFor = (id) => search && search.offers.find((o) => o.room_type_id === id);
+  const list = rooms.slice().sort((a, b) => {
+    if (!search) return 0;
+    const oa = offerFor(a.room_type_id), ob = offerFor(b.room_type_id);
+    if (!!oa !== !!ob) return oa ? -1 : 1;
+    return oa ? oa.total - ob.total : 0;
+  });
+  $('rooms').innerHTML = list.map((room, idx) => {
+    const offer = offerFor(room.room_type_id);
+    let buy;
+    if (!search) {
+      buy = `<span class="per">Choose dates above to see the price</span>`;
+    } else if (offer) {
+      buy = `<div>
+          <div class="price">${vnd(offer.total)}</div>
+          <div class="per">${offer.rooms_needed > 1 ? offer.rooms_needed + ' rooms · ' : ''}${search.nights} night${search.nights > 1 ? 's' : ''} · ${search.adults + search.children} guest${search.adults + search.children > 1 ? 's' : ''}</div>
+          ${offer.only_left ? `<div class="left">Only ${offer.only_left} left</div>` : ''}
+        </div>
+        <button class="btn" data-book="${room.room_type_id}">Book</button>`;
+    } else {
+      buy = `<span class="unavailable">Not available for these dates or this party size</span>`;
+    }
+    return `<article class="room" data-idx="${rooms.indexOf(room)}">
+      ${galleryHtml(room, idx)}
+      <div class="body">
+        <h3>${esc(room.name)}</h3>
+        ${room.summary ? `<p class="summary">${esc(room.summary)}</p>` : ''}
+        ${chips(room)}
+        ${(room.description_html || room.facilities.length) ? `<button class="btn link" data-more>More about this room ↓</button>${detailsHtml(room)}` : ''}
+        <div class="buy">${buy}</div>
+      </div>
+    </article>`;
+  }).join('');
+  wireCards();
+}
+
+function wireCards() {
+  document.querySelectorAll('.room').forEach((card) => {
+    const room = rooms[+card.dataset.idx];
+    const slides = card.querySelector('.slides');
+    if (slides) {
+      const count = card.querySelector('.count');
+      const go = (dir) => slides.scrollBy({ left: dir * slides.clientWidth, behavior: 'smooth' });
+      card.querySelector('.prev')?.addEventListener('click', () => go(-1));
+      card.querySelector('.next')?.addEventListener('click', () => go(1));
+      slides.addEventListener('scroll', () => {
+        count.textContent = `${Math.round(slides.scrollLeft / slides.clientWidth) + 1} / ${room.photos.length}`;
+      }, { passive: true });
+      slides.querySelectorAll('img').forEach((img) => img.addEventListener('click', () => openLightbox(room, +img.dataset.photo)));
+    }
+    card.querySelector('[data-more]')?.addEventListener('click', (e) => {
+      const d = card.querySelector('.details'); d.classList.toggle('open');
+      e.target.textContent = d.classList.contains('open') ? 'Less ↑' : 'More about this room ↓';
+    });
+    card.querySelector('[data-book]')?.addEventListener('click', () => pick(room));
+  });
+}
+
+/* ---------- lightbox ---------- */
+let lb = { room: null, i: 0 };
+function openLightbox(room, i) { lb = { room, i }; showLb(); $('lightbox').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+function showLb() {
+  const p = lb.room.photos[lb.i];
+  $('lbImg').src = p.url; $('lbImg').alt = `${lb.room.name} photo ${lb.i + 1}`;
+  $('lbCap').textContent = `${lb.room.name} · ${lb.i + 1} / ${lb.room.photos.length}${p.caption ? ' · ' + p.caption : ''}`;
+}
+function stepLb(d) { const n = lb.room.photos.length; lb.i = (lb.i + d + n) % n; showLb(); }
+function closeLb() { $('lightbox').classList.add('hidden'); document.body.style.overflow = ''; }
+$('lbClose').onclick = closeLb; $('lbPrev').onclick = () => stepLb(-1); $('lbNext').onclick = () => stepLb(1);
+$('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox') closeLb(); });
+document.addEventListener('keydown', (e) => {
+  if ($('lightbox').classList.contains('hidden')) return;
+  if (e.key === 'Escape') closeLb(); if (e.key === 'ArrowLeft') stepLb(-1); if (e.key === 'ArrowRight') stepLb(1);
+});
+
+/* ---------- flow ---------- */
+async function loadRooms() {
+  try {
+    const d = await (await fetch('/api/book/rooms')).json();
+    if (!d.ok) { $('searchErr').textContent = d.message; return; }
+    rooms = d.rooms;
+    const cover = rooms.find((r) => r.photos.length);
+    if (cover) $('hero').style.backgroundImage = `url("${cover.photos[0].url}")`;
+    render();
+  } catch (e) { $('searchErr').textContent = 'Could not load the rooms, please refresh the page.'; }
+}
+
 $('searchBtn').onclick = async () => {
-  $('searchErr').textContent = ''; $('offers').innerHTML = ''; $('guest').classList.add('hidden'); $('done').classList.add('hidden');
+  $('searchErr').textContent = ''; $('guest').classList.add('hidden'); $('done').classList.add('hidden');
+  $('rooms').classList.remove('hidden'); $('status').classList.remove('hidden');
   const q = new URLSearchParams({ checkin: $('checkin').value, checkout: $('checkout').value, adults: $('adults').value, children: $('children').value });
   $('searchBtn').disabled = true;
   try {
-    const r = await fetch('/api/book/search?' + q); const d = await r.json();
+    const d = await (await fetch('/api/book/search?' + q)).json();
     if (!d.ok) { $('searchErr').textContent = d.message; return; }
-    if (!d.offers.length) { $('offers').innerHTML = '<div class="card">No rooms are free for these dates. Please try other dates.</div>'; return; }
-    $('offers').innerHTML = d.offers.map((o, i) => `
-      <div class="card offer">
-        <div>
-          <h3>${o.rooms_needed > 1 ? o.rooms_needed + ' × ' : ''}${esc(o.name)}</h3>
-          <div class="small">${esc(o.description)}</div>
-          <div class="small">${d.nights} night(s) · up to ${o.capacity} guests per room</div>
-          ${o.only_left ? `<div class="left">Only ${o.only_left} left</div>` : ''}
-        </div>
-        <div style="text-align:right">
-          <div class="price">${vnd(o.total)}</div>
-          <button data-i="${i}">Select</button>
-        </div>
-      </div>`).join('');
-    $('offers').querySelectorAll('button').forEach((b) => b.onclick = () => {
-      chosen = d.offers[+b.dataset.i];
-      $('chosen').textContent = `${chosen.rooms_needed} × ${chosen.name}, ${d.checkin} → ${d.checkout}, ${vnd(chosen.total)}`;
-      $('offers').innerHTML = ''; $('guest').classList.remove('hidden'); $('gname').focus();
-    });
+    search = d;
+    const n = d.offers.length;
+    $('status').innerHTML = `<h2>${n ? n + ' room type' + (n > 1 ? 's' : '') + ' available' : 'Nothing available'}</h2>
+      <span>${fmtDate(d.checkin)} → ${fmtDate(d.checkout)} · ${d.nights} night${d.nights > 1 ? 's' : ''}</span>`;
+    render();
+    $('status').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (e) { $('searchErr').textContent = 'Search failed, please try again.'; }
   finally { $('searchBtn').disabled = false; }
 };
 
-$('backBtn').onclick = () => { $('guest').classList.add('hidden'); $('searchBtn').click(); };
+function fmtDate(iso) { return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+
+function pick(room) {
+  chosen = { room, offer: search.offers.find((o) => o.room_type_id === room.room_type_id) };
+  const o = chosen.offer, img = room.photos[0];
+  $('picked').innerHTML = `${img ? `<img src="${esc(img.thumb)}" alt="">` : ''}
+    <div><strong>${o.rooms_needed > 1 ? o.rooms_needed + ' × ' : ''}${esc(room.name)}</strong><br>
+    <span class="small">${fmtDate(search.checkin)} → ${fmtDate(search.checkout)} · ${search.adults} adult${search.adults > 1 ? 's' : ''}${search.children ? ', ' + search.children + ' child' + (search.children > 1 ? 'ren' : '') : ''}</span><br>
+    <strong>${vnd(o.total)}</strong></div>`;
+  $('rooms').classList.add('hidden'); $('status').classList.add('hidden');
+  $('guest').classList.remove('hidden'); $('guest').scrollIntoView({ behavior: 'smooth' }); $('gname').focus({ preventScroll: true });
+}
+
+$('backBtn').onclick = () => { $('guest').classList.add('hidden'); $('rooms').classList.remove('hidden'); $('status').classList.remove('hidden'); };
 
 $('bookBtn').onclick = async () => {
   $('bookErr').textContent = ''; $('bookBtn').disabled = true;
   try {
     const r = await fetch('/api/book/hold', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ quote: chosen.quote, payment_method: 'bank', turnstile: turnstileToken,
+      body: JSON.stringify({ quote: chosen.offer.quote, payment_method: 'bank', turnstile: turnstileToken,
         guest: { name: $('gname').value, email: $('gemail').value, phone: $('gphone').value, note: $('gnote').value } }) });
     const d = await r.json();
     if (!d.ok) { $('bookErr').textContent = d.message; return; }
@@ -141,28 +332,37 @@ $('bookBtn').onclick = async () => {
 function showHold(h) {
   const b = h.bank, ok = h.state === 'confirmed';
   $('done').innerHTML = `
-    <h2 style="margin-top:0;font-size:1.2rem">Booking ${esc(h.reference)}
-      <span class="badge ${ok ? 'ok' : ''}">${ok ? 'Confirmed' : h.state === 'pending' ? 'Awaiting payment' : esc(h.state)}</span></h2>
-    ${ok ? '<p>We have received your payment. See you soon!</p>' : `
+    <h2>Booking ${esc(h.reference)}<span class="badge ${ok ? 'ok' : ''}">${ok ? 'Confirmed' : h.state === 'pending' ? 'Awaiting payment' : esc(h.state)}</span></h2>
+    ${ok ? '<p>We have received your payment. We look forward to welcoming you!</p>' : `
     <p>Your room is held until <strong>${esc(h.expires_display)}</strong>. Please transfer the full amount:</p>
-    <table>
-      <tr><td>Amount</td><td class="copy">${vnd(h.amount)}</td></tr>
-      <tr><td>Bank</td><td>${esc(b.bank_name)}</td></tr>
-      <tr><td>Account number</td><td class="copy">${esc(b.account_number)}</td></tr>
-      <tr><td>Account holder</td><td>${esc(b.account_holder)}</td></tr>
-      ${b.swift ? `<tr><td>SWIFT</td><td>${esc(b.swift)}</td></tr>` : ''}
-      <tr><td>Transfer note</td><td class="copy">${esc(b.transfer_note)}</td></tr>
-    </table>
-    ${h.qr_url ? `<div class="qr"><img src="${esc(h.qr_url)}" alt="VietQR code"><div class="small">Scan with any Vietnamese banking app</div></div>` : ''}
+    <div class="pay">
+      <table>
+        <tr><td>Amount</td><td class="copy">${vnd(h.amount)}</td></tr>
+        <tr><td>Bank</td><td>${esc(b.bank_name)}</td></tr>
+        <tr><td>Account number</td><td class="copy">${esc(b.account_number)}</td></tr>
+        <tr><td>Account holder</td><td>${esc(b.account_holder)}</td></tr>
+        ${b.swift ? `<tr><td>SWIFT</td><td>${esc(b.swift)}</td></tr>` : ''}
+        <tr><td>Transfer note</td><td class="copy">${esc(b.transfer_note)}</td></tr>
+      </table>
+      ${h.qr_url ? `<div class="qr"><img src="${esc(h.qr_url)}" alt="VietQR payment code"><div class="small">Scan with any Vietnamese banking app: amount and note are filled in</div></div>` : ''}
+    </div>
     <p class="small">We have emailed you these details. Your booking is confirmed once the money arrives.</p>
-    <p><button class="ghost" id="refreshBtn">Check payment status</button></p>`}`;
-  $('done').classList.remove('hidden');
+    <p><button class="btn ghost" id="refreshBtn">Check payment status</button></p>`}`;
+  $('done').classList.remove('hidden'); $('done').scrollIntoView({ behavior: 'smooth' });
   const rb = $('refreshBtn');
   if (rb) rb.onclick = async () => {
-    const r = await fetch('/api/book/hold/status?' + new URLSearchParams({ ref: h.reference, token: h.token }));
-    const d = await r.json(); if (d.ok) showHold(d);
+    const d = await (await fetch('/api/book/hold/status?' + new URLSearchParams({ ref: h.reference, token: h.token }))).json();
+    if (d.ok) showHold(d);
   };
 }
+
+// A link from the website can carry the search: /book?checkin=…&checkout=…&adults=2&children=0
+(async function start() {
+  const qs = new URLSearchParams(location.search);
+  ['checkin', 'checkout', 'adults', 'children'].forEach((k) => { if (qs.get(k)) $(k).value = qs.get(k); });
+  await loadRooms();
+  if (qs.get('checkin') && qs.get('checkout') && rooms.length) $('searchBtn').click();
+})();
 </script>
 </body>
 </html>

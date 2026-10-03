@@ -212,6 +212,7 @@ class LakBookingQuote(models.AbstractModel):
                 'room_type_id': room_type.id,
                 'name': room_type.name,
                 'description': room_type.description or '',
+                **room_type.web_content(),
                 'capacity': capacity,
                 'rooms_needed': rooms_needed,
                 'only_left': left if left < SHOW_LEFT_BELOW else None,

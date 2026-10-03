@@ -192,6 +192,39 @@ class LakBookingEngine(http.Controller):
             return self._error('not_found', 'Booking not found.', status=404)
         return self._reply(dict(hold.public_view(), ok=True))
 
+    @http.route('/api/book/rooms', type='http', auth='public', methods=['GET', 'OPTIONS'],
+                csrf=False, readonly=True, save_session=False)
+    def rooms(self, **kwargs):
+        """The room types the website sells, with photos and text but no
+        price or availability: what the page shows before a search."""
+        if request.httprequest.method == 'OPTIONS':
+            return self._reply({})
+        if not self._enabled():
+            return self._error('disabled', 'Online booking is not open yet.', status=503)
+        types = request.env['hotel.room.type'].sudo().with_context(lang=self._lang(kwargs)).search([
+            ('active', '=', True), ('is_roh', '=', False), ('website_bookable', '=', True),
+        ])
+        rooms = [dict(rt.web_content(), room_type_id=rt.id, name=rt.name, capacity=rt.capacity)
+                 for rt in types]
+        rooms.sort(key=lambda r: (not r['photos'], r['name']))
+        return self._reply({'ok': True, 'rooms': rooms})
+
+    @http.route('/api/book/photo/<int:image_id>/<int:size>', type='http', auth='public',
+                methods=['GET'], readonly=True, save_session=False)
+    def photo(self, image_id, size, **kwargs):
+        """A room photo for the booking page. Only photos of types the
+        website sells, and only at the sizes the image mixin stores."""
+        if size not in (512, 1024, 1920):
+            return request.not_found()
+        image = request.env['lak.room.type.image'].sudo().browse(image_id).exists()
+        if not image or not image.room_type_id.website_bookable or image.room_type_id.is_roh:
+            return request.not_found()
+        stream = request.env['ir.binary']._get_image_stream_from(
+            image, 'image_%d' % size, filename='room-%d.jpg' % image.id)
+        # Cache a day; the URL carries the photo's write date, so a
+        # replaced photo gets a new URL rather than a stale cache hit.
+        return stream.get_response(max_age=86400)
+
     @http.route('/book', type='http', auth='public', methods=['GET'],
                 readonly=True, save_session=False, sitemap=False)
     def book_page(self, **kwargs):
