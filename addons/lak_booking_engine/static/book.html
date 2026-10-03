@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Book Lak Tented Camp</title>
+<style>
+  :root { --ink:#1f2a24; --muted:#6b756f; --line:#dfe5e1; --bg:#f6f8f6; --card:#fff; --accent:#2f6b4f; --warn:#b4541a; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width:720px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:1.6rem; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:4px; }
+  input, textarea { width:100%; font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  button { font:inherit; font-weight:600; padding:11px 18px; border:0; border-radius:8px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  button:disabled { opacity:.5; cursor:wait; }
+  .offer { display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
+  .offer h3 { margin:0; font-size:1.1rem; }
+  .price { font-size:1.25rem; font-weight:700; white-space:nowrap; }
+  .small { font-size:.85rem; color:var(--muted); }
+  .left { color:var(--warn); font-weight:600; font-size:.85rem; }
+  .err { color:#a12a2a; margin:12px 0 0; }
+  table { width:100%; border-collapse:collapse; }
+  td { padding:8px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:first-child { color:var(--muted); width:42%; padding-right:12px; }
+  .copy { font-weight:700; letter-spacing:.03em; }
+  .qr { text-align:center; margin:16px 0 0; }
+  .qr img { width:240px; max-width:100%; }
+  .badge { display:inline-block; padding:2px 10px; border-radius:999px; background:#fdf1d8; color:#7a5200; font-size:.85rem; font-weight:600; }
+  .badge.ok { background:#dcf1e4; color:#1e5a3a; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Book your stay</h1>
+  <p class="sub">Lak Tented Camp · prices in VND per stay</p>
+
+  <section class="card" id="search">
+    <div class="grid">
+      <div><label for="checkin">Check-in</label><input type="date" id="checkin"></div>
+      <div><label for="checkout">Check-out</label><input type="date" id="checkout"></div>
+      <div><label for="adults">Adults</label><input type="number" id="adults" min="1" max="20" value="2"></div>
+      <div><label for="children">Children</label><input type="number" id="children" min="0" max="10" value="0"></div>
+    </div>
+    <p style="margin:16px 0 0"><button id="searchBtn">Search</button></p>
+    <p class="err" id="searchErr"></p>
+  </section>
+
+  <section id="offers"></section>
+
+  <section class="card hidden" id="guest">
+    <h2 style="margin-top:0;font-size:1.2rem">Your details</h2>
+    <p class="small" id="chosen"></p>
+    <div class="grid">
+      <div style="grid-column:1/-1"><label for="gname">Full name</label><input id="gname" autocomplete="name"></div>
+      <div><label for="gemail">Email</label><input id="gemail" type="email" autocomplete="email"></div>
+      <div><label for="gphone">Phone (optional)</label><input id="gphone" type="tel" autocomplete="tel"></div>
+      <div style="grid-column:1/-1"><label for="gnote">Requests (optional)</label><textarea id="gnote" rows="2"></textarea></div>
+    </div>
+    <p class="small">Payment: bank transfer of the full amount. Your room is held while we wait for it.</p>
+    <div id="turnstile"></div>
+    <p style="margin:16px 0 0"><button id="bookBtn">Book and get payment details</button>
+       <button class="ghost" id="backBtn">Back</button></p>
+    <p class="err" id="bookErr"></p>
+  </section>
+
+  <section class="card hidden" id="done"></section>
+</main>
+
+<script>
+const SITEKEY = '__TURNSTILE_SITEKEY__';
+const $ = (id) => document.getElementById(id);
+const vnd = (n) => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + ' ₫';
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let chosen = null, turnstileToken = '';
+
+(function initDates() {
+  const d = new Date(); d.setDate(d.getDate() + 14);
+  const iso = (x) => x.toISOString().slice(0, 10);
+  $('checkin').value = iso(d); d.setDate(d.getDate() + 2); $('checkout').value = iso(d);
+})();
+
+if (SITEKEY) {
+  window.onTurnstile = () => turnstile.render('#turnstile', { sitekey: SITEKEY, callback: (t) => { turnstileToken = t; } });
+  const s = document.createElement('script');
+  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstile'; s.async = true;
+  document.head.appendChild(s);
+}
+
+$('searchBtn').onclick = async () => {
+  $('searchErr').textContent = ''; $('offers').innerHTML = ''; $('guest').classList.add('hidden'); $('done').classList.add('hidden');
+  const q = new URLSearchParams({ checkin: $('checkin').value, checkout: $('checkout').value, adults: $('adults').value, children: $('children').value });
+  $('searchBtn').disabled = true;
+  try {
+    const r = await fetch('/api/book/search?' + q); const d = await r.json();
+    if (!d.ok) { $('searchErr').textContent = d.message; return; }
+    if (!d.offers.length) { $('offers').innerHTML = '<div class="card">No rooms are free for these dates. Please try other dates.</div>'; return; }
+    $('offers').innerHTML = d.offers.map((o, i) => `
+      <div class="card offer">
+        <div>
+          <h3>${o.rooms_needed > 1 ? o.rooms_needed + ' × ' : ''}${esc(o.name)}</h3>
+          <div class="small">${esc(o.description)}</div>
+          <div class="small">${d.nights} night(s) · up to ${o.capacity} guests per room</div>
+          ${o.only_left ? `<div class="left">Only ${o.only_left} left</div>` : ''}
+        </div>
+        <div style="text-align:right">
+          <div class="price">${vnd(o.total)}</div>
+          <button data-i="${i}">Select</button>
+        </div>
+      </div>`).join('');
+    $('offers').querySelectorAll('button').forEach((b) => b.onclick = () => {
+      chosen = d.offers[+b.dataset.i];
+      $('chosen').textContent = `${chosen.rooms_needed} × ${chosen.name}, ${d.checkin} → ${d.checkout}, ${vnd(chosen.total)}`;
+      $('offers').innerHTML = ''; $('guest').classList.remove('hidden'); $('gname').focus();
+    });
+  } catch (e) { $('searchErr').textContent = 'Search failed, please try again.'; }
+  finally { $('searchBtn').disabled = false; }
+};
+
+$('backBtn').onclick = () => { $('guest').classList.add('hidden'); $('searchBtn').click(); };
+
+$('bookBtn').onclick = async () => {
+  $('bookErr').textContent = ''; $('bookBtn').disabled = true;
+  try {
+    const r = await fetch('/api/book/hold', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quote: chosen.quote, payment_method: 'bank', turnstile: turnstileToken,
+        guest: { name: $('gname').value, email: $('gemail').value, phone: $('gphone').value, note: $('gnote').value } }) });
+    const d = await r.json();
+    if (!d.ok) { $('bookErr').textContent = d.message; return; }
+    showHold(d); $('guest').classList.add('hidden');
+  } catch (e) { $('bookErr').textContent = 'Booking failed, please try again.'; }
+  finally { $('bookBtn').disabled = false; }
+};
+
+function showHold(h) {
+  const b = h.bank, ok = h.state === 'confirmed';
+  $('done').innerHTML = `
+    <h2 style="margin-top:0;font-size:1.2rem">Booking ${esc(h.reference)}
+      <span class="badge ${ok ? 'ok' : ''}">${ok ? 'Confirmed' : h.state === 'pending' ? 'Awaiting payment' : esc(h.state)}</span></h2>
+    ${ok ? '<p>We have received your payment. See you soon!</p>' : `
+    <p>Your room is held until <strong>${esc(h.expires_display)}</strong>. Please transfer the full amount:</p>
+    <table>
+      <tr><td>Amount</td><td class="copy">${vnd(h.amount)}</td></tr>
+      <tr><td>Bank</td><td>${esc(b.bank_name)}</td></tr>
+      <tr><td>Account number</td><td class="copy">${esc(b.account_number)}</td></tr>
+      <tr><td>Account holder</td><td>${esc(b.account_holder)}</td></tr>
+      ${b.swift ? `<tr><td>SWIFT</td><td>${esc(b.swift)}</td></tr>` : ''}
+      <tr><td>Transfer note</td><td class="copy">${esc(b.transfer_note)}</td></tr>
+    </table>
+    ${h.qr_url ? `<div class="qr"><img src="${esc(h.qr_url)}" alt="VietQR code"><div class="small">Scan with any Vietnamese banking app</div></div>` : ''}
+    <p class="small">We have emailed you these details. Your booking is confirmed once the money arrives.</p>
+    <p><button class="ghost" id="refreshBtn">Check payment status</button></p>`}`;
+  $('done').classList.remove('hidden');
+  const rb = $('refreshBtn');
+  if (rb) rb.onclick = async () => {
+    const r = await fetch('/api/book/hold/status?' + new URLSearchParams({ ref: h.reference, token: h.token }));
+    const d = await r.json(); if (d.ok) showHold(d);
+  };
+}
+</script>
+</body>
+</html>

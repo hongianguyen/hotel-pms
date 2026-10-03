@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- use_default_to must be off or email_to is ignored (Odoo 19). -->
+        <record id="mail_template_hold_instructions" model="mail.template">
+            <field name="name">Booking Engine: Bank Transfer Instructions</field>
+            <field name="model_id" ref="model_lak_booking_hold"/>
+            <field name="subject">Your booking {{ object.name }} - please complete your bank transfer</field>
+            <field name="email_from">{{ object.env.company.email or user.email }}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="email_to">{{ object.guest_email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif; color: #222;">
+    <t t-set="bank" t-value="object.bank_details()"/>
+    <p>Dear <t t-out="object.guest_name"/>,</p>
+    <p>Thank you for booking with us. Your room is held until
+        <strong><t t-out="object.expires_display"/></strong>.
+        To confirm it, please transfer the full amount below. Your booking is
+        confirmed once we receive the money; we will email you then.</p>
+    <table style="border-collapse: collapse; width: 100%; max-width: 560px;">
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Booking reference</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.name"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Room</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.room_count"/> x <t t-out="object.room_type_id.name"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Dates</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkin_date.strftime('%d/%m/%Y')"/> - <t t-out="object.checkout_date.strftime('%d/%m/%Y')"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Guests</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.adults"/> adult(s), <t t-out="object.children"/> child(ren)</td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Amount to transfer</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong><t t-out="object.amount_display"/></strong></td></tr>
+    </table>
+    <h3 style="margin-top: 20px;">Bank transfer details</h3>
+    <table style="border-collapse: collapse; width: 100%; max-width: 560px;">
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Bank</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="bank['bank_name']"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Account number</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="bank['account_number']"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Account holder</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="bank['account_holder']"/></td></tr>
+        <tr t-if="bank['swift']"><td style="padding: 8px; border: 1px solid #ddd;"><strong>SWIFT</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="bank['swift']"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Transfer note</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong><t t-out="object.name"/></strong> (please write exactly this)</td></tr>
+    </table>
+    <p t-if="object.qr_url">In Vietnam you can scan this code with any banking app; the amount and note are filled in for you:</p>
+    <p t-if="object.qr_url"><img t-att-src="object.qr_url" alt="VietQR" style="width: 260px;"/></p>
+    <p>If the transfer does not reach us by the time above, the room is released automatically.</p>
+    <p>Best regards,<br/><t t-out="object.env.company.name"/></p>
+</div>
+            </field>
+        </record>
+
+        <record id="mail_template_hold_confirmed" model="mail.template">
+            <field name="name">Booking Engine: Booking Confirmed</field>
+            <field name="model_id" ref="model_lak_booking_hold"/>
+            <field name="subject">Booking confirmed - {{ object.name }}</field>
+            <field name="email_from">{{ object.env.company.email or user.email }}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="email_to">{{ object.guest_email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif; color: #222;">
+    <p>Dear <t t-out="object.guest_name"/>,</p>
+    <p>We have received your payment of <strong><t t-out="object.amount_display"/></strong>.
+        Your booking is confirmed.</p>
+    <table style="border-collapse: collapse; width: 100%; max-width: 560px;">
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Booking reference</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.name"/></td></tr>
+        <tr t-foreach="object.reservation_ids" t-as="res">
+            <td style="padding: 8px; border: 1px solid #ddd;"><strong><t t-out="res.reservation_number"/></strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="res.room_id.display_name"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Check-in</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkin_date.strftime('%d/%m/%Y')"/></td></tr>
+        <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Check-out</strong></td>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkout_date.strftime('%d/%m/%Y')"/></td></tr>
+    </table>
+    <p>We look forward to welcoming you!</p>
+    <p>Best regards,<br/><t t-out="object.env.company.name"/></p>
+</div>
+            </field>
+        </record>
+
+        <record id="mail_template_hold_expired" model="mail.template">
+            <field name="name">Booking Engine: Booking Released (unpaid)</field>
+            <field name="model_id" ref="model_lak_booking_hold"/>
+            <field name="subject">Your booking {{ object.name }} has been released</field>
+            <field name="email_from">{{ object.env.company.email or user.email }}</field>
+            <field name="use_default_to" eval="False"/>
+            <field name="email_to">{{ object.guest_email }}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif; color: #222;">
+    <p>Dear <t t-out="object.guest_name"/>,</p>
+    <p>We did not receive the transfer for booking <strong><t t-out="object.name"/></strong>
+        in time, so the room has been released.</p>
+    <p>If you have already paid, please reply to this email with your
+        transfer receipt and we will sort it out straight away.</p>
+    <p>Best regards,<br/><t t-out="object.env.company.name"/></p>
+</div>
+            </field>
+        </record>
+    </data>
+</odoo>

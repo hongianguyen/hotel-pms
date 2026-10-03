@@ -15,8 +15,11 @@ guest yesterday's availability.
 """
 import json
 import logging
+import os
 import time
 from collections import defaultdict, deque
+
+import requests
 
 from odoo import http
 from odoo.http import request
@@ -25,6 +28,10 @@ from ..models.booking_quote import BookingInputError
 
 _logger = logging.getLogger(__name__)
 
+TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+MAX_BODY = 16 * 1024     # a hold request is a few hundred bytes
+HOLD_RATE_MAX = 5        # hold attempts per IP per RATE_WINDOW
+
 RATE_MAX = 60            # searches ...
 RATE_WINDOW = 300        # ... per IP per 5 minutes
 
@@ -32,6 +39,7 @@ RATE_WINDOW = 300        # ... per IP per 5 minutes
 # runaway script on one connection; the real limit belongs in a Cloudflare
 # rate-limiting rule on /api/book/*.
 _RECENT = defaultdict(deque)
+_RECENT_HOLDS = defaultdict(deque)
 
 LANGS = {'en': 'en_US', 'vi': 'vi_VN'}
 
@@ -63,7 +71,7 @@ class LakBookingEngine(http.Controller):
         if origin and origin in allowed:
             headers += [
                 ('Access-Control-Allow-Origin', origin),
-                ('Access-Control-Allow-Methods', 'GET, OPTIONS'),
+                ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
                 ('Access-Control-Allow-Headers', 'Content-Type'),
                 ('Access-Control-Max-Age', '86400'),
             ]
@@ -77,16 +85,35 @@ class LakBookingEngine(http.Controller):
     def _error(self, code, message, status=400):
         return self._reply({'ok': False, 'error': code, 'message': message}, status=status)
 
-    def _rate_limited(self):
+    def _rate_limited(self, recent=_RECENT, limit=RATE_MAX):
         ip = request.httprequest.remote_addr or '?'
         now = time.time()
-        hits = _RECENT[ip]
+        hits = recent[ip]
         while hits and hits[0] < now - RATE_WINDOW:
             hits.popleft()
-        if len(hits) >= RATE_MAX:
+        if len(hits) >= limit:
             return True
         hits.append(now)
         return False
+
+    def _turnstile_ok(self, token):
+        """Cloudflare's bot check. Without a secret configured, bookings are
+        refused unless the server is explicitly marked as a test server."""
+        secret = self._param('turnstile_secret')
+        if not secret:
+            return self._param('allow_without_turnstile') == '1'
+        if not token:
+            return False
+        try:
+            resp = requests.post(TURNSTILE_URL, data={
+                'secret': secret,
+                'response': token,
+                'remoteip': request.httprequest.remote_addr,
+            }, timeout=10)
+            return bool(resp.json().get('success'))
+        except (requests.RequestException, ValueError):
+            _logger.warning('Turnstile verification unreachable', exc_info=True)
+            return False
 
     def _lang(self, kwargs):
         code = LANGS.get((kwargs.get('lang') or 'en').lower()[:2], 'en_US')
@@ -114,3 +141,69 @@ class LakBookingEngine(http.Controller):
             _logger.exception('Booking engine search failed for %s', kwargs)
             return self._error('server_error', 'Search failed, please try again.', status=500)
         return self._reply(dict(result, ok=True))
+
+    @http.route('/api/book/hold', type='http', auth='public', methods=['POST', 'OPTIONS'],
+                csrf=False, save_session=False)
+    def hold(self, **kwargs):
+        """Accept an offer: hold the rooms and return how to pay."""
+        if request.httprequest.method == 'OPTIONS':
+            return self._reply({})
+        if not self._enabled():
+            return self._error('disabled', 'Online booking is not open yet.', status=503)
+        if self._rate_limited(_RECENT_HOLDS, HOLD_RATE_MAX):
+            return self._error('rate_limited', 'Too many attempts, please wait a few minutes.', status=429)
+        raw = request.httprequest.get_data(cache=False)
+        if len(raw) > MAX_BODY:
+            return self._error('bad_request', 'Request too large.', status=413)
+        try:
+            payload = json.loads(raw or b'{}')
+        except ValueError:
+            return self._error('bad_request', 'Malformed request.')
+        if not isinstance(payload, dict):
+            return self._error('bad_request', 'Malformed request.')
+        if not self._turnstile_ok(payload.get('turnstile')):
+            return self._error('bot_check', 'Please complete the security check and try again.', status=403)
+        lang = self._lang(payload)
+        Hold = request.env['lak.booking.hold'].sudo().with_context(lang=lang)
+        try:
+            result = Hold.create_from_web(
+                payload, client_ip=request.httprequest.remote_addr, lang=lang)
+        except BookingInputError as e:
+            # Undo anything already written (reservations, the room lock).
+            request.env.cr.rollback()
+            return self._error(e.code, str(e), status=409 if e.code in (
+                'not_available', 'price_changed', 'quote_expired') else 400)
+        except Exception:
+            request.env.cr.rollback()
+            _logger.exception('Booking engine hold failed')
+            return self._error('server_error', 'Booking failed, please try again or contact us.', status=500)
+        return self._reply(dict(result, ok=True))
+
+    @http.route('/api/book/hold/status', type='http', auth='public', methods=['GET', 'OPTIONS'],
+                csrf=False, readonly=True, save_session=False)
+    def hold_status(self, **kwargs):
+        if request.httprequest.method == 'OPTIONS':
+            return self._reply({})
+        if self._rate_limited():
+            return self._error('rate_limited', 'Too many requests, please wait a few minutes.', status=429)
+        hold = request.env['lak.booking.hold'].sudo().find_public(
+            kwargs.get('ref'), kwargs.get('token'))
+        if not hold:
+            return self._error('not_found', 'Booking not found.', status=404)
+        return self._reply(dict(hold.public_view(), ok=True))
+
+    @http.route('/book', type='http', auth='public', methods=['GET'],
+                readonly=True, save_session=False, sitemap=False)
+    def book_page(self, **kwargs):
+        """A plain page to try the whole flow before the website has its
+        own. Served only while the engine is enabled."""
+        if not self._enabled():
+            return request.make_response('Online booking is not open yet.', status=503,
+                                         headers=[('Content-Type', 'text/plain; charset=utf-8')])
+        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', 'book.html')
+        with open(path, encoding='utf-8') as f:
+            html = f.read().replace('__TURNSTILE_SITEKEY__', self._param('turnstile_sitekey'))
+        return request.make_response(html, headers=[
+            ('Content-Type', 'text/html; charset=utf-8'),
+            ('Cache-Control', 'no-store'),
+        ])

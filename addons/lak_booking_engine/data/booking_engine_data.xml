@@ -11,5 +11,43 @@
             <field name="key">lak_booking_engine.allowed_origins</field>
             <field name="value">https://www.laktentedcamp.com,https://laktentedcamp.com,https://pms.laktentedcamp.com</field>
         </record>
+        <!-- Bank transfer: the account guests pay into. Holder and bank name
+             are read from the matching res.partner.bank, so only the number
+             lives here. 970422 is MB Bank's NAPAS BIN (for the VietQR code). -->
+        <record id="param_bank_account" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.bank_account</field>
+            <field name="value">2626255552</field>
+        </record>
+        <record id="param_bank_bin" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.bank_bin</field>
+            <field name="value">970422</field>
+        </record>
+        <record id="param_hold_hours" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.hold_hours</field>
+            <field name="value">24</field>
+        </record>
+        <!-- Unpaid holds cost the camp rooms, not money: cap them. -->
+        <record id="param_max_pending_per_email" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.max_pending_per_email</field>
+            <field name="value">2</field>
+        </record>
+        <record id="param_max_pending_per_ip" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.max_pending_per_ip</field>
+            <field name="value">3</field>
+        </record>
+        <record id="param_max_pending_rooms" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.max_pending_rooms</field>
+            <field name="value">10</field>
+        </record>
+        <!-- Cloudflare Turnstile secret. Bookings are refused while it is
+             empty unless allow_without_turnstile is 1 (test servers only). -->
+        <record id="param_turnstile_secret" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.turnstile_secret</field>
+            <field name="value"> </field>
+        </record>
+        <record id="param_allow_without_turnstile" model="ir.config_parameter">
+            <field name="key">lak_booking_engine.allow_without_turnstile</field>
+            <field name="value">0</field>
+        </record>
     </data>
 </odoo>

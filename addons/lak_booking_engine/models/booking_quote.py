@@ -116,6 +116,20 @@ class LakBookingQuote(models.AbstractModel):
             return None
         return nightly, total
 
+    @api.model
+    def _party_split(self, adults, children, rooms):
+        """[(adults, children)] per room, as evenly as possible, with at least
+        one adult in every room. None when there are fewer adults than rooms
+        (children are not booked into a room on their own)."""
+        if adults < rooms:
+            return None
+        split = []
+        for i in range(rooms):
+            a = adults // rooms + (1 if i < adults % rooms else 0)
+            c = children // rooms + (1 if i < children % rooms else 0)
+            split.append((a, c))
+        return split
+
     # ── Quote token ────────────────────────────────────────────────────
     @api.model
     def _sign(self, payload):
@@ -173,15 +187,18 @@ class LakBookingQuote(models.AbstractModel):
             left = free.get(room_type.id, 0)
             if rooms_needed > MAX_ROOMS or left < rooms_needed:
                 continue
-            # Spread the party evenly so every room is priced as it will be
-            # booked (adults first; nobody's room is empty).
-            priced = self._price_stay(room_type, checkin, checkout,
-                                      math.ceil(adults / rooms_needed),
-                                      math.ceil(children / rooms_needed))
-            if not priced:
+            # Price every room with the party it will really carry: the hold
+            # creates exactly these rooms, and refuses when its saved total
+            # differs from this one.
+            split = self._party_split(adults, children, rooms_needed)
+            if not split:
                 continue
-            nightly, room_total = priced
-            total = room_total * rooms_needed
+            priced = [self._price_stay(room_type, checkin, checkout, a, c)
+                      for a, c in split]
+            if not all(priced):
+                continue
+            nightly, room_total = priced[0]
+            total = sum(p[1] for p in priced)
             token = self.make_quote_token({
                 'room_type_id': room_type.id,
                 'checkin': checkin.isoformat(),
