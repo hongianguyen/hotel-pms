@@ -144,6 +144,33 @@ class TestHold(BookingEngineCase):
         with self.assertRaises(UserError):
             hold.action_confirm_payment()
 
+    def test_confirm_refused_when_booking_changed_since(self):
+        hold, _v = self._hold()
+        hold.reservation_ids.checkout_date = self.start + timedelta(days=3)
+        with self.assertRaises(UserError):
+            hold.action_confirm_payment()
+        self.assertEqual(hold.state, 'pending')
+        self.assertEqual(hold.reservation_ids.state, 'draft')
+
+    def test_reception_user_can_work_the_booking(self):
+        """Reception holds no accounting rights; the screen and both buttons
+        must still work for them."""
+        user = self.env['res.users'].create({
+            'name': 'Zz Reception', 'login': 'zz.reception.hold',
+            'group_ids': [(6, 0, [self.env.ref('hotel_core.group_hotel_reception').id])],
+        })
+        hold, _v = self._hold(self._quote(adults=4))
+        other, _v = self._hold(email='zz.other@example.com', ip='10.2.2.2')
+        as_rec = hold.with_user(user)
+        as_rec.read(['name', 'amount_display', 'qr_url', 'expiring_soon', 'expires_display', 'state'])
+        as_rec.reservation_ids.folio_id.mapped('name')
+        self.env['lak.booking.hold'].with_user(user).search([('expiring_soon', '=', True)])
+        as_rec.action_confirm_payment()
+        self.assertEqual(hold.state, 'confirmed')
+        self.assertTrue(all(r._prepayment_received() for r in hold.reservation_ids))
+        other.with_user(user).action_cancel()
+        self.assertEqual(other.state, 'cancelled')
+
     def test_cancel_releases_rooms(self):
         hold, _v = self._hold()
         hold.action_cancel()

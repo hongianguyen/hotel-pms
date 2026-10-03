@@ -379,11 +379,22 @@ class LakBookingHold(models.Model):
 
     # ── Messages ───────────────────────────────────────────────────────
     def _send(self, xmlid):
+        """Queue, never send inline: a hold is created while every room row
+        is locked, and an SMTP round-trip there would make reception's own
+        confirmations wait on it -- and would email a reference that does not
+        exist if the transaction then failed. Queued mail goes out only after
+        commit; the queue cron is woken because creating a mail does not."""
         template = self.env.ref('lak_booking_engine.%s' % xmlid, raise_if_not_found=False)
+        queued = False
         for hold in self:
             if template and hold.guest_email:
                 template.sudo().with_context(lang=hold.lang or 'en_US').send_mail(
-                    hold.id, force_send=True)
+                    hold.id, force_send=False)
+                queued = True
+        if queued:
+            cron = self.env.ref('mail.ir_cron_mail_scheduler_action', raise_if_not_found=False)
+            if cron:
+                cron.sudo()._trigger()
 
     def _notify_reception(self):
         """A to-do for reception: watch the bank app for this reference."""
@@ -414,6 +425,19 @@ class LakBookingHold(models.Model):
                 raise UserError(_(
                     'The reservations of %s are no longer drafts. Open them and '
                     'confirm or record the payment there.', hold.name))
+            # Each room is paid at its own current total. If someone changed
+            # a room, dates or party since the guest booked, those totals no
+            # longer add up to what the guest was asked to transfer, and
+            # posting them would record money that never arrived.
+            currency = hold.currency_id or self.env.company.currency_id
+            if currency.compare_amounts(sum(reservations.mapped('total_amount')), hold.amount) != 0:
+                raise UserError(_(
+                    'Booking %(ref)s was changed after the guest booked: its rooms now '
+                    'total %(now)s but the guest was asked to transfer %(asked)s. '
+                    'Confirm the reservations and record the payment by hand.',
+                    ref=hold.name,
+                    now=formatLang(self.env, sum(reservations.mapped('total_amount')), currency_obj=currency),
+                    asked=hold.amount_display))
             reservations.with_context(skip_confirmation_email=True).action_confirm()
             # One payment per room, on that room's own folio: check-in judges
             # each reservation by its own folios, so a lump sum on the first
