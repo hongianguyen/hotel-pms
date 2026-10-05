@@ -4,8 +4,6 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools.mail import email_normalize
 from datetime import timedelta
 
-from .hotel_rate_plan import ACCOUNT_TYPES
-
 
 class HotelReservation(models.Model):
     _name = 'hotel.reservation'
@@ -98,9 +96,9 @@ class HotelReservation(models.Model):
         help='Party the invoice is issued to: the agency/company for '
              'corporate bookings, otherwise the guest.',
     )
-    account_type = fields.Selection(
-        selection=ACCOUNT_TYPES,
-        string='Account Type', compute='_compute_account_type', store=True,
+    account_type_id = fields.Many2one(
+        'hotel.account.type', string='Account Type',
+        compute='_compute_account_type', store=True, index=True,
         help='Direct Guest without an agency, otherwise the agency\'s account '
              'type (OTA, Travel Agent, Corporate). Decides which rate plans '
              'the booking may use.')
@@ -224,18 +222,20 @@ class HotelReservation(models.Model):
             else:
                 rec.nightly_rate = 0.0
 
-    @api.depends('agency_id.hotel_agency_type', 'group_id.agency_id.hotel_agency_type')
+    @api.depends('agency_id.hotel_account_type_id', 'group_id.agency_id.hotel_account_type_id')
     def _compute_account_type(self):
+        direct = self.env['hotel.account.type'].direct()
         for rec in self:
             agency = rec._effective_agency()
-            rec.account_type = (agency.hotel_agency_type or 'direct') if agency else 'direct'
+            rec.account_type_id = (agency.hotel_account_type_id if agency else False) or direct
 
     @api.model
     def _account_type_from_vals(self, vals):
         agency = self.env['res.partner'].browse(vals.get('agency_id') or [])
         if not agency and vals.get('group_id'):
             agency = self.env['hotel.booking.group'].browse(vals['group_id']).agency_id
-        return (agency.hotel_agency_type or 'direct') if agency else 'direct'
+        return (agency.hotel_account_type_id if agency else False) \
+            or self.env['hotel.account.type'].direct()
 
     # Not on 'state': a booking made before plans had account types must
     # still check in. Judged when the plan or the agency changes.
@@ -244,16 +244,14 @@ class HotelReservation(models.Model):
         for rec in self:
             if rec.state in ('cancelled', 'no_show', 'checked_out') or not rec.rate_plan_id:
                 continue
-            if not rec.rate_plan_id.allows_account_type(rec.account_type):
-                types = dict(rec._fields['account_type']._description_selection(self.env))
-                plan_types = dict(rec.rate_plan_id._fields['account_type']._description_selection(self.env))
+            if not rec.rate_plan_id.allows_account_type(rec.account_type_id):
                 raise ValidationError(_(
                     'Rate plan "%(plan)s" is for %(plan_type)s bookings only, but '
                     'reservation %(number)s is a %(type)s booking.',
                     plan=rec.rate_plan_id.name,
-                    plan_type=plan_types[rec.rate_plan_id.account_type],
+                    plan_type=rec.rate_plan_id.account_type_id.name,
                     number=rec.reservation_number or _('new'),
-                    type=types.get(rec.account_type, rec.account_type)))
+                    type=rec.account_type_id.name))
 
     def _party_rate_on(self, day):
         """The per-guest plan's price for this party on `day`, or False."""

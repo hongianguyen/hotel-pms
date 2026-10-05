@@ -137,21 +137,25 @@ class TestRatePlanAccountType(TransactionCase):
             'name': 'ZZ Acct Tent', 'max_adults': 2, 'max_children': 1, 'base_rate': 500.0})
         cls.room = cls.env['hotel.room'].create({'name': 'ZZA-01', 'room_type_id': cls.room_type.id})
         cls.guest = cls.env['res.partner'].create({'name': 'ZZ Acct Guest'})
+        Type = cls.env['hotel.account.type']
+        cls.t_direct, cls.t_ota = Type.direct(), Type.by_code('ota')
+        cls.t_agent, cls.t_corp = Type.by_code('travel_agent'), Type.by_code('corporate')
         Partner = cls.env['res.partner']
         cls.ota = Partner.create({'name': 'ZZ OTA', 'is_company': True, 'is_hotel_agency': True,
-                                  'hotel_agency_type': 'ota', 'hotel_credit_term': True})
+                                  'hotel_account_type_id': cls.t_ota.id, 'hotel_credit_term': True})
         cls.agent = Partner.create({'name': 'ZZ Agent', 'is_company': True, 'is_hotel_agency': True,
-                                    'hotel_agency_type': 'travel_agent', 'hotel_credit_term': True})
+                                    'hotel_account_type_id': cls.t_agent.id, 'hotel_credit_term': True})
 
         def plan(name, account_type, first, default=False):
             return Plan.create({
-                'name': name, 'pricing_mode': 'pax', 'account_type': account_type,
+                'name': name, 'pricing_mode': 'pax',
+                'account_type_id': account_type.id if account_type else False,
                 'is_default': default,
                 'line_ids': [(0, 0, {'room_type_id': cls.room_type.id, 'first_pax': first})]})
-        cls.plan_direct = plan('ZZ Direct', 'direct', 1000.0, True)
-        cls.plan_ota = plan('ZZ OTA Rate', 'ota', 1100.0, True)
-        cls.plan_agent = plan('ZZ Agent Rate', 'travel_agent', 800.0, True)
-        cls.plan_any = plan('ZZ Any', 'any', 900.0)
+        cls.plan_direct = plan('ZZ Direct', cls.t_direct, 1000.0, True)
+        cls.plan_ota = plan('ZZ OTA Rate', cls.t_ota, 1100.0, True)
+        cls.plan_agent = plan('ZZ Agent Rate', cls.t_agent, 800.0, True)
+        cls.plan_any = plan('ZZ Any', None, 900.0)
         start = date.today() + timedelta(days=520)
         cls.vals = {
             'guest_id': cls.guest.id, 'room_type_id': cls.room_type.id, 'room_id': cls.room.id,
@@ -163,10 +167,11 @@ class TestRatePlanAccountType(TransactionCase):
         return self.env['hotel.reservation'].create(dict(self.vals, **extra))
 
     def test_account_type_comes_from_the_agency(self):
-        self.assertEqual(self._book().account_type, 'direct')
-        self.assertEqual(self._book(agency_id=self.ota.id, booker_id=self.ota.id).account_type, 'ota')
-        self.assertEqual(self._book(agency_id=self.agent.id, booker_id=self.agent.id).account_type,
-                         'travel_agent')
+        self.assertEqual(self._book().account_type_id, self.t_direct)
+        self.assertEqual(self._book(agency_id=self.ota.id, booker_id=self.ota.id).account_type_id,
+                         self.t_ota)
+        self.assertEqual(self._book(agency_id=self.agent.id, booker_id=self.agent.id).account_type_id,
+                         self.t_agent)
 
     def test_each_account_type_gets_its_own_default(self):
         self.assertEqual(self._book().rate_plan_id, self.plan_direct)
@@ -179,7 +184,7 @@ class TestRatePlanAccountType(TransactionCase):
     def test_falls_back_to_the_all_accounts_default(self):
         corporate = self.env['res.partner'].create({
             'name': 'ZZ Corp', 'is_company': True, 'is_hotel_agency': True,
-            'hotel_agency_type': 'corporate', 'hotel_credit_term': True})
+            'hotel_account_type_id': self.t_corp.id, 'hotel_credit_term': True})
         self.assertFalse(self._book(agency_id=corporate.id, booker_id=corporate.id).rate_plan_id)
         self.plan_any.is_default = True
         self.assertEqual(self._book(agency_id=corporate.id, booker_id=corporate.id).rate_plan_id,
@@ -199,4 +204,27 @@ class TestRatePlanAccountType(TransactionCase):
     def test_one_default_per_account_type(self):
         with self.assertRaises(ValidationError):
             self.env['hotel.rate.plan'].create({
-                'name': 'ZZ Second OTA Default', 'account_type': 'ota', 'is_default': True})
+                'name': 'ZZ Second OTA Default', 'account_type_id': self.t_ota.id,
+                'is_default': True})
+
+    def test_a_new_account_type_works_like_the_others(self):
+        """Account types are records the hotel adds itself."""
+        school = self.env['hotel.account.type'].create({'name': 'ZZ School Groups', 'code': 'zz_school'})
+        agency = self.env['res.partner'].create({
+            'name': 'ZZ School', 'is_company': True, 'is_hotel_agency': True,
+            'hotel_account_type_id': school.id, 'hotel_credit_term': True})
+        plan = self.env['hotel.rate.plan'].create({
+            'name': 'ZZ School Rate', 'pricing_mode': 'pax', 'account_type_id': school.id,
+            'is_default': True,
+            'line_ids': [(0, 0, {'room_type_id': self.room_type.id, 'first_pax': 700.0})]})
+        res = self._book(agency_id=agency.id, booker_id=agency.id)
+        self.assertEqual((res.account_type_id, res.rate_plan_id, res.total_amount), (school, plan, 700.0))
+        with self.assertRaises(ValidationError):
+            self._book(rate_plan_id=plan.id)          # a direct booking
+
+    def test_direct_guest_type_is_protected(self):
+        from odoo.exceptions import UserError
+        with self.assertRaises(UserError):
+            self.t_direct.active = False
+        with self.assertRaises(UserError):
+            self.t_direct.unlink()

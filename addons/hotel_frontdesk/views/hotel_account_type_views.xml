@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_account_type_list" model="ir.ui.view">
+        <field name="name">hotel.account.type.list</field>
+        <field name="model">hotel.account.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description"/>
+                <field name="is_direct"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hotel_account_type_search" model="ir.ui.view">
+        <field name="name">hotel.account.type.search</field>
+        <field name="model">hotel.account.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hotel_account_type" model="ir.actions.act_window">
+        <field name="name">Account Types</field>
+        <field name="res_model">hotel.account.type</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add an account type</p>
+            <p>Kinds of account that send you bookings, e.g. OTA, Travel Agent,
+                Corporate. Set one on each agency; rate plans can be limited to one.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hotel_account_types"
+              name="Account Types"
+              parent="hotel_core.menu_hotel_config"
+              action="action_hotel_account_type"
+              groups="hotel_core.group_hotel_admin"
+              sequence="40"/>
+</odoo>

@@ -114,9 +114,9 @@
                     <group>
                         <group string="Pricing">
                             <field name="combo_id"/>
-                            <field name="account_type" readonly="1"/>
+                            <field name="account_type_id" readonly="1"/>
                             <field name="rate_plan_id" invisible="combo_id"
-                                   domain="[('account_type', 'in', ('any', account_type or 'direct'))]"/>
+                                   domain="['|', ('account_type_id', '=', False), ('account_type_id', '=', account_type_id)]"/>
                             <field name="payment_required"/>
                             <field name="prepaid" invisible="not payment_required"/>
                             <field name="nightly_rate" widget="monetary"/>

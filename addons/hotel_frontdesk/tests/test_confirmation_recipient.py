@@ -37,7 +37,7 @@ class TestConfirmationRecipient(TransactionCase):
             'name': 'ZZ Mail Corp',
             'is_company': True,
             'is_hotel_agency': True,
-            'hotel_agency_type': 'corporate',
+            'hotel_account_type_id': cls.env.ref('hotel_frontdesk.account_type_corporate').id,
             'hotel_routing': 'room',
         })
         cls.booker = cls.env['res.partner'].create({

@@ -23,13 +23,6 @@ to both modes alike.
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-ACCOUNT_TYPES = [
-    ('direct', 'Direct Guest'),
-    ('ota', 'OTA'),
-    ('travel_agent', 'Travel Agent'),
-    ('corporate', 'Corporate'),
-]
-
 WEEKDAY_FIELDS = ('day_monday', 'day_tuesday', 'day_wednesday', 'day_thursday',
                   'day_friday', 'day_saturday', 'day_sunday')
 
@@ -43,12 +36,11 @@ class HotelRatePlan(models.Model):
     ], string='Pricing', default='room', required=True,
         help='Per room: one price a night whoever stays. Per guest: the price '
              'is built from the guests in the room, using the rows below.')
-    account_type = fields.Selection(
-        [('any', 'All Accounts')] + ACCOUNT_TYPES, string='Account Type',
-        default='any', required=True,
-        help='Which bookings may use this plan: a direct guest (no agency), '
-             'or bookings from an OTA, travel agent or corporate account. '
-             'A booking takes its account type from its agency.')
+    account_type_id = fields.Many2one(
+        'hotel.account.type', string='Account Type',
+        help='Which bookings may use this plan. Empty = all accounts. A booking '
+             'takes its account type from its agency; without one it is a '
+             'Direct Guest booking.')
     is_default = fields.Boolean(
         'Default Plan',
         help='New bookings of this account type made without a rate plan '
@@ -56,19 +48,21 @@ class HotelRatePlan(models.Model):
     line_ids = fields.One2many(
         'hotel.rate.plan.line', 'rate_plan_id', string='Per-Guest Rates', copy=True)
 
-    @api.constrains('is_default', 'account_type', 'active')
+    @api.constrains('is_default', 'account_type_id', 'active')
     def _check_single_default(self):
-        for account_type in set(self.filtered('is_default').mapped('account_type')):
-            defaults = self.search([('is_default', '=', True), ('account_type', '=', account_type)])
+        for plan in self.filtered('is_default'):
+            defaults = self.search([('is_default', '=', True),
+                                    ('account_type_id', '=', plan.account_type_id.id)])
             if len(defaults) > 1:
-                label = dict(self._fields['account_type']._description_selection(self.env))[account_type]
                 raise ValidationError(_(
                     'Only one default rate plan per account type; %(type)s has %(plans)s.',
-                    type=label, plans=', '.join(defaults.mapped('name'))))
+                    type=plan.account_type_id.name or _('All Accounts'),
+                    plans=', '.join(defaults.mapped('name'))))
 
     def allows_account_type(self, account_type):
+        """May a booking of `account_type` (a hotel.account.type) use this plan?"""
         self.ensure_one()
-        return self.account_type in ('any', account_type or 'direct')
+        return not self.account_type_id or self.account_type_id == account_type
 
     def _can_price(self, room_type):
         self.ensure_one()
@@ -77,17 +71,18 @@ class HotelRatePlan(models.Model):
         return not self.room_type_id or self.room_type_id == room_type
 
     @api.model
-    def default_plan_for(self, room_type, account_type='direct'):
-        """The default plan for this account type that can price
-        `room_type`: the account type's own default first, then the one
-        for all accounts. An empty set when neither fits."""
+    def default_plan_for(self, room_type, account_type=None):
+        """The default plan for this account type (Direct Guest when none is
+        given) that can price `room_type`: the type's own default first, then
+        the all-accounts one. An empty set when neither fits."""
         if not room_type or room_type.is_roh:
             return self.browse()
+        account_type = account_type or self.env['hotel.account.type'].direct()
         defaults = self.search([
             ('is_default', '=', True),
-            ('account_type', 'in', ('any', account_type or 'direct')),
+            ('account_type_id', 'in', [account_type.id, False]),
         ])
-        for plan in defaults.sorted(lambda p: p.account_type == 'any'):
+        for plan in defaults.sorted(lambda p: not p.account_type_id):
             if plan._can_price(room_type):
                 return plan
         return self.browse()

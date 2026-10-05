@@ -25,3 +25,5 @@ access_account_payment_reception,account.payment reception read,account.model_ac
 access_account_journal_reception,account.journal reception read,account.model_account_journal,hotel_core.group_hotel_reception,1,0,0,0
 access_hotel_rate_plan_line_admin,hotel.rate.plan.line admin,model_hotel_rate_plan_line,hotel_core.group_hotel_admin,1,1,1,1
 access_hotel_rate_plan_line_reception,hotel.rate.plan.line reception,model_hotel_rate_plan_line,hotel_core.group_hotel_reception,1,0,0,0
+access_hotel_account_type_admin,hotel.account.type admin,model_hotel_account_type,hotel_core.group_hotel_admin,1,1,1,1
+access_hotel_account_type_reception,hotel.account.type reception,model_hotel_account_type,hotel_core.group_hotel_reception,1,0,0,0

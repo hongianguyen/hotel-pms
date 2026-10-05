@@ -35,7 +35,7 @@ class TestSplitFolio(TransactionCase):
             'name': 'ZZ Corp',
             'is_company': True,
             'is_hotel_agency': True,
-            'hotel_agency_type': 'corporate',
+            'hotel_account_type_id': cls.env.ref('hotel_frontdesk.account_type_corporate').id,
             'hotel_credit_term': True,
             'hotel_routing': 'room',
         })
