@@ -97,6 +97,7 @@
                             <field name="guest_email"/>
                             <field name="adults"/>
                             <field name="children"/>
+                            <field name="infants"/>
                         </group>
                         <group string="Room &amp; Dates">
                             <field name="is_roh" invisible="1"/>

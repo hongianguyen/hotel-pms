@@ -112,8 +112,11 @@ class HotelReservation(models.Model):
     notes = fields.Text('Notes')
     color = fields.Integer('Color', compute='_compute_color')
 
-    adults = fields.Integer('Adults', default=1)
-    children = fields.Integer('Children', default=0)
+    # Guest age bands, as the camp defines them: adult 13 and over, child
+    # 6-12, infant under 6.
+    adults = fields.Integer('Adults', default=1, help='Guests aged 13 and over.')
+    children = fields.Integer('Children (6-12)', default=0, help='Guests aged 6 to 12.')
+    infants = fields.Integer('Infants (0-6)', default=0, help='Guests under 6.')
 
     # ── Pax (guest names staying in this room) ──────────────────────────
     pax_ids = fields.One2many(
@@ -360,6 +363,12 @@ class HotelReservation(models.Model):
         if self.combo_id and self.checkin_date:
             self.checkout_date = self.checkin_date + timedelta(
                 days=self.combo_id.nights)
+
+    @api.constrains('adults', 'children', 'infants')
+    def _check_guest_counts(self):
+        for rec in self:
+            if rec.adults < 0 or rec.children < 0 or rec.infants < 0:
+                raise ValidationError(_('Guest counts cannot be negative.'))
 
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
@@ -1153,7 +1162,8 @@ class HotelReservationPax(models.Model):
     name = fields.Char('Guest Name', required=True)
     pax_type = fields.Selection([
         ('adult', 'Adult'),
-        ('child', 'Child'),
+        ('child', 'Child (6-12)'),
+        ('infant', 'Infant (0-6)'),
     ], string='Type', default='adult', required=True)
     id_number = fields.Char('ID / Passport #')
     nationality_id = fields.Many2one('res.country', string='Nationality')
