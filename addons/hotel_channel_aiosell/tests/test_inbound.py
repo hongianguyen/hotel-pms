@@ -100,6 +100,15 @@ class TestInbound(AiosellCase):
         self.assertFalse(reservation.rate_plan_id)
         self.assertEqual(reservation.nightly_rate, 1100000.0)
 
+    def test_manual_rate_beats_the_channel_price(self):
+        if 'manual_rate' not in self.env['hotel.reservation']._fields:
+            self.skipTest('hotel_frontdesk without manual rates')
+        self._push()
+        reservation = self._reservations()
+        reservation.write({'manual_rate': True, 'manual_nightly_rate': 950000.0})
+        self.assertEqual(reservation.nightly_rate, 950000.0)
+        self.assertEqual(reservation.total_amount, 2 * 950000.0)
+
     def test_ota_rate_beats_the_pms_price_list(self):
         """The guest agreed the channel's price, so the folio must use it."""
         self._push()

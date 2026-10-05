@@ -77,7 +77,9 @@ class HotelReservation(models.Model):
     def _compute_nightly_rate(self):
         super()._compute_nightly_rate()
         for rec in self:
-            if rec.ota_nightly_rate and rec.state in self._RATE_FOLLOWS_PRICE_LIST:
+            manual = 'manual_rate' in rec._fields and rec.manual_rate
+            # A manual rate typed at the desk wins over the channel's price.
+            if rec.ota_nightly_rate and rec.state in self._RATE_FOLLOWS_PRICE_LIST and not manual:
                 rec.nightly_rate = rec.ota_nightly_rate
 
     def _occupancy_exempt(self):
