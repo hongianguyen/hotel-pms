@@ -373,10 +373,20 @@ class HotelReservation(models.Model):
     # Not on 'state': a booking made before the limits existed must still be
     # able to check in. The rule bites when a booking is made, or when its
     # party or room changes.
+    def _occupancy_exempt(self):
+        """True for a booking the room type limits must not refuse.
+
+        Hook for channel integrations: a booking a channel has already sold
+        must be accepted as sold, or the channel retries it forever and the
+        guest arrives unknown; reception re-houses the party instead.
+        """
+        self.ensure_one()
+        return bool(self.env.context.get('hotel_skip_occupancy_check'))
+
     @api.constrains('adults', 'children', 'infants', 'room_id', 'room_type_id')
     def _check_room_occupancy(self):
         for rec in self:
-            if rec.state in ('cancelled', 'no_show', 'checked_out'):
+            if rec.state in ('cancelled', 'no_show', 'checked_out') or rec._occupancy_exempt():
                 continue
             # The room actually given decides; a Run-of-House booking has no
             # occupancy of its own until it gets one.
