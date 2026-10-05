@@ -5,3 +5,4 @@ from . import test_folio_lifecycle
 from . import test_pax_types
 from . import test_rate_per_guest
 from . import test_service_rates
+from . import test_combo_per_guest

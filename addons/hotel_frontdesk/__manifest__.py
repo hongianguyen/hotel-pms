@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Hotel Front Desk',
-    'version': '19.0.1.17.0',
+    'version': '19.0.1.18.0',
     'category': 'Hotel Management',
     'summary': 'Reservations, check-in/out, folios, invoicing',
     'description': """
@@ -30,6 +30,8 @@ Core PMS operations:
         'views/hotel_room_type_views.xml',
         'views/hotel_rate_plan_views.xml',
         'views/hotel_service_rate_views.xml',
+        'data/hotel_package_data.xml',
+        'views/hotel_combo_views.xml',
         'views/hotel_reservation_views.xml',
         'views/hotel_booking_group_views.xml',
         'views/hotel_folio_views.xml',

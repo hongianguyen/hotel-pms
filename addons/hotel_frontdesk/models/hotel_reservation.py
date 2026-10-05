@@ -195,6 +195,9 @@ class HotelReservation(models.Model):
                  'room_type_id', 'room_type_id.is_roh',
                  'room_type_id.base_rate',
                  'combo_id', 'combo_id.nightly_rate',
+                 'combo_id.pricing', 'combo_id.room_first_pax', 'combo_id.room_second_pax',
+                 'combo_id.room_extra_adult', 'combo_id.room_extra_child',
+                 'combo_id.room_extra_infant',
                  'state')
     def _compute_nightly_rate(self):
         # Read the persisted rate directly: for records whose price is
@@ -216,7 +219,8 @@ class HotelReservation(models.Model):
             elif rec.manual_rate:
                 rec.nightly_rate = rec.manual_nightly_rate
             elif rec.combo_id:
-                rec.nightly_rate = rec.combo_id.nightly_rate
+                rec.nightly_rate = rec.combo_id.room_rate_for(
+                    rec.adults, rec.children, rec.infants)
             elif rec.rate_plan_id.pricing_mode == 'pax' and rec._party_rate_on(rec.checkin_date):
                 # The headline rate is the first night's; each night is still
                 # priced on its own (see _rate_on).
@@ -284,6 +288,8 @@ class HotelReservation(models.Model):
         self.ensure_one()
         if self.manual_rate:
             return self.manual_nightly_rate
+        if self.combo_id and self.state in self._RATE_FOLLOWS_PRICE_LIST:
+            return self.combo_id.room_rate_for(self.adults, self.children, self.infants)
         if self.rate_plan_id and not self.combo_id:
             if self.rate_plan_id.pricing_mode == 'pax':
                 rate = self._party_rate_on(day)
@@ -321,6 +327,9 @@ class HotelReservation(models.Model):
                  'rate_plan_id.line_ids.first_pax', 'rate_plan_id.line_ids.second_pax',
                  'rate_plan_id.line_ids.extra_adult', 'rate_plan_id.line_ids.extra_child',
                  'rate_plan_id.line_ids.extra_infant',
+                 'combo_id.pricing', 'combo_id.room_first_pax', 'combo_id.room_second_pax',
+                 'combo_id.room_extra_adult', 'combo_id.room_extra_child',
+                 'combo_id.room_extra_infant',
                  'checkin_date', 'checkout_date', 'services_total')
     def _compute_total_amount(self):
         """Sum per-night rates so the quoted total matches the folio.
@@ -383,14 +392,58 @@ class HotelReservation(models.Model):
     # ── Combo → service lines ────────────────────────────────────────────
 
     def _combo_service_line_vals(self):
-        """Service-line values for every component of the selected combo."""
+        """Service-line values for every component of the selected combo.
+
+        Each component lands on its package day. A Fixed package charges
+        each at its listed price; a Per-guest package lists them at 0 (the
+        schedule) and adds one line for its services part, priced from the
+        party.
+        """
         self.ensure_one()
-        return [{
+        combo = self.combo_id
+        per_guest = combo.pricing == 'per_guest'
+        vals = [{
             'service_id': line.service_id.id,
             'quantity': line.quantity,
-            'price_unit': line.price_unit,
-            'combo_id': self.combo_id.id,
-        } for line in self.combo_id.line_ids]
+            'price_unit': 0.0 if per_guest else line.price_unit,
+            'date': line.date_for(self.checkin_date),
+            'pax': max((self.adults or 0) + (self.children or 0), 1),
+            'combo_id': combo.id,
+            'combo_line_id': line.id,
+        } for line in combo.line_ids]
+        if per_guest:
+            vals.append(self._combo_package_price_vals())
+        return vals
+
+    def _combo_package_price_vals(self):
+        self.ensure_one()
+        combo = self.combo_id
+        total, breakdown = combo.services_price_for(self.adults, self.children, self.infants)
+        return {
+            'service_id': self.env.ref('hotel_frontdesk.service_package_price').id,
+            'quantity': 1.0,
+            'price_unit': total,
+            'date': self.checkin_date,
+            'pax': max((self.adults or 0) + (self.children or 0) + (self.infants or 0), 1),
+            'note': '%s: %s' % (combo.name, breakdown) if breakdown else combo.name,
+            'combo_id': combo.id,
+            'is_package_price': True,
+        }
+
+    def _refresh_combo_lines(self):
+        """Keep a booking's not-yet-charged package lines in step with its
+        check-in date (service days) and party (the services part)."""
+        for rec in self.filtered('combo_id'):
+            lines = rec.service_line_ids.filtered(
+                lambda l: l.combo_id == rec.combo_id and not l.folio_line_id)
+            for line in lines.filtered('combo_line_id'):
+                day = line.combo_line_id.date_for(rec.checkin_date)
+                if line.date != day:
+                    line.date = day
+            price_line = lines.filtered('is_package_price')
+            if price_line:
+                vals = rec._combo_package_price_vals()
+                price_line.write({k: vals[k] for k in ('price_unit', 'date', 'pax', 'note')})
 
     def _sync_combo_services(self):
         """Mirror the selected combo's components into the service lines.
@@ -449,6 +502,16 @@ class HotelReservation(models.Model):
         if self.combo_id and self.checkin_date:
             self.checkout_date = self.checkin_date + timedelta(
                 days=self.combo_id.nights)
+
+    @api.constrains('combo_id', 'agency_id', 'group_id', 'checkin_date')
+    def _check_combo_available(self):
+        for rec in self:
+            if not rec.combo_id or rec.state in ('cancelled', 'no_show', 'checked_out', 'checked_in'):
+                continue
+            problem = rec.combo_id.available_for(rec.account_type_id, rec.checkin_date)
+            if problem:
+                raise ValidationError(_('Reservation %(number)s: %(problem)s',
+                                        number=rec.reservation_number or _('new'), problem=problem))
 
     @api.constrains('manual_rate', 'manual_nightly_rate')
     def _check_manual_rate(self):
@@ -1174,6 +1237,8 @@ class HotelReservation(models.Model):
         res = super().write(vals)
         if 'combo_id' in vals:
             self._sync_combo_services()
+        if set(vals) & {'adults', 'children', 'infants', 'checkin_date', 'combo_id'}:
+            self._refresh_combo_lines()
         for rec in resync:
             rec._resync_room_charges(old_room_name=old_rooms.get(rec.id))
         return res

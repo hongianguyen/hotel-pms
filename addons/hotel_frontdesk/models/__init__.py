@@ -4,6 +4,7 @@ from . import hotel_account_type
 from . import hotel_room_type
 from . import hotel_rate_plan
 from . import hotel_service_rate
+from . import hotel_combo
 from . import res_partner
 from . import hotel_booking_group
 from . import hotel_reservation
