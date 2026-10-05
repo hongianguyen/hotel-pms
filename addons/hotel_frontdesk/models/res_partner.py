@@ -10,13 +10,14 @@ class ResPartner(models.Model):
         help='This company sends bookings to the hotel. Invoices for its '
              'bookings are issued to the company, not to the staying guests.',
     )
-    hotel_agency_type = fields.Selection([
-        ('ota', 'OTA'),
-        ('travel_agent', 'Travel Agent'),
-        ('corporate', 'Corporate'),
-    ], string='Account Type', default='travel_agent',
+    hotel_account_type_id = fields.Many2one(
+        'hotel.account.type', string='Account Type',
+        domain="[('is_direct', '=', False)]",
+        default=lambda self: self.env.ref(
+            'hotel_frontdesk.account_type_travel_agent', raise_if_not_found=False),
         help='Which rate plans this account books on: a rate plan can be '
-             'limited to one account type.')
+             'limited to one account type. Manage the list under Hotel > '
+             'Configuration > Account Types.')
     hotel_credit_term = fields.Boolean(
         'Credit Terms',
         help='The hotel extends credit to this account: its bookings can '

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: the hotel renames, reorders and adds to these itself. -->
+    <data noupdate="1">
+        <record id="account_type_direct" model="hotel.account.type">
+            <field name="name">Direct Guest</field>
+            <field name="code">direct</field>
+            <field name="sequence">1</field>
+            <field name="is_direct" eval="True"/>
+            <field name="description">Bookings made without an agency: website, phone, walk-in, messages.</field>
+        </record>
+        <record id="account_type_ota" model="hotel.account.type">
+            <field name="name">OTA</field>
+            <field name="code">ota</field>
+            <field name="sequence">10</field>
+            <field name="description">Online travel agencies: Booking.com, Agoda, Expedia, Traveloka...</field>
+        </record>
+        <record id="account_type_travel_agent" model="hotel.account.type">
+            <field name="name">Travel Agent</field>
+            <field name="code">travel_agent</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="account_type_corporate" model="hotel.account.type">
+            <field name="name">Corporate</field>
+            <field name="code">corporate</field>
+            <field name="sequence">30</field>
+        </record>
+    </data>
+</odoo>
