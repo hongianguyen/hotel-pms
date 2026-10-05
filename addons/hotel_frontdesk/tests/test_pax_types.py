@@ -14,7 +14,7 @@ class TestPaxTypes(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         room_type = cls.env['hotel.room.type'].create({
-            'name': 'ZZ Pax Tent', 'capacity': 4, 'max_adults': 2, 'max_children': 2,
+            'name': 'ZZ Pax Tent', 'max_adults': 2, 'max_children': 2,
             'base_rate': 1000000.0})
         cls.room_type = room_type
         cls.room = cls.env['hotel.room'].create({'name': 'ZZP-01', 'room_type_id': room_type.id})
@@ -70,11 +70,22 @@ class TestPaxTypes(TransactionCase):
         with self.assertRaisesRegex(ValidationError, 'at most 2 child'):
             self._book(1, 0, 3)
 
-    def test_total_counts_everyone(self):
-        self.room_type.write({'capacity': 3})
-        with self.assertRaisesRegex(ValidationError, 'at most 3 people'):
-            self._book(2, 1, 1)
-        self._book(2, 0, 1)
+    def test_occupancy_is_adults_plus_children(self):
+        self.assertEqual(self.room_type.capacity, 4)
+        self.room_type.write({'max_adults': 3, 'max_children': 1})
+        self.assertEqual(self.room_type.capacity, 4)
+        self.room_type.write({'max_children': 0})
+        self.assertEqual(self.room_type.capacity, 3)
+        self.assertEqual(self.room.capacity, 3, 'rooms follow their type')
+
+    def test_capacity_alone_means_adults_only(self):
+        """Data written before the split sets capacity alone."""
+        legacy = self.env['hotel.room.type'].create({
+            'name': 'ZZ Legacy Tent', 'capacity': 3, 'base_rate': 1.0})
+        self.assertEqual((legacy.max_adults, legacy.max_children, legacy.capacity), (3, 0, 3))
+        fresh = self.env['hotel.room.type'].create({
+            'name': 'ZZ Fresh Tent', 'max_adults': 2, 'max_children': 1, 'base_rate': 1.0})
+        self.assertEqual(fresh.capacity, 3, 'no default may override the two limits')
 
     def test_editing_the_party_is_checked(self):
         res = self._book(2)
@@ -103,11 +114,9 @@ class TestPaxTypes(TransactionCase):
 
     def test_room_type_limits_are_consistent(self):
         with self.assertRaises(ValidationError):
-            self.room_type.write({'max_adults': 5})
-        with self.assertRaises(ValidationError):
             self.room_type.write({'max_adults': 0})
         with self.assertRaises(ValidationError):
-            self.room_type.write({'max_children': 5})
+            self.room_type.write({'max_children': -1})
 
     def test_exemption_hook(self):
         res = self.env['hotel.reservation'].with_context(
