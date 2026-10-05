@@ -108,3 +108,8 @@ class TestPaxTypes(TransactionCase):
             self.room_type.write({'max_adults': 0})
         with self.assertRaises(ValidationError):
             self.room_type.write({'max_children': 5})
+
+    def test_exemption_hook(self):
+        res = self.env['hotel.reservation'].with_context(
+            hotel_skip_occupancy_check=True).create(dict(self.vals, adults=9))
+        self.assertEqual(res.adults, 9)
