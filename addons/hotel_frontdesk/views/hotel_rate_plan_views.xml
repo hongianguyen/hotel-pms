@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_rate_plan_form_per_guest" model="ir.ui.view">
+        <field name="name">hotel.rate.plan.form.per.guest</field>
+        <field name="model">hotel.rate.plan</field>
+        <field name="inherit_id" ref="hotel_core.view_hotel_rate_plan_form"/>
+        <field name="arch" type="xml">
+            <field name="room_type_id" position="before">
+                <field name="pricing_mode" widget="radio"/>
+                <field name="is_default"/>
+            </field>
+            <field name="room_type_id" position="attributes">
+                <attribute name="invisible">pricing_mode == 'pax'</attribute>
+            </field>
+            <field name="base_rate" position="attributes">
+                <attribute name="invisible">pricing_mode == 'pax'</attribute>
+            </field>
+            <xpath expr="//notebook" position="inside">
+                <page string="Per-Guest Rates" name="per_guest" invisible="pricing_mode != 'pax'">
+                    <p class="text-muted small">
+                        Price per room-night, one row per room type. Only adults fill
+                        First and Second Pax: 1 adult + 1 child pays First Pax + Extra Child.
+                        Each further adult pays Extra Adult, each child 6-12 Extra Child,
+                        each infant 0-6 Extra Infant.
+                    </p>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="room_type_id" domain="[('is_roh', '=', False)]"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="first_pax"/>
+                            <field name="second_pax"/>
+                            <field name="extra_adult"/>
+                            <field name="extra_child"/>
+                            <field name="extra_infant"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hotel_rate_plan_list_per_guest" model="ir.ui.view">
+        <field name="name">hotel.rate.plan.list.per.guest</field>
+        <field name="model">hotel.rate.plan</field>
+        <field name="inherit_id" ref="hotel_core.view_hotel_rate_plan_list"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="pricing_mode" optional="show"/>
+                <field name="is_default" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -171,6 +171,11 @@ class HotelReservation(models.Model):
     _RATE_FOLLOWS_PRICE_LIST = ('draft', 'confirmed')
 
     @api.depends('rate_plan_id', 'rate_plan_id.base_rate',
+                 'rate_plan_id.pricing_mode', 'rate_plan_id.line_ids',
+                 'rate_plan_id.line_ids.first_pax', 'rate_plan_id.line_ids.second_pax',
+                 'rate_plan_id.line_ids.extra_adult', 'rate_plan_id.line_ids.extra_child',
+                 'rate_plan_id.line_ids.extra_infant',
+                 'adults', 'children', 'infants', 'checkin_date',
                  'room_id', 'room_id.base_rate',
                  'room_type_id', 'room_type_id.is_roh',
                  'room_type_id.base_rate',
@@ -195,6 +200,10 @@ class HotelReservation(models.Model):
                 rec.nightly_rate = stored[rec.id] or 0.0
             elif rec.combo_id:
                 rec.nightly_rate = rec.combo_id.nightly_rate
+            elif rec.rate_plan_id.pricing_mode == 'pax' and rec._party_rate_on(rec.checkin_date):
+                # The headline rate is the first night's; each night is still
+                # priced on its own (see _rate_on).
+                rec.nightly_rate = rec._party_rate_on(rec.checkin_date)
             elif rec.rate_plan_id and rec.rate_plan_id.base_rate:
                 rec.nightly_rate = rec.rate_plan_id.base_rate
             elif rec.room_type_id and rec.room_type_id.is_roh:
@@ -206,6 +215,32 @@ class HotelReservation(models.Model):
                 rec.nightly_rate = rec.room_type_id.base_rate
             else:
                 rec.nightly_rate = 0.0
+
+    def _party_rate_on(self, day):
+        """The per-guest plan's price for this party on `day`, or False."""
+        self.ensure_one()
+        plan = self.rate_plan_id
+        if not plan or self.combo_id or plan.pricing_mode != 'pax' or not day:
+            return False
+        return plan.party_rate_for(day, self.room_type_id, self.adults,
+                                   self.children, self.infants)
+
+    def _rate_on(self, day):
+        """Price of one night of this booking: the single rule behind the
+        booking total, the folio's room charges and late check-out nights.
+
+        A per-guest plan prices the party; a flat plan its own rate; a night
+        the plan does not cover, and a combo, fall back to the nightly rate.
+        """
+        self.ensure_one()
+        if self.rate_plan_id and not self.combo_id:
+            if self.rate_plan_id.pricing_mode == 'pax':
+                rate = self._party_rate_on(day)
+            else:
+                rate = self.rate_plan_id.get_rate_for_date(day)
+            if rate:
+                return rate
+        return self.nightly_rate
 
     @api.depends('booker_id.email', 'agency_id.email')
     def _compute_booker_email(self):
@@ -230,6 +265,10 @@ class HotelReservation(models.Model):
             rec.services_total = sum(rec.service_line_ids.mapped('subtotal'))
 
     @api.depends('nights', 'nightly_rate', 'rate_plan_id', 'combo_id',
+                 'adults', 'children', 'infants', 'rate_plan_id.pricing_mode',
+                 'rate_plan_id.line_ids.first_pax', 'rate_plan_id.line_ids.second_pax',
+                 'rate_plan_id.line_ids.extra_adult', 'rate_plan_id.line_ids.extra_child',
+                 'rate_plan_id.line_ids.extra_infant',
                  'checkin_date', 'checkout_date', 'services_total')
     def _compute_total_amount(self):
         """Sum per-night rates so the quoted total matches the folio.
@@ -247,12 +286,7 @@ class HotelReservation(models.Model):
             total = 0.0
             current = rec.checkin_date
             while current < rec.checkout_date:
-                day_rate = rec.nightly_rate
-                if rec.rate_plan_id and not rec.combo_id:
-                    plan_rate = rec.rate_plan_id.get_rate_for_date(current)
-                    if plan_rate:
-                        day_rate = plan_rate
-                total += day_rate
+                total += rec._rate_on(current)
                 current += timedelta(days=1)
             # Combo services are materialized as service lines, so they
             # are already covered by services_total.
@@ -467,8 +501,29 @@ class HotelReservation(models.Model):
 
     # ── CRUD ──────────────────────────────────────────────────────────────
 
+    def _skip_default_rate_plan(self, vals):
+        """True when a new booking must NOT get the default rate plan.
+
+        Hook for channel integrations: a booking that arrives with the
+        channel's own price must keep it."""
+        return bool(self.env.context.get('hotel_no_default_rate_plan'))
+
+    def _with_default_rate_plan(self, vals):
+        if (vals.get('rate_plan_id') or vals.get('combo_id')
+                or not vals.get('room_type_id') or self._skip_default_rate_plan(vals)):
+            return vals
+        room_type = self.env['hotel.room.type'].browse(vals['room_type_id'])
+        plan = self.env['hotel.rate.plan'].sudo().default_plan_for(room_type)
+        return dict(vals, rate_plan_id=plan.id) if plan else vals
+
+    @api.onchange('room_type_id')
+    def _onchange_room_type_default_rate_plan(self):
+        if self.room_type_id and not self.rate_plan_id and not self.combo_id:
+            self.rate_plan_id = self.env['hotel.rate.plan'].default_plan_for(self.room_type_id)
+
     @api.model_create_multi
     def create(self, vals_list):
+        vals_list = [self._with_default_rate_plan(v) for v in vals_list]
         for vals in vals_list:
             if vals.get('reservation_number', 'New') == 'New':
                 vals['reservation_number'] = self.env['ir.sequence'].next_by_code(
@@ -771,11 +826,7 @@ class HotelReservation(models.Model):
         account = (self.room_type_id.revenue_account_id
                    or self.room_id.room_type_id.revenue_account_id)
         while current < today:
-            day_rate = self.nightly_rate
-            if self.rate_plan_id and not self.combo_id:
-                plan_rate = self.rate_plan_id.get_rate_for_date(current)
-                if plan_rate:
-                    day_rate = plan_rate
+            day_rate = self._rate_on(current)
             vals.append({
                 'name': _('Late checkout — Room %s — %s') % (
                     room_name, current.strftime('%d/%m/%Y')),
