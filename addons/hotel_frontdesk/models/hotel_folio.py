@@ -250,7 +250,6 @@ class HotelFolio(models.Model):
         if not res:
             return
         current = res.checkin_date
-        rate = res.nightly_rate
         room_name = res.room_id.name or 'Room'
         # ROH/combo bookings: revenue account of the booked (virtual) type
         # wins over the physical room's type.
@@ -259,13 +258,10 @@ class HotelFolio(models.Model):
 
         lines = []
         while current < res.checkout_date:
-            # Check rate plan for per-day rate if available
-            # (combo bookings use the combo's fixed rate instead)
-            day_rate = rate
-            if res.rate_plan_id and not res.combo_id:
-                plan_rate = res.rate_plan_id.get_rate_for_date(current)
-                if plan_rate:
-                    day_rate = plan_rate
+            # Same per-night rule as the booking total (combo, per-guest or
+            # flat plan, else the nightly rate), so the folio charges what was
+            # quoted.
+            day_rate = res._rate_on(current)
 
             lines.append((0, 0, {
                 'name': _('Room %s — %s') % (room_name, current.strftime('%d/%m/%Y')),

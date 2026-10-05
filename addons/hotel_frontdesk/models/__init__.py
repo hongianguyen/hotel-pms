@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import hotel_booking_source
 from . import hotel_room_type
+from . import hotel_rate_plan
 from . import res_partner
 from . import hotel_partner_lookup
 from . import hotel_booking_group
