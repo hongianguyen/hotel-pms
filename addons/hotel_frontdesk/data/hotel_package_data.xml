@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The line a per-guest package's services part is charged on. Set its
+         revenue account to where package revenue should go. -->
+    <data noupdate="1">
+        <record id="service_package_price" model="hotel.service">
+            <field name="name">Package (services part)</field>
+            <field name="category">misc</field>
+            <field name="price">0</field>
+            <field name="description">Charged automatically for per-guest packages: adults at the package's adult price for the group size, children and infants at theirs. Do not delete.</field>
+        </record>
+    </data>
+</odoo>

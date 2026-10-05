@@ -113,7 +113,8 @@
                     </group>
                     <group>
                         <group string="Pricing">
-                            <field name="combo_id"/>
+                            <field name="combo_id"
+                                   domain="['|', ('account_type_id', '=', False), ('account_type_id', '=', account_type_id)]"/>
                             <field name="account_type_id" readonly="1"/>
                             <field name="rate_plan_id" invisible="combo_id or manual_rate"
                                    domain="['|', ('account_type_id', '=', False), ('account_type_id', '=', account_type_id)]"/>
@@ -153,6 +154,8 @@
                                     <field name="quantity"/>
                                     <field name="price_unit" widget="monetary"/>
                                     <field name="rate_id" force_save="1" optional="hide"/>
+                                    <field name="combo_line_id" column_invisible="1" force_save="1"/>
+                                    <field name="is_package_price" column_invisible="1" force_save="1"/>
                                     <field name="subtotal" widget="monetary"/>
                                     <field name="note" optional="show"/>
                                     <field name="is_charged" optional="show"/>

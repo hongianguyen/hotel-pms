@@ -45,6 +45,13 @@ class HotelReservationService(models.Model):
              'when posted to the folio.',
     )
     note = fields.Char('Note')
+    combo_line_id = fields.Many2one(
+        'hotel.combo.line', string='Package Component', readonly=True,
+        ondelete='set null', copy=False,
+        help='The package service this line schedules (its day decides the date).')
+    is_package_price = fields.Boolean(
+        'Package Price Line', readonly=True, copy=False,
+        help="The per-guest package's services part, priced from the party.")
     combo_id = fields.Many2one(
         'hotel.combo', string='From Combo', readonly=True,
         ondelete='set null',

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_combo_form_per_guest" model="ir.ui.view">
+        <field name="name">hotel.combo.form.per.guest</field>
+        <field name="model">hotel.combo</field>
+        <field name="inherit_id" ref="hotel_services.view_hotel_combo_form"/>
+        <field name="arch" type="xml">
+            <field name="room_type_id" position="before">
+                <field name="pricing" widget="radio"/>
+                <field name="account_type_id" placeholder="All accounts"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+            </field>
+            <field name="nightly_rate" position="attributes">
+                <attribute name="invisible">pricing != 'fixed'</attribute>
+            </field>
+            <field name="accommodation_total" position="before">
+                <div colspan="2" class="text-muted small" invisible="pricing != 'per_guest'">
+                    Reference price for 2 adults. The real price follows each booking's party.
+                </div>
+            </field>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='service_id']" position="before">
+                <field name="day"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="column_invisible">parent.pricing == 'per_guest'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='subtotal']" position="attributes">
+                <attribute name="column_invisible">parent.pricing == 'per_guest'</attribute>
+            </xpath>
+            <xpath expr="//notebook/page[@name='services']" position="before">
+                <page string="Per-Guest Prices" name="per_guest" invisible="pricing != 'per_guest'">
+                    <group>
+                        <group string="Room, per night">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="room_first_pax"/>
+                            <field name="room_second_pax"/>
+                            <field name="room_extra_adult"/>
+                            <field name="room_extra_child"/>
+                            <field name="room_extra_infant"/>
+                        </group>
+                        <group string="Services, per person, once per stay">
+                            <field name="price_adult_1"/>
+                            <field name="price_adult_2"/>
+                            <field name="price_adult_3_5"/>
+                            <field name="price_adult_6_9"/>
+                            <field name="price_adult_10"/>
+                            <field name="price_child"/>
+                            <field name="price_infant"/>
+                        </group>
+                    </group>
+                    <p class="text-muted small">
+                        Room: only adults fill First and Second Pax. Services: every adult
+                        pays the price for the number of adults coming (1, 2, 3-5, 6-9, 10+).
+                        The included services are the schedule, each on its Day, and are not
+                        charged again.
+                    </p>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_hotel_combo_list_per_guest" model="ir.ui.view">
+        <field name="name">hotel.combo.list.per.guest</field>
+        <field name="model">hotel.combo</field>
+        <field name="inherit_id" ref="hotel_services.view_hotel_combo_list"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="pricing" optional="show"/>
+                <field name="account_type_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>
