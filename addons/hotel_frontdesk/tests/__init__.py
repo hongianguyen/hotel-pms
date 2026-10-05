@@ -4,3 +4,4 @@ from . import test_checkout_balance
 from . import test_folio_lifecycle
 from . import test_confirmation_recipient
 from . import test_partner_lookup
+from . import test_pax_types
