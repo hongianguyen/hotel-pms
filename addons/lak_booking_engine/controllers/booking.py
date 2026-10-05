@@ -205,7 +205,8 @@ class LakBookingEngine(http.Controller):
         types = request.env['hotel.room.type'].sudo().with_context(lang=self._lang(kwargs)).search([
             ('active', '=', True), ('is_roh', '=', False), ('website_bookable', '=', True),
         ])
-        rooms = [dict(rt.web_content(), room_type_id=rt.id, name=rt.name, capacity=rt.capacity)
+        rooms = [dict(rt.web_content(), room_type_id=rt.id, name=rt.name, capacity=rt.capacity,
+                      max_adults=rt.max_adults, max_children=rt.max_children)
                  for rt in types]
         rooms.sort(key=lambda r: (not r['photos'], r['name']))
         return self._reply({'ok': True, 'rooms': rooms})

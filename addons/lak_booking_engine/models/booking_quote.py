@@ -12,7 +12,6 @@ authority: the booking step must recompute availability and price itself and
 refuse when they no longer match.
 """
 import json
-import math
 import time
 from datetime import date, datetime, timedelta
 
@@ -83,8 +82,8 @@ class LakBookingQuote(models.AbstractModel):
 
     @api.model
     def _parse_infants(self, infants):
-        """Infants (0-6) ride along: recorded on the booking, but they do not
-        count towards a room's capacity and are not priced."""
+        """Infants (0-6) count towards a room's occupancy and share the
+        children allowance, but are not priced."""
         try:
             infants = int(infants or 0)
         except (TypeError, ValueError):
@@ -92,11 +91,6 @@ class LakBookingQuote(models.AbstractModel):
         if not 0 <= infants <= MAX_INFANTS:
             raise BookingInputError('bad_party', 'Between 0 and %d infants.' % MAX_INFANTS)
         return infants
-
-    @api.model
-    def _spread(self, count, rooms):
-        """`count` people spread over `rooms`, as evenly as possible."""
-        return [count // rooms + (1 if i < count % rooms else 0) for i in range(rooms)]
 
     # ── Pricing ────────────────────────────────────────────────────────
     @api.model
@@ -136,18 +130,40 @@ class LakBookingQuote(models.AbstractModel):
         return nightly, total
 
     @api.model
-    def _party_split(self, adults, children, rooms):
-        """[(adults, children)] per room, as evenly as possible, with at least
-        one adult in every room. None when there are fewer adults than rooms
-        (children are not booked into a room on their own)."""
-        if adults < rooms:
+    def _party_split(self, room_type, adults, children, infants, rooms):
+        """[(adults, children, infants)] per room, or None when the party
+        cannot be spread over `rooms` rooms of this type.
+
+        Every room gets at least one adult (children are never booked into a
+        room on their own). Adults go evenly with the odd ones in the first
+        rooms; children and infants -- one allowance between them -- go
+        evenly with the odd ones in the LAST rooms, so no room takes both an
+        extra adult and an extra child when another room has space. Each room
+        is then judged by the room type's own occupancy rule.
+        """
+        if rooms < 1 or adults < rooms:
             return None
-        split = []
+        kids = children + infants
+        split, children_left = [], children
         for i in range(rooms):
             a = adults // rooms + (1 if i < adults % rooms else 0)
-            c = children // rooms + (1 if i < children % rooms else 0)
-            split.append((a, c))
+            k = kids // rooms + (1 if i >= rooms - kids % rooms else 0)
+            c = min(k, children_left)
+            children_left -= c
+            if room_type.occupancy_problem(a, c, k - c):
+                return None
+            split.append((a, c, k - c))
         return split
+
+    @api.model
+    def _fit_party(self, room_type, adults, children, infants):
+        """(rooms, split) for the fewest rooms of this type the party fits,
+        or (None, None) beyond MAX_ROOMS."""
+        for rooms in range(1, MAX_ROOMS + 1):
+            split = self._party_split(room_type, adults, children, infants, rooms)
+            if split:
+                return rooms, split
+        return None, None
 
     # ── Quote token ────────────────────────────────────────────────────
     @api.model
@@ -190,7 +206,6 @@ class LakBookingQuote(models.AbstractModel):
         checkin, checkout, nights, adults, children = self._parse_stay(
             checkin, checkout, adults, children)
         infants = self._parse_infants(infants)
-        guests = adults + children      # infants do not take a bed
 
         types = self.env['hotel.room.type'].search([
             ('active', '=', True),
@@ -203,18 +218,15 @@ class LakBookingQuote(models.AbstractModel):
         offers = []
         for room_type in types:
             capacity = room_type.capacity or 1
-            rooms_needed = math.ceil(guests / capacity)
+            rooms_needed, split = self._fit_party(room_type, adults, children, infants)
             left = free.get(room_type.id, 0)
-            if rooms_needed > MAX_ROOMS or left < rooms_needed:
+            if not rooms_needed or left < rooms_needed:
                 continue
             # Price every room with the party it will really carry: the hold
             # creates exactly these rooms, and refuses when its saved total
             # differs from this one.
-            split = self._party_split(adults, children, rooms_needed)
-            if not split:
-                continue
             priced = [self._price_stay(room_type, checkin, checkout, a, c)
-                      for a, c in split]
+                      for a, c, _i in split]
             if not all(priced):
                 continue
             nightly, room_total = priced[0]
@@ -235,6 +247,8 @@ class LakBookingQuote(models.AbstractModel):
                 'description': room_type.description or '',
                 **room_type.web_content(),
                 'capacity': capacity,
+                'max_adults': room_type.max_adults,
+                'max_children': room_type.max_children,
                 'rooms_needed': rooms_needed,
                 'only_left': left if left < SHOW_LEFT_BELOW else None,
                 'nightly': nightly,

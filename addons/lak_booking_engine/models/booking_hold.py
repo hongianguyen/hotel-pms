@@ -287,9 +287,9 @@ class LakBookingHold(models.Model):
                 or not room_type.website_bookable or not 1 <= rooms_needed <= MAX_ROOMS):
             raise BookingInputError('not_available', 'This room is no longer available. Please search again.')
         infants = Quote._parse_infants(token.get('infants'))
-        split = Quote._party_split(adults, children, rooms_needed)
+        split = Quote._party_split(room_type, adults, children, infants, rooms_needed)
         if not split:
-            raise BookingInputError('bad_party', 'Each room needs at least one adult.')
+            raise BookingInputError('bad_party', 'This party no longer fits these rooms. Please search again.')
 
         self._check_caps(email, client_ip, rooms_needed)
 
@@ -302,7 +302,7 @@ class LakBookingHold(models.Model):
         ref = self._new_ref()
         Reservation = self.env['hotel.reservation'].sudo()
         vals_list = []
-        for room, (a, c), i in zip(rooms, split, Quote._spread(infants, rooms_needed)):
+        for room, (a, c, i) in zip(rooms, split):
             vals = Quote._reservation_vals(room_type, checkin, checkout, a, c, i)
             vals.update({
                 'guest_id': guest.id,

@@ -191,7 +191,8 @@ function galleryHtml(room, idx) {
 }
 
 function chips(room) {
-  const items = [room.beds, room.size, room.view, `Up to ${room.capacity} guest${room.capacity > 1 ? "s" : ""}`].filter(Boolean);
+  const items = [room.beds, room.size, room.view, `Sleeps ${room.capacity}`, `Max ${room.max_adults} adult${room.max_adults > 1 ? "s" : ""}`,
+                 room.max_children ? `Max ${room.max_children} child${room.max_children > 1 ? "ren" : ""} (0–12)` : 'Adults only'].filter(Boolean);
   return `<div class="chips">${items.map((c) => `<span class="chip">${esc(c)}</span>`).join('')}</div>`;
 }
 
