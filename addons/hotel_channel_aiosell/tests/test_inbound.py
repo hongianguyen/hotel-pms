@@ -78,6 +78,16 @@ class TestInbound(AiosellCase):
         self.assertEqual((reservation.adults, reservation.children), (9, 3))
         self.assertEqual(reservation.state, 'confirmed')
 
+    def test_channel_agency_is_an_ota_account(self):
+        if 'ota' not in dict(self.env['res.partner']._fields['hotel_agency_type'].selection):
+            self.skipTest('hotel_frontdesk without the OTA account type')
+        # A channel the hotel has no account for yet; an existing account
+        # keeps the type reception gave it.
+        self._push(channel='ZZ Brand New OTA')
+        agency = self._reservations().agency_id
+        self.assertEqual(agency.name, 'ZZ Brand New OTA')
+        self.assertEqual(agency.hotel_agency_type, 'ota')
+
     def test_default_rate_plan_never_reprices_a_channel_booking(self):
         if 'is_default' not in self.env['hotel.rate.plan']._fields:
             self.skipTest('hotel_frontdesk without default rate plans')

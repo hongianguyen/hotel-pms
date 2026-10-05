@@ -443,7 +443,12 @@ class AiosellConfig(models.Model):
         ], limit=1)
         if agency:
             return agency
-        return Partner.create({
+        vals = {}
+        # An OTA is its own account type where hotel_frontdesk knows it, so
+        # the channel's bookings take the OTA rate plans.
+        if 'ota' in dict(Partner._fields['hotel_agency_type'].selection):
+            vals['hotel_agency_type'] = 'ota'
+        return Partner.create(dict(vals, **{
             'name': channel,
             'is_company': True,
             'is_hotel_agency': True,
@@ -452,7 +457,7 @@ class AiosellConfig(models.Model):
             'comment': _('Created automatically for prepaid bookings arriving '
                          'from %s through Aiosell. Room charges are carried '
                          'here until the channel remits.') % channel,
-        })
+        }))
 
     def _resolve_source(self, channel):
         """Match the channel name to a booking source, creating it if new."""
