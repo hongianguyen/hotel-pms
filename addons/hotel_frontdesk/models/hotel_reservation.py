@@ -50,6 +50,14 @@ class HotelReservation(models.Model):
                                 index=True)
     nights = fields.Integer('Nights', compute='_compute_nights', store=True)
 
+    manual_rate = fields.Boolean(
+        'Manual Rate', tracking=True,
+        help='Charge the rate typed below for every night, instead of the '
+             'rate plan, per-guest prices or combo.')
+    manual_nightly_rate = fields.Float(
+        'Manual Rate / Night', digits=(16, 2), tracking=True,
+        help='Price of one night when Manual Rate is ticked. 0 makes the '
+             'nights free (complimentary).')
     nightly_rate = fields.Float('Nightly Rate', digits=(16, 2), compute='_compute_nightly_rate', store=True)
     total_amount = fields.Float('Total Amount', digits=(16, 2), compute='_compute_total_amount', store=True)
 
@@ -182,6 +190,7 @@ class HotelReservation(models.Model):
                  'rate_plan_id.line_ids.extra_adult', 'rate_plan_id.line_ids.extra_child',
                  'rate_plan_id.line_ids.extra_infant',
                  'adults', 'children', 'infants', 'checkin_date',
+                 'manual_rate', 'manual_nightly_rate',
                  'room_id', 'room_id.base_rate',
                  'room_type_id', 'room_type_id.is_roh',
                  'room_type_id.base_rate',
@@ -204,6 +213,8 @@ class HotelReservation(models.Model):
         for rec in self:
             if rec.id in stored:
                 rec.nightly_rate = stored[rec.id] or 0.0
+            elif rec.manual_rate:
+                rec.nightly_rate = rec.manual_nightly_rate
             elif rec.combo_id:
                 rec.nightly_rate = rec.combo_id.nightly_rate
             elif rec.rate_plan_id.pricing_mode == 'pax' and rec._party_rate_on(rec.checkin_date):
@@ -266,10 +277,13 @@ class HotelReservation(models.Model):
         """Price of one night of this booking: the single rule behind the
         booking total, the folio's room charges and late check-out nights.
 
-        A per-guest plan prices the party; a flat plan its own rate; a night
-        the plan does not cover, and a combo, fall back to the nightly rate.
+        A manual rate wins over everything. Otherwise a per-guest plan prices
+        the party; a flat plan its own rate; a night the plan does not cover,
+        and a combo, fall back to the nightly rate.
         """
         self.ensure_one()
+        if self.manual_rate:
+            return self.manual_nightly_rate
         if self.rate_plan_id and not self.combo_id:
             if self.rate_plan_id.pricing_mode == 'pax':
                 rate = self._party_rate_on(day)
@@ -303,6 +317,7 @@ class HotelReservation(models.Model):
 
     @api.depends('nights', 'nightly_rate', 'rate_plan_id', 'combo_id',
                  'adults', 'children', 'infants', 'rate_plan_id.pricing_mode',
+                 'manual_rate', 'manual_nightly_rate',
                  'rate_plan_id.line_ids.first_pax', 'rate_plan_id.line_ids.second_pax',
                  'rate_plan_id.line_ids.extra_adult', 'rate_plan_id.line_ids.extra_child',
                  'rate_plan_id.line_ids.extra_infant',
@@ -434,6 +449,12 @@ class HotelReservation(models.Model):
         if self.combo_id and self.checkin_date:
             self.checkout_date = self.checkin_date + timedelta(
                 days=self.combo_id.nights)
+
+    @api.constrains('manual_rate', 'manual_nightly_rate')
+    def _check_manual_rate(self):
+        for rec in self:
+            if rec.manual_rate and rec.manual_nightly_rate < 0:
+                raise ValidationError(_('A manual rate cannot be negative.'))
 
     @api.constrains('adults', 'children', 'infants')
     def _check_guest_counts(self):
@@ -1129,12 +1150,16 @@ class HotelReservation(models.Model):
     _PROTECTED_AFTER_CHECKOUT = (
         'room_id', 'room_type_id', 'checkin_date', 'checkout_date',
         'nightly_rate', 'rate_plan_id', 'guest_id',
+        'manual_rate', 'manual_nightly_rate',
     )
 
     # Fields whose amendment changes what the folio's room charges should be.
     _ROOM_CHARGE_FIELDS = (
         'checkin_date', 'checkout_date', 'room_id', 'room_type_id',
         'rate_plan_id', 'combo_id', 'nightly_rate',
+        'manual_rate', 'manual_nightly_rate',
+        # per-guest plans price the party
+        'adults', 'children', 'infants',
     )
 
     def write(self, vals):

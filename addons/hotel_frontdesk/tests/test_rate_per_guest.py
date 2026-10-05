@@ -122,6 +122,36 @@ class TestRatePerGuest(TransactionCase):
         with self.assertRaises(ValidationError):
             self.line.extra_child = -1
 
+    # ── manual rate ────────────────────────────────────────────────────
+    def test_manual_rate_overrides_everything(self):
+        res = self._book(adults=2, children=1, nights=3)
+        self.assertEqual(res.total_amount, 3 * 1850)
+        res.write({'manual_rate': True, 'manual_nightly_rate': 1234.0})
+        self.assertEqual(res.nightly_rate, 1234.0)
+        self.assertEqual(res.total_amount, 3 * 1234.0)
+        self.assertEqual(res._rate_on(self.start + timedelta(days=1)), 1234.0)
+        res.manual_rate = False
+        self.assertEqual(res.total_amount, 3 * 1850, 'unticking restores the plan price')
+
+    def test_manual_rate_can_be_complimentary_but_not_negative(self):
+        res = self._book(adults=1, manual_rate=True, manual_nightly_rate=0.0)
+        self.assertEqual(res.total_amount, 0.0)
+        with self.assertRaises(ValidationError):
+            res.manual_nightly_rate = -5
+
+    def test_amending_an_in_house_stay_reposts_room_charges(self):
+        res = self._book(adults=2, checkin_date=date.today(),
+                         checkout_date=date.today() + timedelta(days=2))
+        res.action_confirm()
+        res.action_check_in()
+        room_lines = lambda: res.folio_id.line_ids.filtered(lambda l: l.charge_type == 'room')
+        self.assertEqual(sum(room_lines().mapped('subtotal')), 2 * 1600)
+        res.write({'manual_rate': True, 'manual_nightly_rate': 900.0})
+        self.assertEqual(room_lines().mapped('amount'), [900.0, 900.0])
+        res.write({'manual_rate': False})
+        res.children = 1                    # the party changes in house
+        self.assertEqual(sum(room_lines().mapped('subtotal')), 2 * 1850)
+
 
 @tagged('post_install', '-at_install')
 class TestRatePlanAccountType(TransactionCase):
