@@ -444,10 +444,12 @@ class AiosellConfig(models.Model):
         if agency:
             return agency
         vals = {}
-        # An OTA is its own account type where hotel_frontdesk knows it, so
+        # An OTA is its own account type where hotel_frontdesk has them, so
         # the channel's bookings take the OTA rate plans.
-        if 'ota' in dict(Partner._fields['hotel_agency_type'].selection):
-            vals['hotel_agency_type'] = 'ota'
+        if 'hotel.account.type' in self.env:
+            ota = self.env['hotel.account.type'].search([('code', '=', 'ota')], limit=1)
+            if ota:
+                vals['hotel_account_type_id'] = ota.id
         return Partner.create(dict(vals, **{
             'name': channel,
             'is_company': True,
