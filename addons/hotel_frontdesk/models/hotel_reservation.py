@@ -370,6 +370,25 @@ class HotelReservation(models.Model):
             if rec.adults < 0 or rec.children < 0 or rec.infants < 0:
                 raise ValidationError(_('Guest counts cannot be negative.'))
 
+    # Not on 'state': a booking made before the limits existed must still be
+    # able to check in. The rule bites when a booking is made, or when its
+    # party or room changes.
+    @api.constrains('adults', 'children', 'infants', 'room_id', 'room_type_id')
+    def _check_room_occupancy(self):
+        for rec in self:
+            if rec.state in ('cancelled', 'no_show', 'checked_out'):
+                continue
+            # The room actually given decides; a Run-of-House booking has no
+            # occupancy of its own until it gets one.
+            room_type = rec.room_id.room_type_id or rec.room_type_id
+            if not room_type or room_type.is_roh:
+                continue
+            problem = room_type.occupancy_problem(rec.adults, rec.children, rec.infants)
+            if problem:
+                raise ValidationError(_(
+                    'Reservation %(number)s: %(problem)s Book another room for the rest of the party.',
+                    number=rec.reservation_number or _('new'), problem=problem))
+
     @api.constrains('room_id', 'checkin_date', 'checkout_date', 'state')
     def _check_room_availability(self):
         # Lock the rooms being booked before looking for overlaps.
