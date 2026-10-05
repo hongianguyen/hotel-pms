@@ -20,8 +20,8 @@ class HotelRoomType(models.Model):
         help='Most children a room of this type takes, counting children '
              '(6-12) and infants (0-6) together.')
     capacity = fields.Integer(
-        'Max Occupancy', compute='_compute_capacity', inverse='_inverse_capacity',
-        store=True, readonly=True, default=None,
+        'Max Occupancy', compute='_compute_capacity',
+        store=True, precompute=True, readonly=True, default=None,
         help='Max adults + max children: the most people a room of this '
              'type takes.')
 
@@ -30,13 +30,23 @@ class HotelRoomType(models.Model):
         for rt in self:
             rt.capacity = rt.max_adults + rt.max_children
 
-    def _inverse_capacity(self):
-        # Code and data files written before the split still set `capacity`
-        # alone. Read that as "this many adults" -- the only reading that
-        # keeps the total they meant.
-        for rt in self:
-            if rt.max_adults + rt.max_children != rt.capacity:
-                rt.write({'max_adults': rt.capacity, 'max_children': 0})
+    @api.model
+    def _capacity_as_limits(self, vals):
+        """Code and data written before the split still set `capacity` alone.
+        Read that as "this many adults": the only reading that keeps the
+        total they meant. Alongside either limit, the limits win."""
+        vals = dict(vals)
+        capacity = vals.pop('capacity', None)
+        if capacity is not None and 'max_adults' not in vals and 'max_children' not in vals:
+            vals.update(max_adults=capacity, max_children=0)
+        return vals
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        return super().create([self._capacity_as_limits(v) for v in vals_list])
+
+    def write(self, vals):
+        return super().write(self._capacity_as_limits(vals))
 
     @api.constrains('max_adults', 'max_children')
     def _check_occupancy_limits(self):
