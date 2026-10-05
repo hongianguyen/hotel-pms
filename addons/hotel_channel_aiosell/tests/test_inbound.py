@@ -78,6 +78,18 @@ class TestInbound(AiosellCase):
         self.assertEqual((reservation.adults, reservation.children), (9, 3))
         self.assertEqual(reservation.state, 'confirmed')
 
+    def test_default_rate_plan_never_reprices_a_channel_booking(self):
+        if 'is_default' not in self.env['hotel.rate.plan']._fields:
+            self.skipTest('hotel_frontdesk without default rate plans')
+        self.env['hotel.rate.plan'].search([('is_default', '=', True)]).write({'is_default': False})
+        self.env['hotel.rate.plan'].create({
+            'name': 'ZZ Default Per Guest', 'pricing_mode': 'pax', 'is_default': True,
+            'line_ids': [(0, 0, {'room_type_id': self.type_bungalow.id, 'first_pax': 9.0})]})
+        self._push()
+        reservation = self._reservations()
+        self.assertFalse(reservation.rate_plan_id)
+        self.assertEqual(reservation.nightly_rate, 1100000.0)
+
     def test_ota_rate_beats_the_pms_price_list(self):
         """The guest agreed the channel's price, so the folio must use it."""
         self._push()

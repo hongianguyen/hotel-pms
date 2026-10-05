@@ -94,6 +94,14 @@ class HotelReservation(models.Model):
         parent = getattr(super(), '_occupancy_exempt', None)
         return bool(parent and parent())
 
+    def _skip_default_rate_plan(self, vals):
+        """A channel booking carries the channel's own price
+        (ota_nightly_rate); the default rate plan must not reprice it."""
+        if vals.get('aiosell_booking_id'):
+            return True
+        parent = getattr(super(), '_skip_default_rate_plan', None)
+        return bool(parent and parent(vals))
+
     def action_aiosell_mark_no_show(self):
         """Tell the channel about a no-show so the OTA can bill it."""
         self.ensure_one()
