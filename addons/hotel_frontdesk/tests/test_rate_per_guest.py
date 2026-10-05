@@ -121,3 +121,82 @@ class TestRatePerGuest(TransactionCase):
     def test_rates_cannot_be_negative(self):
         with self.assertRaises(ValidationError):
             self.line.extra_child = -1
+
+
+@tagged('post_install', '-at_install')
+class TestRatePlanAccountType(TransactionCase):
+    """A rate plan can be limited to one account type: Direct Guest, OTA,
+    Travel Agent or Corporate. A booking's type comes from its agency."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        Plan = cls.env['hotel.rate.plan']
+        Plan.search([('is_default', '=', True)]).write({'is_default': False})
+        cls.room_type = cls.env['hotel.room.type'].create({
+            'name': 'ZZ Acct Tent', 'max_adults': 2, 'max_children': 1, 'base_rate': 500.0})
+        cls.room = cls.env['hotel.room'].create({'name': 'ZZA-01', 'room_type_id': cls.room_type.id})
+        cls.guest = cls.env['res.partner'].create({'name': 'ZZ Acct Guest'})
+        Partner = cls.env['res.partner']
+        cls.ota = Partner.create({'name': 'ZZ OTA', 'is_company': True, 'is_hotel_agency': True,
+                                  'hotel_agency_type': 'ota', 'hotel_credit_term': True})
+        cls.agent = Partner.create({'name': 'ZZ Agent', 'is_company': True, 'is_hotel_agency': True,
+                                    'hotel_agency_type': 'travel_agent', 'hotel_credit_term': True})
+
+        def plan(name, account_type, first, default=False):
+            return Plan.create({
+                'name': name, 'pricing_mode': 'pax', 'account_type': account_type,
+                'is_default': default,
+                'line_ids': [(0, 0, {'room_type_id': cls.room_type.id, 'first_pax': first})]})
+        cls.plan_direct = plan('ZZ Direct', 'direct', 1000.0, True)
+        cls.plan_ota = plan('ZZ OTA Rate', 'ota', 1100.0, True)
+        cls.plan_agent = plan('ZZ Agent Rate', 'travel_agent', 800.0, True)
+        cls.plan_any = plan('ZZ Any', 'any', 900.0)
+        start = date.today() + timedelta(days=520)
+        cls.vals = {
+            'guest_id': cls.guest.id, 'room_type_id': cls.room_type.id, 'room_id': cls.room.id,
+            'checkin_date': start, 'checkout_date': start + timedelta(days=1),
+            'send_confirmation': False,
+        }
+
+    def _book(self, **extra):
+        return self.env['hotel.reservation'].create(dict(self.vals, **extra))
+
+    def test_account_type_comes_from_the_agency(self):
+        self.assertEqual(self._book().account_type, 'direct')
+        self.assertEqual(self._book(agency_id=self.ota.id, booker_id=self.ota.id).account_type, 'ota')
+        self.assertEqual(self._book(agency_id=self.agent.id, booker_id=self.agent.id).account_type,
+                         'travel_agent')
+
+    def test_each_account_type_gets_its_own_default(self):
+        self.assertEqual(self._book().rate_plan_id, self.plan_direct)
+        self.assertEqual(self._book(agency_id=self.agent.id, booker_id=self.agent.id).rate_plan_id,
+                         self.plan_agent)
+        res = self._book(agency_id=self.ota.id, booker_id=self.ota.id)
+        self.assertEqual(res.rate_plan_id, self.plan_ota)
+        self.assertEqual(res.total_amount, 1100.0)
+
+    def test_falls_back_to_the_all_accounts_default(self):
+        corporate = self.env['res.partner'].create({
+            'name': 'ZZ Corp', 'is_company': True, 'is_hotel_agency': True,
+            'hotel_agency_type': 'corporate', 'hotel_credit_term': True})
+        self.assertFalse(self._book(agency_id=corporate.id, booker_id=corporate.id).rate_plan_id)
+        self.plan_any.is_default = True
+        self.assertEqual(self._book(agency_id=corporate.id, booker_id=corporate.id).rate_plan_id,
+                         self.plan_any)
+
+    def test_plan_for_another_account_type_is_refused(self):
+        with self.assertRaisesRegex(ValidationError, 'OTA bookings only'):
+            self._book(rate_plan_id=self.plan_ota.id)
+        self._book(rate_plan_id=self.plan_any.id)        # all accounts: fine
+
+    def test_changing_the_agency_is_checked(self):
+        res = self._book(rate_plan_id=self.plan_agent.id, agency_id=self.agent.id,
+                         booker_id=self.agent.id)
+        with self.assertRaises(ValidationError):
+            res.write({'agency_id': False, 'booker_id': False})
+
+    def test_one_default_per_account_type(self):
+        with self.assertRaises(ValidationError):
+            self.env['hotel.rate.plan'].create({
+                'name': 'ZZ Second OTA Default', 'account_type': 'ota', 'is_default': True})
