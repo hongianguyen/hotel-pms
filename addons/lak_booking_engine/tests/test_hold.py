@@ -358,3 +358,46 @@ class TestRoomContentApi(HttpCase):
         self.assertEqual(self.url_open('/api/book/photo/%d/77' % self.image.id).status_code, 404)
         self.room_type.website_bookable = False
         self.assertEqual(self.url_open('/api/book/photo/%d/512' % self.image.id).status_code, 404)
+
+
+@tagged('post_install', '-at_install')
+class TestPerGuestQuotes(BookingEngineCase):
+    """With a default per-guest plan, the website quotes by the party and the
+    hold saves exactly that price."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        _setup_bank(cls.env)
+        Plan = cls.env['hotel.rate.plan']
+        Plan.search([('is_default', '=', True)]).write({'is_default': False})
+        cls.plan = Plan.create({
+            'name': 'ZZ Web Per Guest', 'pricing_mode': 'pax', 'is_default': True,
+            'line_ids': [(0, 0, {
+                'room_type_id': cls.room_type.id, 'first_pax': 1000000.0,
+                'second_pax': 500000.0, 'extra_adult': 400000.0,
+                'extra_child': 300000.0, 'extra_infant': 100000.0})],
+        })
+
+    def _offer(self, adults, children=0, infants=0):
+        result = self.Quote.search_offers(
+            self.start.isoformat(), (self.start + timedelta(days=2)).isoformat(),
+            adults, children, infants)
+        return next(o for o in result['offers'] if o['room_type_id'] == self.room_type.id)
+
+    def test_quote_follows_the_party(self):
+        self.assertEqual(self._offer(1)['total'], 2 * 1000000)
+        self.assertEqual(self._offer(2)['total'], 2 * 1500000)
+        self.assertEqual(self._offer(1, 1)['total'], 2 * 1300000)     # adult + extra child
+        self.assertEqual(self._offer(2, 0, 1)['total'], 2 * 1600000)  # + extra infant
+        self.assertEqual(self._offer(2)['nightly'][0]['price'], 1500000)
+
+    def test_hold_saves_the_quoted_price_on_the_default_plan(self):
+        offer = self._offer(2, 0, 1)
+        view = self.env['lak.booking.hold'].create_from_web(
+            {'quote': offer['quote'], 'guest': {'name': 'Zz Pax', 'email': 'zz.pax@example.com'}},
+            client_ip='10.7.7.7')
+        hold = self.env['lak.booking.hold'].search([('name', '=', view['reference'])])
+        self.assertEqual(hold.reservation_ids.rate_plan_id, self.plan)
+        self.assertEqual(hold.amount, offer['total'])
+        self.assertEqual(sum(hold.reservation_ids.mapped('total_amount')), offer['total'])

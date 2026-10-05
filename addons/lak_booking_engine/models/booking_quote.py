@@ -97,9 +97,14 @@ class LakBookingQuote(models.AbstractModel):
     def _reservation_vals(self, room_type, checkin, checkout, adults, children, infants=0):
         """Exactly the values the booking step will create a reservation
         with. Keep the two in step: a field set there and not here (a rate
-        plan, a combo) would make the quote and the folio disagree."""
+        plan, a combo) would make the quote and the folio disagree.
+
+        The rate plan is the default one, set explicitly: an unsaved record
+        (the quote) is never given the default by create()."""
+        plan = self.env['hotel.rate.plan'].default_plan_for(room_type)
         return {
             'room_type_id': room_type.id,
+            'rate_plan_id': plan.id or False,
             'checkin_date': checkin,
             'checkout_date': checkout,
             'adults': adults,
@@ -109,21 +114,19 @@ class LakBookingQuote(models.AbstractModel):
         }
 
     @api.model
-    def _price_stay(self, room_type, checkin, checkout, adults, children):
+    def _price_stay(self, room_type, checkin, checkout, adults, children, infants=0):
         """(nightly breakdown, total) for ONE room, or None when any night
         would price at zero or less -- a zero price is a broken price list,
         never a free room."""
         Reservation = self.env['hotel.reservation']
         res = Reservation.new(self._reservation_vals(
-            room_type, checkin, checkout, adults, children))
+            room_type, checkin, checkout, adults, children, infants))
         total = res.total_amount
         nightly = []
         current = checkin
         while current < checkout:
-            rate = res.nightly_rate
-            if res.rate_plan_id and not res.combo_id:
-                rate = res.rate_plan_id.get_rate_for_date(current) or rate
-            nightly.append({'date': current.isoformat(), 'price': rate})
+            # The reservation's own per-night rule: what the folio will post.
+            nightly.append({'date': current.isoformat(), 'price': res._rate_on(current)})
             current += timedelta(days=1)
         if total <= 0 or any(n['price'] <= 0 for n in nightly):
             return None
@@ -225,8 +228,8 @@ class LakBookingQuote(models.AbstractModel):
             # Price every room with the party it will really carry: the hold
             # creates exactly these rooms, and refuses when its saved total
             # differs from this one.
-            priced = [self._price_stay(room_type, checkin, checkout, a, c)
-                      for a, c, _i in split]
+            priced = [self._price_stay(room_type, checkin, checkout, a, c, i)
+                      for a, c, i in split]
             if not all(priced):
                 continue
             nightly, room_total = priced[0]
