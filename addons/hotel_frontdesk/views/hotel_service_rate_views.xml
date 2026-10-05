@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hotel_service_form_rates" model="ir.ui.view">
+        <field name="name">hotel.service.form.rates</field>
+        <field name="model">hotel.service</field>
+        <field name="inherit_id" ref="hotel_services.view_hotel_service_form"/>
+        <field name="arch" type="xml">
+            <field name="price" position="attributes">
+                <attribute name="string">List Price</attribute>
+                <attribute name="help">Charged when no rate below matches the booking.</attribute>
+            </field>
+            <field name="description" position="after">
+                <separator string="Rates"/>
+                <p class="text-muted small">
+                    A rate overrides the list price for bookings of its Account Type (empty = all)
+                    on the dates and weekdays it is valid. Per group: one price for the whole group.
+                    Per pax: each person pays the price for the group's size (1, 2, 3-5, 6-9, 10+).
+                    The booking's own account type wins over an all-accounts rate.
+                </p>
+                <field name="rate_ids" context="{'active_test': False}">
+                    <list editable="bottom" decoration-muted="not active">
+                        <field name="sequence" widget="handle"/>
+                        <field name="account_type_id" placeholder="All accounts"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="day_monday" string="Mo" optional="show"/>
+                        <field name="day_tuesday" string="Tu" optional="show"/>
+                        <field name="day_wednesday" string="We" optional="show"/>
+                        <field name="day_thursday" string="Th" optional="show"/>
+                        <field name="day_friday" string="Fr" optional="show"/>
+                        <field name="day_saturday" string="Sa" optional="show"/>
+                        <field name="day_sunday" string="Su" optional="show"/>
+                        <field name="pricing"/>
+                        <field name="currency_id" column_invisible="1"/>
+                        <field name="price_group" readonly="pricing != 'group'"/>
+                        <field name="price_pax_1" readonly="pricing != 'pax'"/>
+                        <field name="price_pax_2" readonly="pricing != 'pax'"/>
+                        <field name="price_pax_3_5" readonly="pricing != 'pax'"/>
+                        <field name="price_pax_6_9" readonly="pricing != 'pax'"/>
+                        <field name="price_pax_10" readonly="pricing != 'pax'"/>
+                        <field name="active" widget="boolean_toggle"/>
+                    </list>
+                </field>
+            </field>
+        </field>
+    </record>
+</odoo>

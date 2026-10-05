@@ -22,11 +22,22 @@ class HotelReservationService(models.Model):
     service_id = fields.Many2one(
         'hotel.service', string='Service', required=True,
     )
-    quantity = fields.Float('Quantity', default=1.0, required=True)
+    quantity = fields.Float('Quantity', default=1.0, required=True,
+                            help='How many times the service is taken, e.g. 2 days of breakfast.')
+    pax = fields.Integer(
+        'Pax', default=1,
+        help='People taking the service. Per-pax rates charge each of them at '
+             'the price for this group size. Defaults to the adults and '
+             'children (6-12) of the booking.')
     price_unit = fields.Float(
         'Unit Price', digits=(16, 2), required=True,
-        help='Defaults to the service list price; can be overridden.',
+        help='Price of one service for the whole group, from the service rate '
+             'that matches the booking (account type, date) or else the '
+             'service list price; can be overridden.',
     )
+    rate_id = fields.Many2one(
+        'hotel.service.rate', string='Rate Applied', readonly=True, ondelete='set null',
+        help='Service rate the unit price came from; empty = the list price.')
     subtotal = fields.Float('Subtotal', compute='_compute_subtotal', store=True)
     date = fields.Date(
         'Service Date',
@@ -63,10 +74,31 @@ class HotelReservationService(models.Model):
         for line in self:
             line.subtotal = line.quantity * line.price_unit
 
-    @api.onchange('service_id')
+    def _rate_context(self, reservation, day=None):
+        """(day, account type) a rate is chosen on for this booking."""
+        day = day or reservation.checkin_date or fields.Date.context_today(self)
+        account_type = reservation.account_type_id or self.env['hotel.account.type'].direct()
+        return day, account_type
+
+    @api.onchange('service_id', 'pax', 'date')
     def _onchange_service_id(self):
         if self.service_id:
-            self.price_unit = self.service_id.price
+            day, account_type = self._rate_context(self.reservation_id, self.date)
+            self.price_unit, self.rate_id = self.service_id.price_for(
+                day, account_type, self.pax or 1)
+
+    @api.model
+    def _with_rate_price(self, vals):
+        """Price a line created without one (imports, code) the same way
+        the form does."""
+        if 'price_unit' in vals or not vals.get('service_id') or not vals.get('reservation_id'):
+            return vals
+        service = self.env['hotel.service'].browse(vals['service_id'])
+        reservation = self.env['hotel.reservation'].browse(vals['reservation_id'])
+        day = fields.Date.to_date(vals.get('date')) if vals.get('date') else None
+        day, account_type = self._rate_context(reservation, day)
+        price, rate = service.price_for(day, account_type, vals.get('pax') or 1)
+        return dict(vals, price_unit=price, rate_id=rate.id or False)
 
     # ── Folio posting ────────────────────────────────────────────────────
 
@@ -103,7 +135,7 @@ class HotelReservationService(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        lines = super().create(vals_list)
+        lines = super().create([self._with_rate_price(v) for v in vals_list])
         for line in lines:
             state = line.reservation_id.state
             if state in ('checked_out', 'cancelled'):
@@ -116,7 +148,7 @@ class HotelReservationService(models.Model):
         return lines
 
     def write(self, vals):
-        protected = {'service_id', 'quantity', 'price_unit', 'date'}
+        protected = {'service_id', 'quantity', 'price_unit', 'date', 'pax'}
         if protected & set(vals):
             posted = self.filtered('folio_line_id')
             if posted:
