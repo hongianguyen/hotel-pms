@@ -5,12 +5,14 @@
         <field name="model">hotel.room.type</field>
         <field name="inherit_id" ref="hotel_core.view_hotel_room_type_form"/>
         <field name="arch" type="xml">
-            <field name="capacity" position="after">
+            <field name="capacity" position="before">
                 <field name="max_adults"/>
                 <field name="max_children"/>
+            </field>
+            <field name="capacity" position="after">
                 <div colspan="2" class="text-muted small">
                     Max Children counts children 6-12 and infants 0-6 together.
-                    Adults + children + infants must not exceed Max Occupancy.
+                    Max Occupancy is always Max Adults + Max Children.
                 </div>
             </field>
         </field>
