@@ -125,6 +125,33 @@ class TestHold(BookingEngineCase):
             self._hold(email='cap@example.com', ip='10.1.1.3')
         self.assertEqual(ctx.exception.code, 'too_many_holds')
 
+    def test_infants_ride_along(self):
+        """Infants (0-6) take no bed and no price, but are recorded."""
+        base = self._quote(adults=2)
+        result = self.Quote.search_offers(
+            self.start.isoformat(), (self.start + timedelta(days=2)).isoformat(), 2, 0, 3)
+        offer = next(o for o in result['offers'] if o['room_type_id'] == self.room_type.id)
+        self.assertEqual(result['infants'], 3)
+        self.assertEqual(offer['rooms_needed'], 1)
+        self.assertEqual(offer['total'], base['total'])
+        hold, view = self._hold(offer)
+        self.assertEqual(hold.infants, 3)
+        self.assertEqual(view['infants'], 3)
+        self.assertEqual(hold.reservation_ids.infants, 3)
+        # Spread over the rooms of a multi-room booking.
+        result = self.Quote.search_offers(
+            self.start.isoformat(), (self.start + timedelta(days=2)).isoformat(), 4, 0, 3)
+        offer = next(o for o in result['offers'] if o['room_type_id'] == self.room_type.id)
+        hold, _v = self._hold(offer, email='zz.inf2@example.com', ip='10.3.3.3')
+        self.assertEqual(sorted(hold.reservation_ids.mapped('infants')), [1, 2])
+
+    def test_bad_infant_counts_refused(self):
+        for bad in (-1, 7, 'x'):
+            with self.assertRaises(BookingInputError) as ctx:
+                self.Quote.search_offers(
+                    self.start.isoformat(), (self.start + timedelta(days=1)).isoformat(), 2, 0, bad)
+            self.assertEqual(ctx.exception.code, 'bad_party')
+
     def test_party_split(self):
         split = self.Quote._party_split
         self.assertEqual(split(3, 1, 2), [(2, 1), (1, 0)])

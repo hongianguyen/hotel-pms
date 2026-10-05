@@ -25,7 +25,7 @@
         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Dates</strong></td>
             <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.checkin_date.strftime('%d/%m/%Y')"/> - <t t-out="object.checkout_date.strftime('%d/%m/%Y')"/></td></tr>
         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Guests</strong></td>
-            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.adults"/> adult(s), <t t-out="object.children"/> child(ren)</td></tr>
+            <td style="padding: 8px; border: 1px solid #ddd;"><t t-out="object.adults"/> adult(s), <t t-out="object.children"/> child(ren) aged 6-12<t t-if="object.infants">, <t t-out="object.infants"/> infant(s) under 6</t></td></tr>
         <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Amount to transfer</strong></td>
             <td style="padding: 8px; border: 1px solid #ddd;"><strong><t t-out="object.amount_display"/></strong></td></tr>
     </table>

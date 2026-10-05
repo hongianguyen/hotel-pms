@@ -134,7 +134,8 @@ class LakBookingEngine(http.Controller):
         try:
             result = Quote.search_offers(
                 kwargs.get('checkin'), kwargs.get('checkout'),
-                kwargs.get('adults', 2), kwargs.get('children', 0))
+                kwargs.get('adults', 2), kwargs.get('children', 0),
+                kwargs.get('infants', 0))
         except BookingInputError as e:
             return self._error(e.code, str(e))
         except Exception:

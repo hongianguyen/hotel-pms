@@ -66,7 +66,8 @@ class LakBookingHold(models.Model):
     checkin_date = fields.Date('Check-in', readonly=True, required=True)
     checkout_date = fields.Date('Check-out', readonly=True, required=True)
     adults = fields.Integer(readonly=True)
-    children = fields.Integer(readonly=True)
+    children = fields.Integer('Children (6-12)', readonly=True)
+    infants = fields.Integer('Infants (0-6)', readonly=True)
     room_count = fields.Integer('Rooms', readonly=True)
     reservation_ids = fields.One2many('hotel.reservation', 'lak_hold_id', 'Reservations', readonly=True)
 
@@ -285,6 +286,7 @@ class LakBookingHold(models.Model):
         if (not room_type or not room_type.active or room_type.is_roh
                 or not room_type.website_bookable or not 1 <= rooms_needed <= MAX_ROOMS):
             raise BookingInputError('not_available', 'This room is no longer available. Please search again.')
+        infants = Quote._parse_infants(token.get('infants'))
         split = Quote._party_split(adults, children, rooms_needed)
         if not split:
             raise BookingInputError('bad_party', 'Each room needs at least one adult.')
@@ -300,8 +302,8 @@ class LakBookingHold(models.Model):
         ref = self._new_ref()
         Reservation = self.env['hotel.reservation'].sudo()
         vals_list = []
-        for room, (a, c) in zip(rooms, split):
-            vals = Quote._reservation_vals(room_type, checkin, checkout, a, c)
+        for room, (a, c), i in zip(rooms, split, Quote._spread(infants, rooms_needed)):
+            vals = Quote._reservation_vals(room_type, checkin, checkout, a, c, i)
             vals.update({
                 'guest_id': guest.id,
                 'room_id': room.id,
@@ -336,6 +338,7 @@ class LakBookingHold(models.Model):
             'checkout_date': checkout,
             'adults': adults,
             'children': children,
+            'infants': infants,
             'room_count': rooms_needed,
             'amount': amount,
             'currency_id': currency.id,
@@ -362,6 +365,7 @@ class LakBookingHold(models.Model):
             'checkout': self.checkout_date.isoformat(),
             'adults': self.adults,
             'children': self.children,
+            'infants': self.infants,
             'amount': self.amount,
             'currency': self.currency_id.name,
             'expires_at': fields.Datetime.to_string(self.expires_at) + 'Z',

@@ -33,7 +33,7 @@
   /* Search bar */
   .search { position:relative; z-index:2; margin-top:-56px; background:var(--card); border-radius:16px;
             box-shadow:0 10px 30px rgba(30,43,36,.12); padding:16px; display:grid; gap:12px;
-            grid-template-columns:repeat(4, minmax(0,1fr)) auto; align-items:end; }
+            grid-template-columns:1.2fr 1.2fr repeat(3, minmax(0,1fr)) auto; align-items:end; }
   .search label { display:block; font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:4px; }
   .search > div { min-width:0; }
   input, textarea { width:100%; min-width:0; font:inherit; color:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; }
@@ -42,7 +42,10 @@
   .btn:disabled { opacity:.55; cursor:wait; }
   .btn.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
   .btn.link { background:none; color:var(--accent); padding:4px 0; align-self:flex-start; }
-  @media (max-width:760px) { .search { grid-template-columns:1fr 1fr; } .search .btn { grid-column:1/-1; } }
+  @media (max-width:860px) { .search { grid-template-columns:1fr 1fr; } .search .btn { grid-column:1/-1; } }
+  @media (max-width:860px) { .search .party { grid-column:1/-1; display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; } }
+  @media (min-width:861px) { .search .party { display:contents; } }
+  .search .hint { font-weight:400; text-transform:none; letter-spacing:0; }
 
   .status { margin:28px 0 12px; display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; }
   .status h2 { font:600 1.5rem/1.2 var(--serif); margin:0; }
@@ -119,8 +122,11 @@
   <section class="search" aria-label="Search availability">
     <div><label for="checkin">Check-in</label><input type="date" id="checkin"></div>
     <div><label for="checkout">Check-out</label><input type="date" id="checkout"></div>
-    <div><label for="adults">Adults</label><input type="number" id="adults" min="1" max="20" value="2"></div>
-    <div><label for="children">Children</label><input type="number" id="children" min="0" max="10" value="0"></div>
+    <div class="party">
+      <div><label for="adults">Adults</label><input type="number" id="adults" min="1" max="20" value="2"></div>
+      <div><label for="children">Children <span class="hint">6–12</span></label><input type="number" id="children" min="0" max="10" value="0"></div>
+      <div><label for="infants">Infants <span class="hint">0–6</span></label><input type="number" id="infants" min="0" max="6" value="0"></div>
+    </div>
     <button class="btn" id="searchBtn">Check availability</button>
   </section>
   <p class="err" id="searchErr"></p>
@@ -211,7 +217,7 @@ function render() {
     } else if (offer) {
       buy = `<div>
           <div class="price">${vnd(offer.total)}</div>
-          <div class="per">${offer.rooms_needed > 1 ? offer.rooms_needed + ' rooms · ' : ''}${search.nights} night${search.nights > 1 ? 's' : ''} · ${search.adults + search.children} guest${search.adults + search.children > 1 ? 's' : ''}</div>
+          <div class="per">${offer.rooms_needed > 1 ? offer.rooms_needed + ' rooms · ' : ''}${search.nights} night${search.nights > 1 ? 's' : ''} · ${party(search)}</div>
           ${offer.only_left ? `<div class="left">Only ${offer.only_left} left</div>` : ''}
         </div>
         <button class="btn" data-book="${room.room_type_id}">Book</button>`;
@@ -286,7 +292,7 @@ async function loadRooms() {
 $('searchBtn').onclick = async () => {
   $('searchErr').textContent = ''; $('guest').classList.add('hidden'); $('done').classList.add('hidden');
   $('rooms').classList.remove('hidden'); $('status').classList.remove('hidden');
-  const q = new URLSearchParams({ checkin: $('checkin').value, checkout: $('checkout').value, adults: $('adults').value, children: $('children').value });
+  const q = new URLSearchParams({ checkin: $('checkin').value, checkout: $('checkout').value, adults: $('adults').value, children: $('children').value, infants: $('infants').value });
   $('searchBtn').disabled = true;
   try {
     const d = await (await fetch('/api/book/search?' + q)).json();
@@ -301,6 +307,12 @@ $('searchBtn').onclick = async () => {
   finally { $('searchBtn').disabled = false; }
 };
 
+function party(s) {
+  const p = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+  return [p(s.adults, 'adult', 'adults'), s.children ? p(s.children, 'child', 'children') : '',
+          s.infants ? p(s.infants, 'infant', 'infants') : ''].filter(Boolean).join(', ');
+}
+
 function fmtDate(iso) { return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
 
 function pick(room) {
@@ -308,7 +320,7 @@ function pick(room) {
   const o = chosen.offer, img = room.photos[0];
   $('picked').innerHTML = `${img ? `<img src="${esc(img.thumb)}" alt="">` : ''}
     <div><strong>${o.rooms_needed > 1 ? o.rooms_needed + ' × ' : ''}${esc(room.name)}</strong><br>
-    <span class="small">${fmtDate(search.checkin)} → ${fmtDate(search.checkout)} · ${search.adults} adult${search.adults > 1 ? 's' : ''}${search.children ? ', ' + search.children + ' child' + (search.children > 1 ? 'ren' : '') : ''}</span><br>
+    <span class="small">${fmtDate(search.checkin)} → ${fmtDate(search.checkout)} · ${party(search)}</span><br>
     <strong>${vnd(o.total)}</strong></div>`;
   $('rooms').classList.add('hidden'); $('status').classList.add('hidden');
   $('guest').classList.remove('hidden'); $('guest').scrollIntoView({ behavior: 'smooth' }); $('gname').focus({ preventScroll: true });
@@ -356,10 +368,10 @@ function showHold(h) {
   };
 }
 
-// A link from the website can carry the search: /book?checkin=…&checkout=…&adults=2&children=0
+// A link from the website can carry the search: /book?checkin=…&checkout=…&adults=2&children=0&infants=0
 (async function start() {
   const qs = new URLSearchParams(location.search);
-  ['checkin', 'checkout', 'adults', 'children'].forEach((k) => { if (qs.get(k)) $(k).value = qs.get(k); });
+  ['checkin', 'checkout', 'adults', 'children', 'infants'].forEach((k) => { if (qs.get(k)) $(k).value = qs.get(k); });
   await loadRooms();
   if (qs.get('checkin') && qs.get('checkout') && rooms.length) $('searchBtn').click();
 })();

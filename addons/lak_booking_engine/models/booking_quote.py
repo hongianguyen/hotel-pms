@@ -26,6 +26,7 @@ MAX_NIGHTS = 30
 MAX_HORIZON_DAYS = 540           # how far ahead a stay may start
 MAX_ADULTS = 20
 MAX_CHILDREN = 10
+MAX_INFANTS = 6
 MAX_ROOMS = 5                    # rooms of one type in one web booking
 SHOW_LEFT_BELOW = 3              # "only N left" is shown under this, never the count
 QUOTE_TTL = 30 * 60              # seconds a quote token stays valid
@@ -80,9 +81,26 @@ class LakBookingQuote(models.AbstractModel):
             raise BookingInputError('bad_party', 'Between 0 and %d children.' % MAX_CHILDREN)
         return checkin, checkout, nights, adults, children
 
+    @api.model
+    def _parse_infants(self, infants):
+        """Infants (0-6) ride along: recorded on the booking, but they do not
+        count towards a room's capacity and are not priced."""
+        try:
+            infants = int(infants or 0)
+        except (TypeError, ValueError):
+            raise BookingInputError('bad_party', 'Infants must be a whole number.')
+        if not 0 <= infants <= MAX_INFANTS:
+            raise BookingInputError('bad_party', 'Between 0 and %d infants.' % MAX_INFANTS)
+        return infants
+
+    @api.model
+    def _spread(self, count, rooms):
+        """`count` people spread over `rooms`, as evenly as possible."""
+        return [count // rooms + (1 if i < count % rooms else 0) for i in range(rooms)]
+
     # ── Pricing ────────────────────────────────────────────────────────
     @api.model
-    def _reservation_vals(self, room_type, checkin, checkout, adults, children):
+    def _reservation_vals(self, room_type, checkin, checkout, adults, children, infants=0):
         """Exactly the values the booking step will create a reservation
         with. Keep the two in step: a field set there and not here (a rate
         plan, a combo) would make the quote and the folio disagree."""
@@ -92,6 +110,7 @@ class LakBookingQuote(models.AbstractModel):
             'checkout_date': checkout,
             'adults': adults,
             'children': children,
+            'infants': infants,
             'state': 'draft',
         }
 
@@ -160,7 +179,7 @@ class LakBookingQuote(models.AbstractModel):
 
     # ── Search ─────────────────────────────────────────────────────────
     @api.model
-    def search_offers(self, checkin, checkout, adults, children=0):
+    def search_offers(self, checkin, checkout, adults, children=0, infants=0):
         """Everything the website may offer for this stay.
 
         Returns a dict ready to serialise. Only aggregates leave this method:
@@ -170,7 +189,8 @@ class LakBookingQuote(models.AbstractModel):
         """
         checkin, checkout, nights, adults, children = self._parse_stay(
             checkin, checkout, adults, children)
-        guests = adults + children
+        infants = self._parse_infants(infants)
+        guests = adults + children      # infants do not take a bed
 
         types = self.env['hotel.room.type'].search([
             ('active', '=', True),
@@ -205,6 +225,7 @@ class LakBookingQuote(models.AbstractModel):
                 'checkout': checkout.isoformat(),
                 'adults': adults,
                 'children': children,
+                'infants': infants,
                 'rooms': rooms_needed,
                 'total': total,
             })
@@ -228,6 +249,7 @@ class LakBookingQuote(models.AbstractModel):
             'nights': nights,
             'adults': adults,
             'children': children,
+            'infants': infants,
             'currency': 'VND',
             'offers': offers,
         }
