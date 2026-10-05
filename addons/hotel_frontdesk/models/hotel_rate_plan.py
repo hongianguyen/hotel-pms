@@ -23,6 +23,13 @@ to both modes alike.
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+ACCOUNT_TYPES = [
+    ('direct', 'Direct Guest'),
+    ('ota', 'OTA'),
+    ('travel_agent', 'Travel Agent'),
+    ('corporate', 'Corporate'),
+]
+
 WEEKDAY_FIELDS = ('day_monday', 'day_tuesday', 'day_wednesday', 'day_thursday',
                   'day_friday', 'day_saturday', 'day_sunday')
 
@@ -36,31 +43,54 @@ class HotelRatePlan(models.Model):
     ], string='Pricing', default='room', required=True,
         help='Per room: one price a night whoever stays. Per guest: the price '
              'is built from the guests in the room, using the rows below.')
+    account_type = fields.Selection(
+        [('any', 'All Accounts')] + ACCOUNT_TYPES, string='Account Type',
+        default='any', required=True,
+        help='Which bookings may use this plan: a direct guest (no agency), '
+             'or bookings from an OTA, travel agent or corporate account. '
+             'A booking takes its account type from its agency.')
     is_default = fields.Boolean(
         'Default Plan',
-        help='New bookings made without a rate plan are priced with this one.')
+        help='New bookings of this account type made without a rate plan '
+             'are priced with this one. One default per account type.')
     line_ids = fields.One2many(
         'hotel.rate.plan.line', 'rate_plan_id', string='Per-Guest Rates', copy=True)
 
-    @api.constrains('is_default', 'active')
+    @api.constrains('is_default', 'account_type', 'active')
     def _check_single_default(self):
-        defaults = self.search([('is_default', '=', True)])
-        if len(defaults) > 1:
-            raise ValidationError(_(
-                'Only one rate plan can be the default (now: %s).',
-                ', '.join(defaults.mapped('name'))))
+        for account_type in set(self.filtered('is_default').mapped('account_type')):
+            defaults = self.search([('is_default', '=', True), ('account_type', '=', account_type)])
+            if len(defaults) > 1:
+                label = dict(self._fields['account_type']._description_selection(self.env))[account_type]
+                raise ValidationError(_(
+                    'Only one default rate plan per account type; %(type)s has %(plans)s.',
+                    type=label, plans=', '.join(defaults.mapped('name'))))
+
+    def allows_account_type(self, account_type):
+        self.ensure_one()
+        return self.account_type in ('any', account_type or 'direct')
+
+    def _can_price(self, room_type):
+        self.ensure_one()
+        if self.pricing_mode == 'pax':
+            return room_type in self.line_ids.room_type_id
+        return not self.room_type_id or self.room_type_id == room_type
 
     @api.model
-    def default_plan_for(self, room_type):
-        """The default plan, if it can price `room_type`; else an empty set."""
-        plan = self.search([('is_default', '=', True)], limit=1)
-        if not plan or not room_type or room_type.is_roh:
+    def default_plan_for(self, room_type, account_type='direct'):
+        """The default plan for this account type that can price
+        `room_type`: the account type's own default first, then the one
+        for all accounts. An empty set when neither fits."""
+        if not room_type or room_type.is_roh:
             return self.browse()
-        if plan.pricing_mode == 'pax' and room_type not in plan.line_ids.room_type_id:
-            return self.browse()
-        if plan.room_type_id and plan.room_type_id != room_type:
-            return self.browse()
-        return plan
+        defaults = self.search([
+            ('is_default', '=', True),
+            ('account_type', 'in', ('any', account_type or 'direct')),
+        ])
+        for plan in defaults.sorted(lambda p: p.account_type == 'any'):
+            if plan._can_price(room_type):
+                return plan
+        return self.browse()
 
     # ── Validity ────────────────────────────────────────────────────────
     def _applies_on(self, day):

@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <field name="room_type_id" position="before">
                 <field name="pricing_mode" widget="radio"/>
+                <field name="account_type"/>
                 <field name="is_default"/>
             </field>
             <field name="room_type_id" position="attributes">
@@ -46,6 +47,7 @@
         <field name="arch" type="xml">
             <field name="name" position="after">
                 <field name="pricing_mode" optional="show"/>
+                <field name="account_type" optional="show"/>
                 <field name="is_default" optional="show"/>
             </field>
         </field>

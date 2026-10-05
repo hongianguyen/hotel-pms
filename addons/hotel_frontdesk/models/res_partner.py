@@ -11,9 +11,12 @@ class ResPartner(models.Model):
              'bookings are issued to the company, not to the staying guests.',
     )
     hotel_agency_type = fields.Selection([
+        ('ota', 'OTA'),
         ('travel_agent', 'Travel Agent'),
         ('corporate', 'Corporate'),
-    ], string='Account Type', default='travel_agent')
+    ], string='Account Type', default='travel_agent',
+        help='Which rate plans this account books on: a rate plan can be '
+             'limited to one account type.')
     hotel_credit_term = fields.Boolean(
         'Credit Terms',
         help='The hotel extends credit to this account: its bookings can '
