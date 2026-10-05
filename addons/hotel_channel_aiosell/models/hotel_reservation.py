@@ -80,6 +80,20 @@ class HotelReservation(models.Model):
             if rec.ota_nightly_rate and rec.state in self._RATE_FOLLOWS_PRICE_LIST:
                 rec.nightly_rate = rec.ota_nightly_rate
 
+    def _occupancy_exempt(self):
+        """A booking the channel has already sold is accepted as sold.
+
+        hotel_frontdesk refuses a party bigger than the room type allows.
+        Refusing an OTA booking would only make Aiosell retry it forever while
+        the guest still turns up; reception re-houses the party instead.
+        Guarded so this module keeps working on a hotel_frontdesk without the
+        occupancy rule.
+        """
+        if self.aiosell_booking_id:
+            return True
+        parent = getattr(super(), '_occupancy_exempt', None)
+        return bool(parent and parent())
+
     def action_aiosell_mark_no_show(self):
         """Tell the channel about a no-show so the OTA can bill it."""
         self.ensure_one()

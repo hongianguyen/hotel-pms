@@ -67,6 +67,17 @@ class TestInbound(AiosellCase):
         self.assertEqual(reservation.aiosell_cm_booking_id, 'AAABBBCCC')
         self.assertTrue(reservation.folio_id, 'Confirming opens the folio.')
 
+    def test_channel_booking_over_room_limits_is_still_accepted(self):
+        """The OTA has sold it: refusing would only make Aiosell retry forever."""
+        payload = _payload(self.config, self.today)
+        payload['rooms'][0]['occupancy'] = {'adults': 9, 'children': 3}
+        status, body = self.env['aiosell.config'].handle_reservation_push(payload)
+        self.assertEqual(status, 200)
+        self.assertTrue(body['success'], body)
+        reservation = self._reservations()
+        self.assertEqual((reservation.adults, reservation.children), (9, 3))
+        self.assertEqual(reservation.state, 'confirmed')
+
     def test_ota_rate_beats_the_pms_price_list(self):
         """The guest agreed the channel's price, so the folio must use it."""
         self._push()
