@@ -17,7 +17,8 @@ class BookingEngineCase(TransactionCase):
         cls.start = cls.Quote._hotel_today() + timedelta(days=400)
         cls.room_type = cls.env['hotel.room.type'].create({
             'name': 'ZZ Engine Tent',
-            'capacity': 2,
+            'max_adults': 2,
+            'max_children': 1,     # sleeps 3
             'base_rate': 1500000.0,
         })
         cls.rooms = cls.env['hotel.room'].create([{

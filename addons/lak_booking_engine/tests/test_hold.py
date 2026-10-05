@@ -126,23 +126,24 @@ class TestHold(BookingEngineCase):
         self.assertEqual(ctx.exception.code, 'too_many_holds')
 
     def test_infants_count_towards_occupancy(self):
-        """Infants are not priced, but they take a place in the room and
-        share the children allowance."""
+        """Infants are not priced, but they take a child's place in the room."""
         def offer(adults, children=0, infants=0):
             result = self.Quote.search_offers(
                 self.start.isoformat(), (self.start + timedelta(days=2)).isoformat(),
                 adults, children, infants)
             return result, next(o for o in result['offers'] if o['room_type_id'] == self.room_type.id)
         _r, base = offer(2)
-        self.assertEqual(base['rooms_needed'], 1)          # 2-person tent
-        result, with_baby = offer(2, 0, 1)
-        self.assertEqual(result['infants'], 1)
-        self.assertEqual(with_baby['rooms_needed'], 2)     # 3 people > 2
-        self.assertEqual(with_baby['total'], 2 * base['total'])
-        hold, view = self._hold(with_baby)
-        self.assertEqual((hold.infants, view['infants']), (1, 1))
+        self.assertEqual(base['rooms_needed'], 1)          # 2 adults + 1 child per tent
+        _r, one_baby = offer(2, 0, 1)
+        self.assertEqual(one_baby['rooms_needed'], 1)
+        self.assertEqual(one_baby['total'], base['total'], 'infants are not priced')
+        result, twins = offer(2, 0, 2)
+        self.assertEqual(result['infants'], 2)
+        self.assertEqual(twins['rooms_needed'], 2)         # 2 kids > 1 per tent
+        hold, view = self._hold(twins)
+        self.assertEqual((hold.infants, view['infants']), (2, 2))
         self.assertEqual(sorted(hold.reservation_ids.mapped(lambda r: (r.adults, r.infants))),
-                         [(1, 0), (1, 1)])
+                         [(1, 1), (1, 1)])
 
     def test_bad_infant_counts_refused(self):
         for bad in (-1, 7, 'x'):
@@ -153,14 +154,14 @@ class TestHold(BookingEngineCase):
 
     def test_party_split(self):
         family = self.env['hotel.room.type'].create({
-            'name': 'ZZ Family Bungalow', 'capacity': 3, 'max_adults': 2,
-            'max_children': 2, 'base_rate': 2000000.0})
+            'name': 'ZZ Family Bungalow', 'max_adults': 2, 'max_children': 2,
+            'base_rate': 2000000.0})                       # sleeps 4
         split = self.Quote._party_split
         # Odd adult in the first room, odd child in the last.
         self.assertEqual(split(family, 3, 1, 0, 2), [(2, 0, 0), (1, 1, 0)])
         # Children and infants share one allowance; children placed first.
-        self.assertEqual(split(family, 2, 1, 1, 1), None)        # 4 people > 3
-        self.assertEqual(split(family, 1, 1, 1, 1), [(1, 1, 1)])
+        self.assertEqual(split(family, 2, 1, 1, 1), [(2, 1, 1)])
+        self.assertIsNone(split(family, 1, 2, 1, 1), '3 kids > 2')
         self.assertIsNone(split(family, 1, 3, 0, 2), 'a child never gets a room alone')
         self.assertIsNone(split(family, 3, 0, 0, 1), 'max 2 adults')
         self.assertEqual(self.Quote._fit_party(family, 3, 2, 1), (2, [(2, 1, 0), (1, 1, 1)]))
