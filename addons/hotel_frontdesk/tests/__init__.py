@@ -6,3 +6,4 @@ from . import test_confirmation_recipient
 from . import test_partner_lookup
 from . import test_pax_types
 from . import test_rate_per_guest
+from . import test_service_rates

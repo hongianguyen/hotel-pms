@@ -29,6 +29,7 @@ class HotelAddChargeWizard(models.TransientModel):
         ('manual', 'Manual Charge'),
     ], string='Charge Type', default='manual', required=True)
     quantity = fields.Float('Quantity', default=1.0, required=True)
+    pax = fields.Integer('Pax', default=1, help='People taking the service (per-pax rates).')
     amount = fields.Float('Unit Price', required=True, digits=(16, 2))
     service_id = fields.Many2one(
         'hotel.service', string='Service',
@@ -46,11 +47,14 @@ class HotelAddChargeWizard(models.TransientModel):
             else:
                 wizard.post_to_folio_id = folio
 
-    @api.onchange('service_id')
+    @api.onchange('service_id', 'pax')
     def _onchange_service_id(self):
         if self.service_id:
             self.name = self.service_id.name
-            self.amount = self.service_id.price
+            res = self.folio_id.reservation_id
+            account_type = res.account_type_id or self.env['hotel.account.type'].direct()
+            self.amount, _rate = self.service_id.price_for(
+                fields.Date.context_today(self), account_type, self.pax or 1)
             if self.service_id.category == 'fnb':
                 self.charge_type = 'fnb'
             else:

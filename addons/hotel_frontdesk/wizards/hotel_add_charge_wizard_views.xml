@@ -13,6 +13,7 @@
                     <field name="charge_type"/>
                     <field name="post_to_folio_id" invisible="not linked_folio_id"
                            required="linked_folio_id != False"/>
+                    <field name="pax" invisible="not service_id"/>
                     <field name="quantity"/>
                     <field name="amount" widget="monetary"/>
                 </group>
