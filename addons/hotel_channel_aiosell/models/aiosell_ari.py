@@ -250,7 +250,7 @@ class AiosellConfig(models.Model):
             for room_code, group in by_room_code.items():
                 open_plans = [m for m in group if m._rate_for_date(day)]
                 min_stay = min(
-                    (m.rate_plan_id.min_stay or 1 for m in open_plans), default=1,
+                    (m._plan_on(day).min_stay or 1 for m in open_plans), default=1,
                 )
                 rooms.append({
                     'roomCode': room_code,

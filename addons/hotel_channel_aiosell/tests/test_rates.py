@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from unittest.mock import patch
 
+from odoo import fields
 from odoo.tests import tagged
 
 from .common import AiosellCase
@@ -91,3 +92,44 @@ class TestRates(AiosellCase):
         restrictions = blocks[0]['rooms'][0]['restrictions']
         self.assertFalse(restrictions['stopSell'])
         self.assertEqual(restrictions['minimumStay'], 3)
+
+    def _weekday_split(self):
+        """Main plan Sun-Thu at the plan price, an extra Fri-Sat plan dearer."""
+        days = ['day_monday', 'day_tuesday', 'day_wednesday', 'day_thursday',
+                'day_friday', 'day_saturday', 'day_sunday']
+        self.plan.write({'day_friday': False, 'day_saturday': False})
+        weekend = self.env['hotel.rate.plan'].create({
+            'name': 'AIO Weekend',
+            'room_type_id': self.plan.room_type_id.id,
+            'base_rate': 1800000.0,
+            **{d: d in ('day_friday', 'day_saturday') for d in days},
+        })
+        self.map_rate.extra_rate_plan_ids = weekend
+        return weekend
+
+    def _next(self, weekday):
+        return self.today + timedelta(days=(weekday - self.today.weekday()) % 7)
+
+    def test_other_day_plan_prices_the_nights_the_main_plan_skips(self):
+        self._weekday_split()
+        thu, fri, sun = self._next(3), self._next(4), self._next(6)
+        rates = {}
+        for block in self.config._build_rate_updates(self.today, self.today + timedelta(days=7)):
+            day = block['startDate']
+            while day <= block['endDate']:
+                rates[day] = block['rates'][0]['rate']
+                day = str(fields.Date.from_string(day) + timedelta(days=1))
+        self.assertEqual(rates[str(thu)], 1500000.0)
+        self.assertEqual(rates[str(fri)], 1800000.0)
+        self.assertEqual(rates[str(sun)], 1500000.0)
+
+    def test_other_day_plan_keeps_the_weekend_open(self):
+        """Without it the Sun-Thu plan alone would stop-sell Fri and Sat."""
+        weekend = self._weekday_split()
+        weekend.min_stay = 2
+        self.config.sync_restrictions = True
+        fri = self._next(4)
+        blocks = self.config._build_restriction_updates(fri, fri + timedelta(days=1))
+        restrictions = blocks[0]['rooms'][0]['restrictions']
+        self.assertFalse(restrictions['stopSell'])
+        self.assertEqual(restrictions['minimumStay'], 2)

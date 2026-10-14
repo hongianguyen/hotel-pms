@@ -29,6 +29,7 @@
                 <field name="room_type_id" readonly="1"/>
                 <field name="occupancy" readonly="1"/>
                 <field name="rate_plan_id"/>
+                <field name="extra_rate_plan_ids" widget="many2many_tags"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>

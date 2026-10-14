@@ -83,11 +83,25 @@ class AiosellRatePlanMapping(models.Model):
         related='room_mapping_id.room_type_id', store=True, string='PMS Room Type',
     )
     rate_plan_id = fields.Many2one('hotel.rate.plan', string='PMS Rate Plan')
+    extra_rate_plan_ids = fields.Many2many(
+        'hotel.rate.plan', 'aiosell_rateplan_mapping_extra_plan_rel',
+        'mapping_id', 'rate_plan_id', string='Other-Day Rate Plans',
+        help='Used on nights the main plan does not apply, e.g. a Fri-Sat '
+             'plan next to a Sun-Thu one. The first plan that applies wins.',
+    )
 
     _rateplan_code_uniq = models.Constraint(
         'UNIQUE(config_id, rateplan_code)',
         'A rate plan code can only be mapped once per connection.',
     )
+
+    def _plan_on(self, day):
+        """The first mapped plan that applies on ``day``, or an empty record."""
+        self.ensure_one()
+        for plan in self.rate_plan_id | self.extra_rate_plan_ids:
+            if plan.get_rate_for_date(day) is not False:
+                return plan
+        return self.env['hotel.rate.plan']
 
     def _rate_for_date(self, day):
         """Nightly rate to publish for this code, or 0 when it is closed.
@@ -97,11 +111,12 @@ class AiosellRatePlanMapping(models.Model):
         the way out: a 0 pushed to Aiosell is a free room on the OTA.
         """
         self.ensure_one()
-        if not self.rate_plan_id or not self.room_type_id:
+        if not self.room_type_id:
             return 0.0
-        rate = self.rate_plan_id.get_rate_for_date(day)
-        if rate is False:
+        plan = self._plan_on(day)
+        if not plan:
             return 0.0
+        rate = plan.get_rate_for_date(day)
         # A plan with no rate of its own and no room type falls back to the
         # room type this code is mapped to.
         if not rate:
