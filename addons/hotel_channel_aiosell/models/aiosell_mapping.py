@@ -36,6 +36,12 @@ class AiosellRoomMapping(models.Model):
     local_count = fields.Integer(
         'PMS Room Count', related='room_type_id.room_count', readonly=True,
     )
+    ota_allotment = fields.Integer(
+        'OTA Allotment', default=0,
+        help='Most rooms of this type ever offered to the channels on one '
+             'night, so some can be kept back for direct sales. The channels '
+             'get the lower of this and the rooms actually free. 0 = no cap.',
+    )
 
     _room_code_uniq = models.Constraint(
         'UNIQUE(config_id, room_code)',

@@ -159,9 +159,12 @@ class AiosellConfig(models.Model):
                 # out of the payload leaves Aiosell selling whatever it last
                 # heard, forever.
                 counts = avail.get(mapping.room_type_id.id) or {}
+                available = counts.get(day, 0)
+                if mapping.ota_allotment > 0:
+                    available = min(available, mapping.ota_allotment)
                 rooms.append({
                     'roomCode': mapping.room_code,
-                    'available': counts.get(day, 0),
+                    'available': available,
                 })
             if rooms:
                 per_date[day] = rooms

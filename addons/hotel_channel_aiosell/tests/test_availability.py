@@ -138,3 +138,27 @@ class TestAvailability(AiosellCase):
             self.today, self.today + timedelta(days=1))
         codes = {r['roomCode'] for r in blocks[0]['rooms']}
         self.assertEqual(codes, {'bungalow'})
+
+    def test_ota_allotment_caps_what_the_channels_see(self):
+        """Rooms kept back for direct sales never reach the OTAs."""
+        self.map_bungalow.ota_allotment = 1
+        blocks = self.config._build_inventory_updates(
+            self.today, self.today + timedelta(days=1))
+        rooms = {r['roomCode']: r['available'] for r in blocks[0]['rooms']}
+        self.assertEqual(rooms['bungalow'], 1, '2 free, allotment 1 -> 1')
+        self.assertEqual(rooms['tent'], 1, 'no allotment -> uncapped')
+
+    def test_ota_allotment_never_raises_availability(self):
+        """An allotment above what is free must not oversell."""
+        self.map_bungalow.ota_allotment = 10
+        self.env['hotel.reservation'].create({
+            'guest_id': self.guest.id,
+            'room_type_id': self.type_bungalow.id,
+            'room_id': self.bungalows[0].id,
+            'checkin_date': self.today,
+            'checkout_date': self.today + timedelta(days=1),
+        })
+        blocks = self.config._build_inventory_updates(
+            self.today, self.today + timedelta(days=1))
+        rooms = {r['roomCode']: r['available'] for r in blocks[0]['rooms']}
+        self.assertEqual(rooms['bungalow'], 1)

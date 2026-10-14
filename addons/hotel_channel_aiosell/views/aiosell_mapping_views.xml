@@ -11,6 +11,7 @@
                 <field name="remote_count" readonly="1" string="Aiosell Rooms"/>
                 <field name="room_type_id"/>
                 <field name="local_count" string="PMS Rooms"/>
+                <field name="ota_allotment" string="OTA Allotment"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
